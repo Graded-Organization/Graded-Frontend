@@ -1,9 +1,9 @@
 <template>
 	<div>
-		<div class="inner">
+		<div class="inner boxfix-vert">
 			<div class="m-default">
 
-				<pre>{{ hoveredCell }}</pre>
+				<!--<pre>{{ hoveredCell }}</pre>-->
 
 				<h2 class="worksheet-title mb-half" contenteditable="true">Untitled Worksheet</h2>
 				<p class="worksheet-description mb-default" contenteditable="true">No description</p>
@@ -106,7 +106,7 @@
 					<graded-button class="button-primary" @click.prevent="removeRow">Remove Row</graded-button>
 				</p>-->
 
-				<p>Selected items:</p>
+				<!--<p>Selected items:</p>
 				<pre>{{ selectedItems }}</pre>
 
 				<p>Assigned Areas:</p>
@@ -115,7 +115,7 @@
 				<p>Areas:</p>
 				<pre>{{ areas }}</pre>
 
-				<pre>{{ Object.values(assignedAreas).filter((v, i, a) => a.indexOf(v) === i) }}</pre>
+				<pre>{{ Object.values(assignedAreas).filter((v, i, a) => a.indexOf(v) === i) }}</pre>-->
 			</div>
 		</div>
 
@@ -280,7 +280,7 @@
 					}
 				}
 
-				if(dir == 'top' && !info.touchLeft) {
+				if(dir == 'top' && !info.touchTop) {
 
 					let rowToGrab = info.origin[1] - 1;
 					let zone = [info.origin[0], info.maxPoint[0]];
@@ -290,21 +290,77 @@
 						this.fillRowArea(area, rowToGrab, zone);
 					}
 				}
+
+				this.columns++;
+				this.columns--;
+			},
+			getAreaSize(area) {
+
+				let origin = this.getOriginPoints(area);
+				let maxPoints = this.getMaxPoints(area);
+				console.log(origin);
+				console.log(maxPoints);
+
+				console.log([
+					maxPoints[0] - Math.max(0, origin[0]-1),
+					maxPoints[1] - Math.max(1, origin[1]-1)
+				]);
+
+				return [
+					(maxPoints[0] + 1) - Math.max(0, origin[0]),
+					(maxPoints[1] + 1) - Math.max(0, origin[1])
+				];
+			},
+			getOriginPoints(area) {
+
+				let cells = this.getToolAreas(area);
+
+				let x = this.columns;
+				let y = this.rows;
+
+				for(const c in cells) {
+					x = Math.min(x, cells[c][0]);
+					y = Math.min(y, cells[c][1]);
+				}
+
+				return [x, y];
+			},
+			getMaxPoints(area) {
+
+				let cells = this.getToolAreas(area);
+
+				let x = 0;
+				let y = 0;
+
+				for(const c in cells) {
+					x = Math.max(x, cells[c][0]);
+					y = Math.max(y, cells[c][1]);
+				}
+
+				return [x, y];
 			},
 			colIsEmpty(col, zone) {
 				for(var i = zone[0]; i <= zone[1]; i++) {
-					console.log(`this.areas[${i}][${col}]`, this.areas[i][col]);
 
-					if(this.areas[i][col].includes('tool-area')) return false;
+					if(this.areas[i][col].includes('tool-area')) {
+						if(this.getAreaSize(this.areas[i][col])[0] < 2) {
+							return false;
+						}
+					}
 				}
 
 				return true;
 			},
 			rowIsEmpty(row, zone) {
 				for(var i = zone[0]; i <= zone[1]; i++) {
-					console.log(`this.areas[${i}][${row}]`, this.areas[row][i]);
 
-					if(this.areas[row][i].includes('tool-area')) return false;
+					if(this.areas[row][i].includes('tool-area')) {
+						console.log(this.getAreaSize(this.areas[row][i]));
+
+						if(this.getAreaSize(this.areas[row][i])[1] < 2) {
+							return false;
+						}
+					}
 				}
 
 				return true;

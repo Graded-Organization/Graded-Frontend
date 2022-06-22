@@ -254,6 +254,8 @@
 
 		&:hover {
 
+			z-index: 10;
+
 			.button-add { opacity: 1; }
 			.button-remove { opacity: 1; }
 		}
