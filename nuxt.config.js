@@ -1,3 +1,5 @@
+import { resolve } from 'path';
+
 export default {
 	// Target: https://go.nuxtjs.dev/config-target
 	ssr: false,
@@ -27,7 +29,8 @@ export default {
 
 	// Global CSS: https://go.nuxtjs.dev/config-css
 	css: [
-		'@/assets/styles/main.css',
+		'@/assets/styles/chimplate/chimplate.less',
+		'~assets/styles/project.less'
 	],
 
 	// Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -41,8 +44,14 @@ export default {
 	buildModules: [
 		// https://go.nuxtjs.dev/tailwindcss
 		//'@nuxtjs/tailwindcss',
-		'@nuxt/postcss8',
+		'@nuxtjs/style-resources',
 	],
+
+	styleResources: {
+		less: [
+			'~assets/styles/chimplate/chimplate-resources.less',
+		]
+	},
 
 	// Modules: https://go.nuxtjs.dev/config-modules
 	modules: [
@@ -56,13 +65,18 @@ export default {
 		baseURL: '/',
 	},
 
+	alias: {
+		'@chimplate': resolve(__dirname, './assets/styles/chimplate'),
+	},
+
 	// Build Configuration: https://go.nuxtjs.dev/config-build
 	build: {
-		postcss: {
-			plugins: {
-				tailwindcss: {},
-				autoprefixer: {},
-			},
+		loaders: {
+			less: {
+				lessOptions: {
+					math: 'always'
+				}
+			}
 		},
-	}
+	},
 }
