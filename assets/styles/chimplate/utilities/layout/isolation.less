@@ -1,0 +1,10 @@
+@isolation-values: {
+	isolate: isolate;
+	isolation-auto: auto;
+}
+
+each(@isolation-values, {
+	.set-rule(@key, {
+		.apply-rule(isolation, @value);
+	});
+});

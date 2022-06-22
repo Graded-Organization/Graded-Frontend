@@ -1,0 +1,10 @@
+@box-sizing-values: {
+	box-border: border-box;
+	box-content: content-box;
+}
+
+each(@box-sizing-values, {
+	.set-rule(@key, {
+		.apply-rule(box-sizing, @value);
+	});
+});

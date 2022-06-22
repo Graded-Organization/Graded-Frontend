@@ -1,0 +1,13 @@
+@object-fit-values: {
+	object-contain: contain;
+	object-cover: cover;
+	object-fill: fill;
+	object-none: none;
+	object-scale-down: scale-down;
+}
+
+each(@object-fit-values, {
+	.set-rule(@key, {
+		.apply-rule(object-fit, @value);
+	});
+});

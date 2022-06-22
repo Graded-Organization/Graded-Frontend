@@ -1,0 +1,65 @@
+/*				   __  ____  _ ___ __  _
+	▀▀▀▀▀▀▀▀▀	  / / / / /_(_) (_) /_(_)__  _____
+  █ ▀▀▀▀ ▀▀▀▀ █	 / / / / __/ / / / __/ / _ \/ ___/
+  ▀ █ ▀▀▀▀▀ █ ▀	/ /_/ / /_/ / / / /_/ /  __(__  )
+	▀▀▀▀▀▀▀▀▀	\____/\__/_/_/_/\__/_/\___/____/*/
+
+.apply-rule(@p, @v) { @{p}: @v; }
+
+.set-rule(@class-name, @rules) {
+
+	.@{class-name} {
+		@rules();
+	}
+
+	// Media Queries
+
+	each(@media-sizes, {
+
+		.on(@value, {
+			.@{key}\:@{class-name} {
+				@rules();
+			}
+		});
+	});
+
+	// Pseudo-Classes
+
+	each(@pseudo-classes, {
+
+		.@{value}\:@{class-name}:@{value} {
+			@rules();
+		}
+	});
+
+	// Media queries + pseudoclases
+
+	each(@media-sizes, {
+
+		each(.pseudo-classes(), .(@v, @k, @i) {
+			.on(@value, {
+				.@{key}\:@{v}\:@{class-name}:@{v} {
+					@rules();
+				}
+			});
+		});
+	});
+
+	// Dark and Light mode
+
+	:root[data-theme="theme-dark"],
+	:root.dark-mode {
+
+		.dark\:@{class-name} {
+			@rules();
+		}
+	}
+
+	:root[data-theme="theme-light"],
+	:root.light-mode {
+
+		.light\:@{class-name} {
+			@rules();
+		}
+	}
+}

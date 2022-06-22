@@ -1,0 +1,40 @@
+/*				   ______                                             __
+	▀▀▀▀▀▀▀▀▀	  / ____/___  ____ ___  ____  ____  ____  ___  ____  / /______
+  █ ▀▀▀▀ ▀▀▀▀ █	 / /   / __ \/ __ `__ \/ __ \/ __ \/ __ \/ _ \/ __ \/ __/ ___/
+  ▀ █ ▀▀▀▀▀ █ ▀	/ /___/ /_/ / / / / / / /_/ / /_/ / / / /  __/ / / / /_(__  )
+	▀▀▀▀▀▀▀▀▀	\____/\____/_/ /_/ /_/ .___/\____/_/ /_/\___/_/ /_/\__/____/
+				                    /_/*/
+
+
+/* Spacing */
+/* ---------------------------------------------------------------------------------------------- */
+
+@comp-x-padding: @-size-3;
+@comp-y-padding: @-size-2;
+@comp-font-size: @-font-size-1;
+@comp-line-height: 20/16;
+@comp-border-radius: @radius-2;
+
+
+.comp-box-model(@mode: block) {
+
+	padding: if((@mode = block), @comp-x-padding, @comp-y-padding @comp-x-padding);
+	font-size: @comp-font-size;
+	line-height: @comp-line-height;
+	border-width: 1px solid transparent;
+}
+
+/* Actions */
+/* ---------------------------------------------------------------------------------------------- */
+
+/**
+ * By default, actions will
+ */
+
+.component-actions {
+
+	position: absolute;
+	right: 0;
+	top: 0;
+	z-index: 10;
+}

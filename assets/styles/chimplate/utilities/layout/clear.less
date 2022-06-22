@@ -1,0 +1,12 @@
+@clear-values: {
+	clear-left: left;
+	clear-right: right;
+	clear-both: both;
+	clear-none: none;
+}
+
+each(@clear-values, {
+	.set-rule(@key, {
+		.apply-rule(clear, @value);
+	});
+});
