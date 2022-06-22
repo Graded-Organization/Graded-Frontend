@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="select-none border-dashed border-slate-300 border-t border-l text-center min-h-[50px]"
-		:class="{ 'border-r': isMaxCol, 'border-b': isMaxRow }"
+		class="cell cell-empty"
+		:class="{ 'border-right': isMaxCol, 'border-bottom': isMaxRow }"
 		v-on="listeners"
 	>
 		<slot></slot>
@@ -35,3 +35,19 @@
 		}
 	}
 </script>
+
+<style lang="less" scoped>
+
+	.cell {
+
+		border-style: dashed;
+		border-color: transparent;
+		border-width: 1px;
+		border-top-color: @gray-3;
+		border-left-color: @gray-3;
+	}
+
+	.border-right { border-right-color: @gray-3; }
+	.border-bottom { border-bottom-color: @gray-3; }
+
+</style>
