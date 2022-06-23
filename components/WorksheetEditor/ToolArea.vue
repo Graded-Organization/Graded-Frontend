@@ -65,24 +65,22 @@
 			<i class="fad fa-arrow-alt-from-top" />
 		</a>
 
+		<div class="component-actions p-half">
+			<button
+				type="button"
+				class="button button-small button-danger button-remove"
+				@click="$emit('remove')"
+			>
+				<i class="fal fa-fw fa-times" />
+			</button>
+		</div>
+
 		<slot>
-
-			<div class="component-actions p-half">
-				<button
-					type="button"
-					class="button button-small button-danger button-remove"
-					@click="$emit('remove')"
-				>
-					<i class="fal fa-fw fa-times" />
-				</button>
-			</div>
-
 			<button
 				type="button"
 				@click="$emit('add-tool')"
 				class="button-add-tool button button-ghost-primary"
 			><i class="fal fa-fw fa-plus"></i></button>
-
 		</slot>
 	</div>
 </template>

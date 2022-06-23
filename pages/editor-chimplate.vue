@@ -3,7 +3,7 @@
 		<div class="inner boxfix-vert">
 			<div class="m-default">
 
-				<!--<pre>{{ hoveredCell }}</pre>-->
+				<pre>{{ hoveredCell }}</pre>
 
 				<h2 class="worksheet-title mb-half" contenteditable="true">Untitled Worksheet</h2>
 				<p class="worksheet-description mb-default" contenteditable="true">No description</p>
@@ -83,7 +83,9 @@
 								:max-cols="columns"
 								:max-rows="rows"
 								@expand="expand"
-							></worksheet-editor-tool-area>
+							>
+								{{ cell }}
+							</worksheet-editor-tool-area>
 						</div>
 					</div>
 				</div>
@@ -96,6 +98,27 @@
 					<graded-button class="button-primary" @click.prevent="setArea">Set Area</graded-button>
 				</div>
 
+				<!-- MAP -->
+
+				<div
+					class="grid-area"
+					style="display: grid;"
+					:style="gridStyle"
+					:key="updateAreas"
+				>
+					<template v-for="row in rows">
+						<div
+							v-for="col in columns"
+							:key="`area${ col-1 }-${ row-1 }`"
+							style="border: 1px solid #EEE; padding: 10px; text-align: center;"
+							:style="!!assignedAreas[`area${col-1}-${row-1}`] ? 'background: #AAA;' : ''"
+						>
+							<p style="font-size: 0.6rem">{{ col-1 }}, {{ row-1 }}</p>
+							<p>{{ assignedAreas[`area${col-1}-${row-1}`] || 'empty' }}</p>
+						</div>
+					</template>
+				</div>
+
 				<!--<p class="mb-default">
 					<graded-button class="button-primary" @click.prevent="addCol">Add Column</graded-button>
 					<graded-button class="button-primary" @click.prevent="removeCol">Remove Column</graded-button>
@@ -106,7 +129,7 @@
 					<graded-button class="button-primary" @click.prevent="removeRow">Remove Row</graded-button>
 				</p>-->
 
-				<!--<p>Selected items:</p>
+				<p>Selected items:</p>
 				<pre>{{ selectedItems }}</pre>
 
 				<p>Assigned Areas:</p>
@@ -115,7 +138,7 @@
 				<p>Areas:</p>
 				<pre>{{ areas }}</pre>
 
-				<pre>{{ Object.values(assignedAreas).filter((v, i, a) => a.indexOf(v) === i) }}</pre>-->
+				<pre>{{ Object.values(assignedAreas).filter((v, i, a) => a.indexOf(v) === i) }}</pre>
 			</div>
 		</div>
 
@@ -253,7 +276,7 @@
 					let zone = [info.origin[1], info.maxPoint[1]];
 
 					// The area is empty
-					if(this.colIsEmpty(colToGrab, zone)) {
+					if(this.colIsEligible(colToGrab, zone, area)) {
 						this.fillColArea(area, colToGrab, zone);
 					}
 				}
@@ -264,7 +287,7 @@
 					let zone = [info.origin[1], info.maxPoint[1]];
 
 					// The area is empty
-					if(this.colIsEmpty(colToGrab, zone)) {
+					if(this.colIsEligible(colToGrab, zone, area)) {
 						this.fillColArea(area, colToGrab, zone);
 					}
 				}
@@ -275,7 +298,7 @@
 					let zone = [info.origin[0], info.maxPoint[0]];
 
 					// The area is empty
-					if(this.rowIsEmpty(rowToGrab, zone)) {
+					if(this.rowIsEligible(rowToGrab, zone, area)) {
 						this.fillRowArea(area, rowToGrab, zone);
 					}
 				}
@@ -286,7 +309,7 @@
 					let zone = [info.origin[0], info.maxPoint[0]];
 
 					// The area is empty
-					if(this.rowIsEmpty(rowToGrab, zone)) {
+					if(this.rowIsEligible(rowToGrab, zone, area)) {
 						this.fillRowArea(area, rowToGrab, zone);
 					}
 				}
@@ -298,13 +321,6 @@
 
 				let origin = this.getOriginPoints(area);
 				let maxPoints = this.getMaxPoints(area);
-				console.log(origin);
-				console.log(maxPoints);
-
-				console.log([
-					maxPoints[0] - Math.max(0, origin[0]-1),
-					maxPoints[1] - Math.max(1, origin[1]-1)
-				]);
 
 				return [
 					(maxPoints[0] + 1) - Math.max(0, origin[0]),
@@ -339,25 +355,46 @@
 
 				return [x, y];
 			},
-			colIsEmpty(col, zone) {
+			getAdjacentCol(col, zone, area) {
+				let adjacent = [];
+
+				console.group('getAdjacentCol');
+				console.log(col, zone, area);
+
 				for(var i = zone[0]; i <= zone[1]; i++) {
 
+					//Check all the adjacent areas
 					if(this.areas[i][col].includes('tool-area')) {
-						if(this.getAreaSize(this.areas[i][col])[0] < 2) {
-							return false;
-						}
+
+						adjacent.push(this.areas[i][col]);
 					}
 				}
 
-				return true;
+				adjacent = adjacent.filter((v, i, a) => a.indexOf(v) === i);
+
+				console.groupEnd();
+				return adjacent;
 			},
-			rowIsEmpty(row, zone) {
-				for(var i = zone[0]; i <= zone[1]; i++) {
+			colIsEligible(col, zone, area) {
 
-					if(this.areas[row][i].includes('tool-area')) {
-						console.log(this.getAreaSize(this.areas[row][i]));
+				let adjacent = this.getAdjacentCol(col, zone, area);
 
-						if(this.getAreaSize(this.areas[row][i])[1] < 2) {
+				// If there is no adjacent areas then it's empty, so it can be used
+				if(!adjacent.length) {
+
+					return true;
+
+				//If there are adjacent areas, we need to check a little more.
+				} else {
+
+					console.log('Adjacents in COL', adjacent);
+
+					for(const a in adjacent) {
+
+						// if the width of the adjacent area is less than 2,
+						// then it can be robbed of a col because it would get zero as area
+						if(this.getAreaSize(adjacent[a])[0] < 2) {
+
 							return false;
 						}
 					}
@@ -366,11 +403,73 @@
 				return true;
 			},
 			fillColArea(area, col, zone) {
+				/*for(var i = zone[0]; i <= zone[1]; i++) {
+					Vue.set(this.assignedAreas, `area${col}-${i}`, area);
+				}*/
+				let adjacent = this.getAdjacentCol(col, zone, area);
+				console.log('Adjacent in FillColArea', adjacent);
+
+				for(var row = 0; row < this.rows; row++) {
+					if(typeof this.assignedAreas[`area${col}-${row}`] !== 'undefined' && adjacent.includes(this.assignedAreas[`area${col}-${row}`])) {
+						Vue.delete(this.assignedAreas, `area${col}-${row}`);
+					}
+				}
+
 				for(var i = zone[0]; i <= zone[1]; i++) {
 					Vue.set(this.assignedAreas, `area${col}-${i}`, area);
 				}
 			},
+			getAdjacentRow(row, zone, area) {
+				let adjacent = [];
+
+				for(var i = zone[0]; i <= zone[1]; i++) {
+
+					//Check all the adjacent areas
+					if(this.areas[row][i].includes('tool-area')) {
+
+						adjacent.push(this.areas[row][i]);
+					}
+				}
+
+				adjacent = adjacent.filter((v, i, a) => a.indexOf(v) === i);
+				return adjacent;
+			},
+			rowIsEligible(row, zone, area) {
+
+				let adjacent = this.getAdjacentRow(row, zone, area);
+
+				// If there is no adjacent areas then it's empty, so it can be used
+				if(!adjacent.length) {
+
+					return true;
+
+				//If there are adjacent areas, we need to check a little more.
+				} else {
+
+					for(const a in adjacent) {
+
+						// if the height of the adjacent area is less than 2,
+						// then it can be robbed of a row because it would get zero as area
+						if(this.getAreaSize(adjacent[a])[1] < 2) {
+
+							return false;
+						}
+					}
+				}
+
+				return true;
+			},
 			fillRowArea(area, row, zone) {
+
+				let adjacent = this.getAdjacentRow(row, zone, area);
+				console.log('Adjacent in FillRowArea', adjacent);
+
+				for(var col = 0; col < this.columns; col++) {
+					if(typeof this.assignedAreas[`area${col}-${row}`] !== 'undefined' && adjacent.includes(this.assignedAreas[`area${col}-${row}`])) {
+						Vue.delete(this.assignedAreas, `area${col}-${row}`);
+					}
+				}
+
 				for(var i = zone[0]; i <= zone[1]; i++) {
 					Vue.set(this.assignedAreas, `area${i}-${row}`, area);
 				}
@@ -609,8 +708,6 @@
 		outline: none;
 	}
 
-
-
 	.cell {
 
 		user-select: none;
@@ -654,6 +751,14 @@
 			&.free-cells { pointer-events: none; }
 			&.overlapping-cells { pointer-events: auto; }
 		}
+
+		&:hover {
+
+			.row-buttons, .col-buttons {
+				opacity: 1;
+				pointer-events: all;
+			}
+		}
 	}
 
 	.row-buttons {
@@ -665,6 +770,9 @@
 		left: 50%;
 		margin-left: -40px;
 		z-index: 100;
+		opacity: 0;
+		transition: opacity 500ms;
+		pointer-events: none;
 	}
 
 	.col-buttons {
@@ -675,6 +783,9 @@
 		width: 35px;
 		top: 50%;
 		margin-top: -86px/2;
+		opacity: 0;
+		transition: opacity 500ms;
+		pointer-events: none;
 
 		.button {
 
