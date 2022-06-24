@@ -3,7 +3,7 @@
 		<div class="inner boxfix-vert">
 			<div class="m-default">
 
-				<pre>{{ hoveredCell }}</pre>
+				<!--<pre>{{ hoveredCell }}</pre>-->
 
 				<h2 class="worksheet-title mb-half" contenteditable="true">Untitled Worksheet</h2>
 				<p class="worksheet-description mb-default" contenteditable="true">No description</p>
@@ -84,7 +84,6 @@
 								:max-rows="rows"
 								@expand="expand"
 							>
-								{{ cell }}
 							</worksheet-editor-tool-area>
 						</div>
 					</div>
@@ -100,7 +99,7 @@
 
 				<!-- MAP -->
 
-				<div
+				<!--<div
 					class="grid-area"
 					style="display: grid;"
 					:style="gridStyle"
@@ -117,7 +116,7 @@
 							<p>{{ assignedAreas[`area${col-1}-${row-1}`] || 'empty' }}</p>
 						</div>
 					</template>
-				</div>
+				</div>-->
 
 				<!--<p class="mb-default">
 					<graded-button class="button-primary" @click.prevent="addCol">Add Column</graded-button>
@@ -129,7 +128,7 @@
 					<graded-button class="button-primary" @click.prevent="removeRow">Remove Row</graded-button>
 				</p>-->
 
-				<p>Selected items:</p>
+				<!--<p>Selected items:</p>
 				<pre>{{ selectedItems }}</pre>
 
 				<p>Assigned Areas:</p>
@@ -138,7 +137,7 @@
 				<p>Areas:</p>
 				<pre>{{ areas }}</pre>
 
-				<pre>{{ Object.values(assignedAreas).filter((v, i, a) => a.indexOf(v) === i) }}</pre>
+				<pre>{{ Object.values(assignedAreas).filter((v, i, a) => a.indexOf(v) === i) }}</pre>-->
 			</div>
 		</div>
 
@@ -146,6 +145,7 @@
 			:show="showEditor"
 			@close="closeEditor"
 		>
+			<worksheet-editor-tool-area-editor />
 		</worksheet-editor-drawer>
 	</div>
 </template>
