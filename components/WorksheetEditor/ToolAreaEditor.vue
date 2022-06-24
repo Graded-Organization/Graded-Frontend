@@ -3,65 +3,61 @@
 		<h2>Edit Tool Area</h2>
 
 		<form-group label="Background Color">
-			<twitter-picker v-model="color" />
-
+			<color-input v-model="properties.backgroundColor" />
 		</form-group>
 
 		<form-group label="Text Color">
-
+			<color-input v-model="properties.color" />
 		</form-group>
 
 		<form-group label="Border Color">
-
+			<color-input v-model="properties.borderColor" />
 		</form-group>
+
+		<pre>{{ properties }}</pre>
 
 	</div>
 </template>
 
 <script>
+	import Vue from 'vue';
 	import { Twitter } from 'vue-color';
-
-	let defaultProps = {
-		hex: '#194d33e6',
-		hsl: {
-			h: 150,
-			s: 0.5,
-			l: 0.2,
-			a: 0.9
-		},
-		hsv: {
-			h: 150,
-			s: 0.66,
-			v: 0.30,
-			a: 0.9
-		},
-		  rgba: {
-			r: 159,
-			g: 96,
-			b: 43,
-			a: 0.9
-		},
-		a: 0.9
-	}
 
 	export default {
 		components: {
 			'twitter-picker': Twitter
 		},
-		props: {
-			value: {
-				type: Object,
-				required: true
+		watch: {
+			properties: {
+				handler(newVal, oldVal) {
+					console.log('Changing');
+					this.$emit('input', newVal);
+				},
+				deep: true
 			}
 		},
-		data: () => ({
-			color: defaultProps
-		}),
-		computed: {
-
+		props: {
+			toolArea: {
+				type: String,
+				default: ''
+			},
+			value: {
+				type: Object,
+				default: () => ({})
+			}
 		},
-		methods: {
-		}
+		data() {
+			return {
+				properties: this.value
+			}
+		},
+		created() {
+			if(typeof this.properties.backgroundColor === 'undefined') Vue.set(this.properties, 'backgroundColor', '#FFFFFF');
+			if(typeof this.properties.color === 'undefined') Vue.set(this.properties, 'color', '#333');
+			if(typeof this.properties.borderColor === 'undefined') Vue.set(this.properties, 'borderColor', 'transparent');
+		},
+		computed: {},
+		methods: {}
 	}
 </script>
 

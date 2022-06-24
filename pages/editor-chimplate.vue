@@ -3,6 +3,7 @@
 		<div class="inner boxfix-vert">
 			<div class="m-default">
 
+				<!-- <pre>{{ currentToolArea }}</pre> -->
 				<!--<pre>{{ hoveredCell }}</pre>-->
 
 				<h2 class="worksheet-title mb-half" contenteditable="true">Untitled Worksheet</h2>
@@ -77,8 +78,8 @@
 								:cells="getToolAreas(cell)"
 								@remove="removeArea(cell)"
 								@add-tool="addTool(cell)"
-								@edit="editCell(cell)"
-								:style="getCellStyle(cell)"
+								@edit="editToolArea(cell)"
+								:style="getToolAreaStyle(cell)"
 								@resize-end="resize(cell)"
 								:max-cols="columns"
 								:max-rows="rows"
@@ -145,7 +146,12 @@
 			:show="showEditor"
 			@close="closeEditor"
 		>
-			<worksheet-editor-tool-area-editor />
+			<worksheet-editor-tool-area-editor
+				:key="toolAreaUpdate"
+				:tool-area="currentToolArea"
+				:value="getToolAreaStyle(currentToolArea)"
+				@input="setToolAreaStyle"
+			/>
 		</worksheet-editor-drawer>
 	</div>
 </template>
@@ -170,9 +176,9 @@
 			assignedAreas: {},
 
 			// Styles
-			currentCell: null,
-			cellStyles: {},
-			currentCellBackground: '',
+			toolAreaUpdate: 0,
+			currentToolArea: null,
+			toolAreas: {},
 
 			//Control
 			hoveredCell: [-1, -1]
@@ -539,20 +545,21 @@
 
 			return cells;
 			},
-			setCellBackground(color) {
-				if(typeof this.cellStyles[this.currentCell] === 'undefined') {
-					Vue.set(this.cellStyles, [this.currentCell], {});
+			editToolArea(area) {
+
+				this.currentToolArea = null;
+				this.currentToolArea = area;
+
+				if(typeof this.toolAreas[area] === 'undefined') {
+					Vue.set(this.toolAreas, area, {});
 				}
 
-				Vue.set(this.cellStyles[this.currentCell], 'backgroundColor', color);
-			},
-			editCell(cell) {
-				this.currentCell = cell;
 				this.showEditor = true;
+				this.toolAreaUpdate++;
 			},
 			closeEditor() {
 
-				this.currentCell = null;
+				this.currentToolArea = null;
 				this.showEditor = false;
 			},
 			removeArea(cell) {
@@ -563,6 +570,9 @@
 					}
 				}
 
+				delete this.toolAreas[cell];
+
+				this.currentToolArea = null;
 				this.showEditor = false;
 
 				this.columns++;
@@ -653,6 +663,7 @@
 					}
 				}
 
+				this.currentToolArea = null;
 				this.showEditor = false;
 				this.areaSelected = true;
 			},
@@ -665,19 +676,23 @@
 			addTool(cell) {
 				console.log(cell);
 			},
-			getCellStyle(cell) {
+			getToolAreaStyle(area) {
 
-				let styles = {
-					'grid-area': cell
-				};
+				if(!area) return {};
 
-				if(typeof this.cellStyles[cell] !== 'undefined') {
+				let styles = { 'grid-area': area };
 
-					styles['background-color'] = this.cellStyles[cell]?.backgroundColor || 'white';
+				if(typeof this.toolAreas[area] !== 'undefined') {
+
+					styles = {...styles, ...(this.toolAreas[area]?.styles || {})};
 				}
 
 				return styles;
-
+			},
+			setToolAreaStyle(styles) {
+				if(this.currentToolArea) {
+					Vue.set(this.toolAreas[this.currentToolArea], 'styles', styles);
+				}
 			},
 			setArea() {
 				this.updateAreas++;

@@ -40,8 +40,8 @@
 	.drawer-editor {
 
 		transition: right 750ms;
-		width: 300px;
-		right: -300px !important;
+		width: 350px;
+		right: -350px !important;
 
 		&.is-visible {
 
