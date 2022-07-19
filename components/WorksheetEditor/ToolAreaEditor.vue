@@ -14,7 +14,7 @@
 			<color-input v-model="properties.borderColor" />
 		</form-group>
 
-		<pre>{{ properties }}</pre>
+		<!--<pre>{{ properties }}</pre>-->
 
 	</div>
 </template>
