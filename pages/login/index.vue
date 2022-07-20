@@ -6,6 +6,7 @@
 		novalidate
 	>
 		<div class="logo-wrapper">
+			<logo />
 		</div>
 
 		<div class="form-copy">
@@ -47,7 +48,7 @@
 				:classes="{ input: 'input-block is-transparent' }"
 			/>
 		</div>
-		<div class="form-actions">
+		<div class="form-actions mb-default">
 			<div class="row row-md">
 				<div class="col col-md-6">
 					<p
@@ -91,12 +92,16 @@
 				</button>
 			</p>
 		</div>
+
+		<div class="already">
+			<p>Do not have an account? <nuxt-link to="/register">Register here</nuxt-link>.</p>
+		</div>
 	</form>
 </template>
 
 <script>
 	import { required, email } from 'vuelidate/lib/validators';
-	//import ChLogo from "~/assets/images/template/logo.svg?inline";
+	import Logo from "~/assets/images/template/logo-mono.svg?inline";
 
 	export default {
 		name: 'LoginPageIndex',
@@ -104,6 +109,7 @@
 		middleware: 'auth',
 		auth: 'guest',
 		transition: 'slide-big',
+		components: { Logo },
 		data: () => ({
 			messages: {
 				login: {
@@ -176,5 +182,8 @@
 		border-top-right-radius: 0 !important;
 	}
 
+	.already {
 
+		.container-style;
+	}
 </style>

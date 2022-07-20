@@ -77,7 +77,7 @@
 					autocorrect="off"
 					autocapitalize="off"
 					spellcheck="false"
-					autocomplete="username"
+					autocomplete="do-not-autofill"
 				/>
 				<template #help-block>
 					<span v.if="!$v.registerFields.username.email">Please enter a valid email</span>
@@ -97,7 +97,7 @@
 						class="form-control input-block"
 						autocorrect="off"
 						autocapitalize="off"
-						autocomplete="password"
+						autocomplete="do-not-autofill"
 					/>
 					<div class="password-score" :data-score="password.score">{{ password.score }}</div>
 				</div>
@@ -119,7 +119,7 @@
 				<template #help-block>This field is required</template>
 			</form-group>
 		</div>
-		<div class="form-actions">
+		<div class="form-actions mb-default">
 			<p
 				class="action-submit"
 				data-aos="fade-left"
@@ -130,6 +130,10 @@
 					<span class="icon"><i class="fa fa-fw fa-angle-right" /></span>
 				</button>
 			</p>
+		</div>
+
+		<div class="already">
+			<p>Already have an account? <nuxt-link to="/login">Sign in here</nuxt-link>.</p>
 		</div>
 	</form>
 </template>
@@ -228,6 +232,11 @@
 
 			margin-bottom: 0;
 		}
+	}
+
+	.already {
+
+		.container-style;
 	}
 
 </style>
