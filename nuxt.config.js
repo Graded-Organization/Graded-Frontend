@@ -106,14 +106,31 @@ export default {
 					type: 'Bearer'
 				},
 				user: {
-					property: false
+					property: 'data'
 				},
 				endpoints: {
 					login: { url: 'users/login', method: 'post', propertyName: 'jwt' },
 					user: { url: 'users/me?fetch_metas=1', method: 'get', propertyName: 'data' },
 					logout: false
 				}
-			}
+			},
+			google: {
+				clientId: '300354635680-nob5v9vuvk0lae0n5gvr7mir523elcm3.apps.googleusercontent.com',
+				codeChallengeMethod: '',
+				responseType: 'code',
+				endpoints: {
+					token: (process.env.API_URL || 'http://graded.test/back') + '/users/google',
+					userInfo: (process.env.API_URL || 'http://graded.test/back') + '/users/me'
+				},
+				user: {
+					property: 'data'
+				},
+				token: {
+					property: 'jwt',
+					required: true,
+					type: 'Bearer'
+				},
+			},
 		},
 		redirect: {
 			login: '/',

@@ -27,6 +27,14 @@
 			data-aos="fade-right"
 			data-aos-delay="100"
 		>
+			<p class="mb-double">
+				<a href="#" @click.prevent="googleLogin" class="button button-gray button-block">
+					<span class="icon"><i class="fa fa-fw fa-google" /></span>
+					Access with Google Account
+				</a>
+			</p>
+
+
 			<form-group>
 				<input
 					v-model.trim="loginCredentials.username"
@@ -133,8 +141,12 @@
 			AOS.init({ once: true });
 		},
 		methods: {
+			async googleLogin() {
+				const obj = this;
+				obj.$auth.loginWith('google');
+			},
 			async login() {
-				var obj = this;
+				const obj = this;
 
 				obj.$v.loginCredentials.$touch();
 				if (obj.$v.loginCredentials.$invalid) {

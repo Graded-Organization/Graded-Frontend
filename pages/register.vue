@@ -143,7 +143,7 @@
 			<div v-show="success">
 				<div class="the-content">
 					<h2>Alrighty!</h2>
-					<p>An email has been sent to your email address with a link to activate and access your <atr>GRADED!</atr> account.</p>
+					<p>An email has been sent to your email address with a link to activate and access your <strong>GRADED!</strong> account.</p>
 					<p>Please check your Spam folder, we may be there.</p>
 
 					<p><nuxt-link to="/login" class="button button-primary">Sign in here</nuxt-link></p>

@@ -1,7 +1,6 @@
 <template>
 	<div>
 		<pre>{{ $auth.user }}</pre>
-
 		<a href="#" @click.prevent="logout">Logout</a>
 	</div>
 </template>
