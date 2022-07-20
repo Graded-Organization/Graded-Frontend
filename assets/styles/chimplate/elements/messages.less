@@ -1,0 +1,25 @@
+/* Message */
+/* ---------------------------------------------------------------------------------------------- */
+
+.message {
+
+	padding: @margin-default;
+	background: @info-light;
+
+	.message-close {
+
+		padding: @margin-third;
+		position: absolute;
+		right: 0;
+		top: 0;
+		cursor: pointer;
+		transition: all 500ms;
+
+		&:hover { opacity: 0.5; }
+	}
+
+	&.message-error {
+
+		background: @error-light;
+	}
+}

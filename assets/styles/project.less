@@ -2,3 +2,26 @@ body {
 
 	font-family: sans-serif;
 }
+
+html {
+
+	min-height: 100vh;
+}
+
+body {
+
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	font-family: 'Inter', sans-serif;
+
+	color: var(--body-color);
+	background: var(--body-background);
+}
+
+#__nuxt, #__layout {
+
+	flex: 1 0 auto;
+	display: flex;
+	flex-direction: column;
+}
