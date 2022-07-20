@@ -749,8 +749,8 @@
 
 	.grid-wrapper {
 
-		.comp-box-model;
-		border-radius: @comp-border-radius;
+		.comb;
+		border-radius: @component-border-radius;
 		position: relative;
 		box-shadow: @-shadow-3;
 
