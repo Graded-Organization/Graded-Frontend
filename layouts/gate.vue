@@ -6,7 +6,7 @@
 		<div class="pretty-area">
 			<fade-image
 				class="pretty-image"
-				src="http://chapi.test/unsplash/LvLek4U8-_U"
+				:src="`${ $config.apiUrl }/unsplash/LvLek4U8-_U/random`"
 			/>
 			<div class="color-overlay" />
 		</div>
