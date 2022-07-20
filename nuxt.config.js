@@ -133,10 +133,10 @@ export default {
 			},
 		},
 		redirect: {
-			login: '/',
-			logout: '/login',
+			login: '/login',
+			logout: '/',
 			callback: '/login',
-			home: '/'
+			home: '/dashboard'
 		}
 	},
 

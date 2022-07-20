@@ -1,7 +1,7 @@
 <template>
 	<section class="section gate-layout">
 		<div class="controls-area">
-			<nuxt-child />
+			<nuxt />
 		</div>
 		<div class="pretty-area">
 			<fade-image

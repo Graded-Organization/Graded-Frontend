@@ -2,7 +2,7 @@
 	<div class="platform-layout">
 		<header></header>
 		<section>
-			<Nuxt />
+			<nuxt />
 		</section>
 		<footer></footer>
 	</div>
