@@ -188,6 +188,10 @@
 
 					return;
 				}
+
+				const res = await this.$axios.$post('/users/register', this.registerFields);
+
+				console.log(res);
 			},
 			showFeedback({suggestions, warning}) {
 				console.log('🙏', suggestions);
