@@ -1,7 +1,8 @@
 <template>
-	<div>
-		<pre v-if="$auth.user">{{ $auth.user }}</pre>
-		<a href="#" @click.prevent="logout">Logout</a>
+	<div class="inner boxfix-vert">
+		<div class="m-default">
+			<pre v-if="$auth.user">{{ $auth.user }}</pre>
+		</div>
 	</div>
 </template>
 
@@ -9,10 +10,7 @@
 	export default {
 		name: 'DashboardPage',
 		middleware: 'auth',
-		methods: {
-			async logout() {
-				await this.$auth.logout();
-			}
-		}
+		layout: 'platform',
+		methods: {}
 	}
 </script>
