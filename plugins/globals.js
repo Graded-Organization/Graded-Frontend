@@ -24,3 +24,9 @@ Vue.use(PortalVue);
 
 import Fragment from 'vue-fragment';
 Vue.use(Fragment.Plugin);
+
+import contenteditable from 'vue-contenteditable';
+Vue.use(contenteditable);
+
+import FloatingVue from 'floating-vue';
+Vue.use(FloatingVue);

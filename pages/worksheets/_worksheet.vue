@@ -6,8 +6,20 @@
 
 				<div class="inner boxfix-vert">
 					<div class="m-default">
-						<h2 class="worksheet-title">Untitled Worksheet</h2>
-						<p class="worksheet-description mb-default" contenteditable="true">No description</p>
+						<div class="worksheet-title-wrapper" @click.prevent="enableTitleEditable" v-click-outside="disableTitleEditable">
+							<contenteditable
+								class="worksheet-title"
+								tag="h2"
+								id="worksheet-title"
+								:contenteditable="titleIsEditable"
+								v-model="worksheet.name"
+								:noNL="true"
+								:noHTML="true"
+								@returned="disableTitleEditable"
+							/>
+							<a href="#" v-show="!titleIsEditable"><i class="fa fa-fw fa-pencil" /></a>
+						</div>
+						<p class="worksheet-description mb-default">No description</p>
 
 						<div class="grid-wrapper mb-default">
 							<div
@@ -127,6 +139,7 @@
 		data: () => ({
 			worksheet: null,
 			ds: null,
+			titleIsEditable: false,
 
 			showEditor: false,
 			cellType: 'Free',
@@ -225,6 +238,38 @@
 			}
 		},
 		methods: {
+			enterPressed() { alert('Enter Pressed'); },
+			placeCaretAtEnd(el) {
+				el.focus();
+				if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
+					var range = document.createRange();
+					range.selectNodeContents(el);
+					range.collapse(false);
+					var sel = window.getSelection();
+					sel.removeAllRanges();
+					sel.addRange(range);
+				} else if (typeof document.body.createTextRange != "undefined") {
+					var textRange = document.body.createTextRange();
+					textRange.moveToElementText(el);
+					textRange.collapse(false);
+					textRange.select();
+				}
+			},
+			enableTitleEditable() {
+				const obj = this;
+
+				if(!obj.titleIsEditable) {
+
+					setTimeout(function() {
+						obj.placeCaretAtEnd(document.getElementById('worksheet-title'));
+					}, 0);
+				}
+
+				obj.titleIsEditable = true;
+			},
+			disableTitleEditable() {
+				this.titleIsEditable = false;
+			},
 			dragInit() {
 
 				this.ds = new DragSelect({
@@ -709,9 +754,30 @@
 		margin-bottom: @margin-double;
 	}
 
-	.worksheet-title {
+	.worksheet-title-wrapper {
 
-		font-size: @font-size-4;
+		display: inline-flex;
+		align-items: center;
+		cursor: pointer;
+
+		.worksheet-title {
+
+			font-size: @font-size-4;
+			margin-right: @margin-default;
+		}
+
+		a {
+
+			color: @gray-3;
+		}
+
+		&:hover {
+
+			a {
+
+				color: @green-5;
+			}
+		}
 	}
 
 	.cell {

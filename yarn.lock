@@ -1034,6 +1034,13 @@
     "@babel/types" "^7.4.4"
     esutils "^2.0.2"
 
+"@babel/runtime@^7.13.10":
+  version "7.18.9"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.18.9.tgz#b4fcfce55db3d2e5e080d2490f608a3b9f407f4a"
+  integrity sha512-lkqXDcvlFT5rvEjiu6+QYO+1GXrEHRo2LOtS7E4GtX5ESIZOgepqsZBVIj6Pv+a6zqsya9VCgiK1KAK4BvJDAw==
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
 "@babel/runtime@^7.14.0", "@babel/runtime@^7.15.4", "@babel/runtime@^7.8.4":
   version "7.18.3"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.18.3.tgz#c7b654b57f6f63cf7f8b418ac9ca04408c4579f4"
@@ -1121,6 +1128,18 @@
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@csstools/convert-colors/-/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"
   integrity sha512-5a6wqoJV/xEdbRNKVo6I4hO3VjyDq//8q2f9I6PBAvMesJHFauXDorcNCsr9RzvsZnaWi5NYCcfyqP1QeFHFbw==
+
+"@floating-ui/core@^0.3.0":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@floating-ui/core/-/core-0.3.1.tgz#3dde0ad0724d4b730567c92f49f0950910e18871"
+  integrity sha512-ensKY7Ub59u16qsVIFEo2hwTCqZ/r9oZZFh51ivcLGHfUwTn8l1Xzng8RJUe91H/UP8PeqeBronAGx0qmzwk2g==
+
+"@floating-ui/dom@^0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@floating-ui/dom/-/dom-0.1.10.tgz#ce304136a52c71ef157826d2ebf52d68fa2deed5"
+  integrity sha512-4kAVoogvQm2N0XE0G6APQJuCNuErjOfPW8Ux7DFxh8+AfugWflwVJ5LDlHOwrwut7z/30NUvdtHzQ3zSip4EzQ==
+  dependencies:
+    "@floating-ui/core" "^0.3.0"
 
 "@fullhuman/postcss-purgecss@^2.0.5":
   version "2.3.0"
@@ -4600,6 +4619,14 @@ flatten@^1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/flatten/-/flatten-1.0.3.tgz#c1283ac9f27b368abc1e36d1ff7b04501a30356b"
   integrity sha512-dVsPA/UwQ8+2uoFe5GHtiBMu48dWLTdsuEd7CKGlZlD78r1TTWBvDuFaFGKCo/ZfEr95Uk56vZoX86OsHkUeIg==
+
+floating-vue@^1.0.0-beta.18:
+  version "1.0.0-beta.18"
+  resolved "https://registry.yarnpkg.com/floating-vue/-/floating-vue-1.0.0-beta.18.tgz#48a9fb79c425db2ec4374059f5a3b9ffa060ea3a"
+  integrity sha512-mRFc78szc1BTbhlCa4okb7wAGPuH/IID+yqJ+yrTMQ038H8WIAsPV/WFgWCaXqe8d1Z12LkMqiHDVorCJy8M2A==
+  dependencies:
+    "@floating-ui/dom" "^0.1.10"
+    vue-resize "^1.0.0"
 
 flush-write-stream@^1.0.0:
   version "1.1.1"
@@ -10074,10 +10101,10 @@ vue-color@^2.8.1:
     material-colors "^1.0.0"
     tinycolor2 "^1.1.2"
 
-vue-contenteditable@^4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/vue-contenteditable/-/vue-contenteditable-4.0.2.tgz#9d865bcb9b640400acde5036f9928789eaaec07c"
-  integrity sha512-tIbpcZZoKwqKfC2pAgwafWNsOL8dP+kpvgM/wgXQSOOdpTbpiRLefZdao+nRk6WFpLjOW8CRoRx8nnDn1COXpg==
+vue-contenteditable@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/vue-contenteditable/-/vue-contenteditable-1.0.2.tgz#144e715cbd55cf80aa17e8b86f89532d917683d0"
+  integrity sha512-waDqyBeABXrlOQ5pC49xLP6fj/+yEfzMV17qUs612JmbR/Tg6NAOaazkvyx3qZz8/j0Gvv5WzR1iJHgdNk4kTw==
 
 vue-drag-select@^0.2.0:
   version "0.2.0"
@@ -10133,6 +10160,13 @@ vue-password-strength-meter@^1.7.2:
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/vue-password-strength-meter/-/vue-password-strength-meter-1.7.2.tgz#ddaae2246fb8a53fd8cdc5b1084b1d16cc401505"
   integrity sha512-S17DsEbXciTcI0fKq1PXia7i3COM/AJOT7os8AVyGxglc5ho1EBssE+ogDa5cFh6Rn8pPgqfVCt/KBcNpgPBiA==
+
+vue-resize@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/vue-resize/-/vue-resize-1.0.1.tgz#c120bed4e09938771d622614f57dbcf58a5147ee"
+  integrity sha512-z5M7lJs0QluJnaoMFTIeGx6dIkYxOwHThlZDeQnWZBizKblb99GSejPnK37ZbNE/rVwDcYcHY+Io+AxdpY952w==
+  dependencies:
+    "@babel/runtime" "^7.13.10"
 
 vue-router@^3.5.1:
   version "3.5.4"
