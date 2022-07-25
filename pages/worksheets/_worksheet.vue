@@ -2,7 +2,10 @@
 	<div class="section-dashboard">
 		<template v-if="!$fetchState.pending && !$fetchState.error">
 			<div class="m-double">
-				<div class="breadcrumb"><nuxt-link to="/dashboard">Home</nuxt-link> | New Worksheet</div>
+
+				<portal to="logo-portal">
+					<div class="breadcrumb"><nuxt-link to="/dashboard">Home</nuxt-link> | <span v-text="worksheet.name"></span></div>
+				</portal>
 
 				<div class="inner boxfix-vert">
 					<div class="m-default">
@@ -267,8 +270,14 @@
 
 				obj.titleIsEditable = true;
 			},
-			disableTitleEditable() {
+			async disableTitleEditable() {
+
+				await this.save();
 				this.titleIsEditable = false;
+			},
+			async save() {
+
+				await this.$axios.$put(`worksheets/${ this.$route.params.worksheet }`, this.worksheet);
 			},
 			dragInit() {
 
@@ -751,7 +760,11 @@
 
 	.breadcrumb {
 
-		margin-bottom: @margin-double;
+		a {
+
+			color: @primary;
+			text-decoration: none;
+		}
 	}
 
 	.worksheet-title-wrapper {

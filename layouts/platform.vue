@@ -5,6 +5,9 @@
 				<logo />
 			</nuxt-link>
 
+			<portal-target name="logo-portal" class="logo-portal">
+			</portal-target>
+
 			<div class="user-area">
 				<img class="avatar" width="40" :src="`${ this.$config.apiUrl }/users/${ $auth.user.id }/avatar`">
 
@@ -66,7 +69,7 @@
 			.site-logo {
 
 				margin: @margin-default;
-				margin-right: auto;
+				margin-right: @margin-default;
 
 				svg {
 
@@ -79,6 +82,11 @@
 						fill: @-green-6;
 					}
 				}
+			}
+
+			.logo-portal {
+
+				margin-right: auto;
 			}
 
 			.user-area {
