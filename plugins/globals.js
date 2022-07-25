@@ -16,6 +16,9 @@ Vue.use(Vuelidate);
 //import VTooltip from 'v-tooltip';
 //Vue.use(VTooltip);
 
+import VModal from 'vue-js-modal';
+Vue.use(VModal);
+
 import PortalVue from 'portal-vue';
 Vue.use(PortalVue);
 
