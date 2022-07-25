@@ -7,12 +7,27 @@
 				<div class="row">
 					<div class="col col-12 col-sm-3">
 						<div class="worksheet-card worksheet-add">
-							<a class="new-worksheet">Create a new Worksheet</a>
+							<a @click.prevent="newWorksheet" class="new-worksheet">
+								<span>
+									<i class="fal fa-fw fa-plus" />
+								</span>
+								Create a new Worksheet
+							</a>
 							<a @click.prevent="newFolder" class="new-folder">Create a new Folder</a>
 						</div>
 					</div>
 
-
+					<div
+						class="col col-12 col-sm-3"
+						v-if="!$fetchState.pending && !$fetchState.error"
+						v-for="worksheet in worksheets"
+					>
+						<div class="worksheet-card">
+							<nuxt-link tag="div" :to="`/worksheets/${ worksheet.id }`" class="card-wrapper">
+								<h3 class="card-title">{{ worksheet.name }}</h3>
+							</nuxt-link>
+						</div>
+					</div>
 				</div>
 			</div>
 
@@ -44,13 +59,26 @@
 		middleware: 'auth',
 		layout: 'platform',
 		mounted() {},
+		data: () => ({
+			worksheets: [],
+		}),
 		methods: {
 			newFolder() {
 				this.$modal.show('new-folder');
 			},
 			hideNewFolder() {
 				this.$modal.hide('new-folder');
+			},
+			async newWorksheet() {
+
+				const worksheet = await this.$axios.$post('worksheets', { id_user: this.$auth.user.id, name: 'Untitled Worksheet' });
+				this.$router.push({ path: `/worksheets/${ worksheet.data.id }` });
 			}
+		},
+		async fetch() {
+
+			const worksheets = await this.$axios.$get('/users/me/worksheets');
+			this.worksheets = worksheets.data;
 		}
 	}
 </script>
@@ -70,6 +98,25 @@
 		border-radius: @radius-2;
 		flex-direction: column;
 		border: 1px solid @border-1;
+
+		&:not(.worksheet-add) {
+
+			.card-wrapper {
+
+				background: @green-3 url('~/assets/images/template/topology.png') center center no-repeat;
+				margin: @margin-half;
+				border-radius: @radius-1;
+				padding: @margin-default;
+				flex: 1;
+				cursor: pointer;
+				display: flex;
+			}
+
+			.card-title {
+
+				font-size: @font-size-3;
+			}
+		}
 
 		&.worksheet-add {
 
@@ -97,7 +144,18 @@
 			.new-worksheet {
 
 				flex: 1;
+				flex-direction: column;
 				margin-bottom: 0;
+
+				span {
+
+					border: 1px solid @body-color;
+					display: block;
+					line-height: 30px;
+					width: 30px;
+					border-radius: @radius-2;
+					margin-bottom: @margin-half;
+				}
 			}
 		}
 	}
