@@ -4,7 +4,7 @@
 		:class="[ show ? 'is-visible' : '' ]"
 	>
 		<div class="component-actions p-half">
-			<a href="#" class="button button-primary button-small" @click.prevent="close"><i class="fal fa-fw fa-times" /></a>
+			<a href="#" class="button button-primary button-small" @click.prevent="close"><i class="fa fa-fw fa-times" /></a>
 		</div>
 
 		<div class="m-default">

@@ -29,6 +29,8 @@
 				<p>Made with <i class="fa fa-fw fa-heart" /> in Ukraine, Portugal and Mexico.</p>
 			</div>
 		</footer>
+
+		<v-dialog />
 	</div>
 </template>
 

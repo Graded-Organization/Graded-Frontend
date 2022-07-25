@@ -29,7 +29,7 @@
 		>
 			<p class="mb-double">
 				<a href="#" @click.prevent="googleLogin" class="button button-gray button-block">
-					<span class="icon"><i class="fa fa-fw fa-google" /></span>
+					<span class="icon"><i class="fab fa-fw fa-google" /></span>
 					Access with Google Account
 				</a>
 			</p>

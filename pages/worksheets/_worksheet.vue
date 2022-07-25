@@ -1,145 +1,102 @@
 <template>
-	<div>
-		<div class="inner boxfix-vert">
-			<div class="m-default">
+	<div class="section-dashboard">
+		<div class="m-double">
+			<div class="breadcrumb">Home | New Worksheet</div>
 
-				<!-- <pre>{{ currentToolArea }}</pre> -->
-				<!--<pre>{{ hoveredCell }}</pre>-->
+			<div class="inner boxfix-vert">
+				<div class="m-default">
+					<h2 class="worksheet-title">Untitled Worksheet</h2>
+					<p class="worksheet-description mb-default" contenteditable="true">No description</p>
 
-				<h2 class="worksheet-title mb-half" contenteditable="true">Untitled Worksheet</h2>
-
-
-				<div class="grid-wrapper mb-default">
-					<div
-						class="grid-areas"
-						@mousemove="setControl"
-						@mouseleave="clearControl"
-					>
-						<div class="row-buttons">
-							<graded-button class="button-primary button-small button-pill" @click.prevent="addRow"><i class="fa fa-fw fa-plus" /></graded-button>
-							<graded-button class="button-primary button-small button-pill" @click.prevent="removeRow"><i class="fa fa-fw fa-minus" /></graded-button>
-						</div>
-
-						<div class="col-buttons">
-							<graded-button class="button-primary button-small button-pill" @click.prevent="addCol"><i class="fa fa-fw fa-plus" /></graded-button>
-							<graded-button class="button-primary button-small button-pill" @click.prevent="removeCol"><i class="fa fa-fw fa-minus" /></graded-button>
-						</div>
-
+					<div class="grid-wrapper mb-default">
 						<div
-							attribute="cell"
-							id="grid-area"
-							class="grid-area"
-							:style="gridStyle"
-							@keydown.esc="escape"
-							tabindex="-1"
+							class="grid-areas"
+							@mousemove="setControl"
+							@mouseleave="clearControl"
 						>
-							<template v-for="row in rows">
-								<worksheet-editor-empty-cell
-									v-for="col in columns"
-									:col="col-1"
-									:row="row-1"
-									:data-item="`area${ col-1 }-${ row-1 }`"
-									:is-max-col="col-1 == columns-1"
-									:is-max-row="row-1 == rows-1"
-									:key="`area${ col-1 }-${ row-1 }`"
-									class="drag-element"
-									:class="{
-										'is-selected': isSelected(`area${ col-1 }-${ row-1 }`) && !isOverlaping(`area${ col-1 }-${ row-1 }`),
-										'is-forbidden': isSelected(`area${ col-1 }-${ row-1 }`) && isOverlaping(`area${ col-1 }-${ row-1 }`)
-									}"
-									@mouseover="selectLayer(`area${ col-1 }-${ row-1 }`)"
-								/>
-							</template>
-						</div>
+							<div class="row-buttons">
+								<graded-button class="button-primary button-small button-pill" @click.prevent="addRow"><i class="fas fa-fw fa-plus" /></graded-button>
+								<graded-button class="button-primary button-small button-pill" @click.prevent="removeRow"><i class="fas fa-fw fa-minus" /></graded-button>
+							</div>
 
-						<div
-							class="grid-area grid-area-blocks"
-							:class="{
-								'free-cells': cellType == 'Free',
-								'overlapping-cells': cellType == 'Overlapping'
-							}"
-							:style="gridAreaStyle"
-							:key="updateAreas"
-						>
-							<template v-for="row in rows">
-								<div
-									v-for="col in columns"
-									:key="`area${ col-1 }-${ row-1 }`"
-									v-if="!Object.keys(assignedAreas).includes(`area${ col-1 }-${ row-1 }`)"
-									class="cell"
-								/>
-							</template>
+							<div class="col-buttons">
+								<graded-button class="button-primary button-small button-pill" @click.prevent="addCol"><i class="fas fa-fw fa-plus" /></graded-button>
+								<graded-button class="button-primary button-small button-pill" @click.prevent="removeCol"><i class="fas fa-fw fa-minus" /></graded-button>
+							</div>
 
-							<worksheet-editor-tool-area
-								v-for="cell in Object.values(assignedAreas).filter((v, i, a) => a.indexOf(v) === i)"
-								class="tool-area"
-								:class="cell"
-								:id="cell"
-								:key="cell"
-								:cells="getToolAreas(cell)"
-								@remove="removeArea(cell)"
-								@add-tool="addTool(cell)"
-								@edit="editToolArea(cell)"
-								:style="getToolAreaStyle(cell)"
-								@resize-end="resize(cell)"
-								:max-cols="columns"
-								:max-rows="rows"
-								@expand="expand"
+							<div
+								attribute="cell"
+								id="grid-area"
+								class="grid-area"
+								:style="gridStyle"
+								@keydown.esc="escape"
+								tabindex="-1"
 							>
-							</worksheet-editor-tool-area>
+								<template v-for="row in rows">
+									<worksheet-editor-empty-cell
+										v-for="col in columns"
+										:col="col-1"
+										:row="row-1"
+										:data-item="`area${ col-1 }-${ row-1 }`"
+										:is-max-col="col-1 == columns-1"
+										:is-max-row="row-1 == rows-1"
+										:key="`area${ col-1 }-${ row-1 }`"
+										class="drag-element"
+										:class="{
+											'is-selected': isSelected(`area${ col-1 }-${ row-1 }`) && !isOverlaping(`area${ col-1 }-${ row-1 }`),
+											'is-forbidden': isSelected(`area${ col-1 }-${ row-1 }`) && isOverlaping(`area${ col-1 }-${ row-1 }`)
+										}"
+										@mouseover="selectLayer(`area${ col-1 }-${ row-1 }`)"
+									/>
+								</template>
+							</div>
+
+							<div
+								class="grid-area grid-area-blocks"
+								:class="{
+									'free-cells': cellType == 'Free',
+									'overlapping-cells': cellType == 'Overlapping'
+								}"
+								:style="gridAreaStyle"
+								:key="updateAreas"
+							>
+								<template v-for="row in rows">
+									<div
+										v-for="col in columns"
+										:key="`area${ col-1 }-${ row-1 }`"
+										v-if="!Object.keys(assignedAreas).includes(`area${ col-1 }-${ row-1 }`)"
+										class="cell"
+									/>
+								</template>
+
+								<worksheet-editor-tool-area
+									v-for="cell in Object.values(assignedAreas).filter((v, i, a) => a.indexOf(v) === i)"
+									class="tool-area"
+									:class="cell"
+									:id="cell"
+									:key="cell"
+									:cells="getToolAreas(cell)"
+									@remove="removeArea(cell)"
+									@add-tool="addTool(cell)"
+									@edit="editToolArea(cell)"
+									:style="getToolAreaStyle(cell)"
+									@resize-end="resize(cell)"
+									:max-cols="columns"
+									:max-rows="rows"
+									@expand="expand"
+								>
+								</worksheet-editor-tool-area>
+							</div>
 						</div>
 					</div>
+
+					<p class="text-center">{{ columns }} &times; {{ rows }}</p>
+
+					<div class="form-group text-right">
+						<graded-button class="button-primary" @click.prevent="setArea">Set Area</graded-button>
+					</div>
+
 				</div>
-
-
-				<p class="text-center">{{ columns }} &times; {{ rows }}</p>
-
-				<div class="form-group text-right">
-					<!--<input class="form-control" type="text" v-model="newAreaName">-->
-					<graded-button class="button-primary" @click.prevent="setArea">Set Area</graded-button>
-				</div>
-
-				<!-- MAP -->
-
-				<!--<div
-					class="grid-area"
-					style="display: grid;"
-					:style="gridStyle"
-					:key="updateAreas"
-				>
-					<template v-for="row in rows">
-						<div
-							v-for="col in columns"
-							:key="`area${ col-1 }-${ row-1 }`"
-							style="border: 1px solid #EEE; padding: 10px; text-align: center;"
-							:style="!!assignedAreas[`area${col-1}-${row-1}`] ? 'background: #AAA;' : ''"
-						>
-							<p style="font-size: 0.6rem">{{ col-1 }}, {{ row-1 }}</p>
-							<p>{{ assignedAreas[`area${col-1}-${row-1}`] || 'empty' }}</p>
-						</div>
-					</template>
-				</div>-->
-
-				<!--<p class="mb-default">
-					<graded-button class="button-primary" @click.prevent="addCol">Add Column</graded-button>
-					<graded-button class="button-primary" @click.prevent="removeCol">Remove Column</graded-button>
-				</p>
-
-				<p class="mb-default">
-					<graded-button class="button-primary" @click.prevent="addRow">Add Row</graded-button>
-					<graded-button class="button-primary" @click.prevent="removeRow">Remove Row</graded-button>
-				</p>-->
-
-				<!--<p>Selected items:</p>
-				<pre>{{ selectedItems }}</pre>
-
-				<p>Assigned Areas:</p>
-				<pre>{{ assignedAreas }}</pre>
-
-				<p>Areas:</p>
-				<pre>{{ areas }}</pre>
-
-				<pre>{{ Object.values(assignedAreas).filter((v, i, a) => a.indexOf(v) === i) }}</pre>-->
 			</div>
 		</div>
 
@@ -162,7 +119,9 @@
 	import DragSelect from 'dragselect';
 
 	export default {
-		name: 'Editor',
+		name: 'WorkSheetPage',
+		middleware: 'auth',
+		layout: 'platform',
 		data: () => ({
 			showEditor: false,
 			cellType: 'Free',
@@ -623,7 +582,16 @@
 
 					if(col == this.columns-1) {
 
-						alert('Cannot remove column because there are tools in the column');
+						this.$modal.show('dialog', {
+							text: 'Cannot remove column because there are tools in the column',
+							buttons: [
+								{
+									title: 'Accept',
+									handler: () => { this.$modal.hide('dialog') }
+								}
+							]
+						});
+
 						return;
 					}
 				}
@@ -716,12 +684,16 @@
 	}
 </script>
 
-<style lang="less" scoped>
+<style scoped lang="less">
+
+	.breadcrumb {
+
+		margin-bottom: @margin-double;
+	}
 
 	.worksheet-title {
 
 		font-size: @font-size-4;
-		outline: none;
 	}
 
 	.cell {
@@ -751,6 +723,8 @@
 	.grid-wrapper {
 
 		.comb;
+		border: 0;
+		padding: @margin-double;
 		border-radius: @component-border-radius;
 		position: relative;
 		box-shadow: @-shadow-3;

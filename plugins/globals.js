@@ -17,7 +17,7 @@ Vue.use(Vuelidate);
 //Vue.use(VTooltip);
 
 import VModal from 'vue-js-modal';
-Vue.use(VModal);
+Vue.use(VModal, { dialog: true });
 
 import PortalVue from 'portal-vue';
 Vue.use(PortalVue);
