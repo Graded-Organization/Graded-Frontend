@@ -29,41 +29,84 @@
 			@dragend="resizeEnd"
 		/>-->
 
-		<a
-			v-if="!touchLeft"
-			href="#"
-			@click.prevent="expand('left')"
-			class="button-add button-add-col-left button button-primary button-small"
-		>
-			<i class="fad fa-arrow-alt-from-right" />
-		</a>
+		<div class="buttons-group buttons-x buttons-left">
+			<a
+				v-if="!touchLeft"
+				href="#"
+				@click.prevent="expand('left')"
+				class="button button-primary button-small"
+			>
+				<i class="fad fa-arrow-alt-from-right" />
+			</a>
+			<a
+				v-if="width > 1"
+				href="#"
+				@click.prevent="contract('left')"
+				class="button button-primary button-small"
+			>
+				<i class="fad fa-arrow-alt-from-left" />
+			</a>
+		</div>
 
-		<a
-			v-if="!touchRight"
-			href="#"
-			@click.prevent="expand('right')"
-			class="button-add button-add-col-right button button-primary button-small"
-		>
-			<i class="fad fa-arrow-alt-from-left" />
-		</a>
 
-		<a
-			v-if="!touchTop"
-			href="#"
-			@click.prevent="expand('top')"
-			class="button-add button-add-col-top button button-primary button-small"
-		>
-			<i class="fad fa-arrow-alt-from-bottom" />
-		</a>
+		<div class="buttons-group buttons-x buttons-right">
+			<a
+				v-if="!touchRight"
+				href="#"
+				@click.prevent="expand('right')"
+				class="button button-primary button-small"
+			>
+				<i class="fad fa-arrow-alt-from-left" />
+			</a>
 
-		<a
-			v-if="!touchBottom"
-			href="#"
-			@click.prevent="expand('bottom')"
-			class="button-add button-add-col-bottom button button-primary button-small"
-		>
-			<i class="fad fa-arrow-alt-from-top" />
-		</a>
+			<a
+				v-if="width > 1"
+				href="#"
+				@click.prevent="contract('right')"
+				class="button button-primary button-small"
+			>
+				<i class="fad fa-arrow-alt-from-right" />
+			</a>
+		</div>
+
+		<div class="buttons-group buttons-y buttons-top">
+			<a
+				v-if="!touchTop"
+				href="#"
+				@click.prevent="expand('top')"
+				class="button button-primary button-small"
+			>
+				<i class="fad fa-arrow-alt-from-bottom" />
+			</a>
+			<a
+				v-if="height > 1"
+				href="#"
+				@click.prevent="contract('top')"
+				class="button button-primary button-small"
+			>
+				<i class="fad fa-arrow-alt-from-top" />
+			</a>
+		</div>
+
+		<div class="buttons-group buttons-y buttons-bottom">
+			<a
+				v-if="!touchBottom"
+				href="#"
+				@click.prevent="expand('bottom')"
+				class="button button-primary button-small"
+			>
+				<i class="fad fa-arrow-alt-from-top" />
+			</a>
+
+			<a
+				v-if="height > 1"
+				href="#"
+				@click.prevent="contract('bottom')"
+				class="button button-primary button-small"
+			>
+				<i class="fad fa-arrow-alt-from-bottom" />
+			</a>
+		</div>
 
 		<div class="component-actions p-half">
 			<button
@@ -129,6 +172,12 @@
 
 				return [x, y];
 			},
+			width() {
+				return (this.maxPoint[0] - this.origin[0])+1;
+			},
+			height() {
+				return (this.maxPoint[1] - this.origin[1])+1;
+			},
 			touchLeft() {
 
 				for(const c in this.cells) if(this.cells[c][0] == 0) return true;
@@ -164,6 +213,19 @@
 
 				this.$emit('expand', this.id, dir, info);
 			},
+			contract(dir) {
+
+				let info = {
+					touchLeft: this.touchLeft,
+					touchTop: this.touchTop,
+					touchRight: this.touchRight,
+					touchBottom: this.touchBottom,
+					origin: this.origin,
+					maxPoint: this.maxPoint
+				};
+
+				this.$emit('contract', this.id, dir, info);
+			},
 			resizeStart() {
 				console.log('ResizeStart');
 				this.$emit('resize-start');
@@ -184,6 +246,61 @@
 
 <style lang="less" scoped>
 
+	.buttons-group {
+
+		position: absolute;
+		opacity: 0;
+		transition: opacity 500ms;
+		display: flex;
+
+		&.buttons-x {
+
+			width: 30px;
+			flex-direction: column;
+			height: 100px;
+			justify-content: center;
+
+			.button { margin: @margin-half 0; }
+		}
+
+		&.buttons-y {
+
+			width: 100px;
+			justify-content: center;
+
+			.button { margin: 0 @margin-half; }
+		}
+
+
+		&.buttons-right {
+
+			right: -15px;
+			top: 50%;
+			margin-top: -50px;
+		}
+
+		&.buttons-left {
+
+			left: -15px;
+			top: 50%;
+			margin-top: -50px;
+		}
+
+		&.buttons-top {
+
+			left: 50%;
+			top: -31px/2;
+			margin-left: -50px;
+		}
+
+		&.buttons-bottom {
+
+			left: 50%;
+			bottom: -31px/2;
+			margin-left: -50px;
+		}
+	}
+
 	.button-add {
 
 		position: absolute;
@@ -195,7 +312,7 @@
 
 			right: -15px;
 			top: 50%;
-			margin-top: -31px/2;
+			margin-top: -31px;
 		}
 
 		&.button-add-col-left {
@@ -257,6 +374,8 @@
 
 			.button-add { opacity: 1; }
 			.button-remove { opacity: 1; }
+
+			.buttons-group { opacity: 1; }
 		}
 	}
 

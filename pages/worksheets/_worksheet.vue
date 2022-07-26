@@ -28,6 +28,7 @@
 							@show-editor="showEditor = true"
 							@hide-editor="showEditor = false"
 							@set-tool-area="currentToolArea = $event"
+							v-model="worksheet.content"
 						/>
 					</div>
 				</div>

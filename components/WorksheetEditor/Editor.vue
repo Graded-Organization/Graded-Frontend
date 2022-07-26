@@ -1,5 +1,5 @@
 <template>
-	<div class="editor">
+	<div class="editor" v-if="worksheet">
 		<div class="grid-wrapper mb-default">
 			<div
 				class="grid-areas"
@@ -76,13 +76,20 @@
 						:max-cols="columns"
 						:max-rows="rows"
 						@expand="expand"
+						@contract="contract"
 					>
 					</worksheet-editor-tool-area>
 				</div>
 			</div>
 		</div>
 
-		<p class="text-center">{{ columns }} &times; {{ rows }}</p>
+		<div class="controls-colrow-wrapper">
+			<form-group class="controls-group controls controls-colrow">
+				<input v-model="columns" type="text" class="form-control">
+				<span class="group-label">&times;</span>
+				<input v-model="rows" type="text" class="form-control">
+			</form-group>
+		</div>
 
 		<div class="form-group text-right">
 			<graded-button class="button-primary" @click.prevent="setArea">Set Area</graded-button>
@@ -93,30 +100,41 @@
 <script>
 	import Vue from 'vue';
 	import DragSelect from 'dragselect';
+	import { cloneDeep, tap, set } from 'lodash';
 
 	export default {
 		name: 'WorkSheetEditor',
+		props: {
+			value: {
+				type: Object,
+				default() {
+					return {
+						rows: 6,
+						columns: 6,
+						assignedAreas: {},
+						toolAreas: {}
+					}
+				}
+			}
+		},
 		data: () => ({
 			ds: null,
+			worksheet: null,
 
+			// Control vars
+			updateAreas: 0,
+			toolAreaUpdate: 0,
 			showEditor: false,
 			cellType: 'Free',
-			updateAreas: 0,
-			ds: null,
 			newAreaName: '',
 			selectedItems: [],
-			columns: 6,
-			rows: 6,
-			min: 6,
 			areaSelected: false,
-			assignedAreas: {},
-
-			// Styles
-			toolAreaUpdate: 0,
 			currentToolArea: null,
+
+			assignedAreas: {},
 			toolAreas: {},
 
-			//Control
+			// Control
 			hoveredCell: [-1, -1]
 		}),
 		watch: {
@@ -127,12 +145,32 @@
 			},
 			currentToolArea(n, o) {
 				this.$emit('set-tool-area', n);
+			},
+			assignedAreas: {
+				handler(n) {
+
+					console.log('Watch for assignedAreas');
+					Vue.set(this.worksheet, 'assignedAreas', n);
+				},
+				deep: true
+			},
+			toolAreas: {
+				handler(n) {
+
+					console.log('Watch for toolAreas');
+					Vue.set(this.worksheet, 'toolAreas', n);
+				},
+				deep: true
 			}
 		},
 		mounted() {
 
 			const obj = this;
-			obj.dragInit();
+			this.worksheet = this.value;
+
+			setTimeout(function() {
+				obj.dragInit();
+			}, 100);
 		},
 		computed: {
 			areas() {
@@ -204,6 +242,20 @@
 					'grid-template-columns': cols.join(' '),
 					'grid-template-rows': rows.join(' ')
 				}
+			},
+			rows: {
+				get() { return this.worksheet.rows; },
+				set(v) {
+					Vue.set(this.worksheet, 'rows', v);
+					this.$emit('input', this.worksheet);
+				}
+			},
+			columns: {
+				get() { return this.worksheet.columns; },
+				set(v) {
+					Vue.set(this.worksheet, 'columns', v);
+					this.$emit('input', this.worksheet);
+				}
 			}
 		},
 		methods: {
@@ -266,6 +318,60 @@
 					// The area is empty
 					if(this.rowIsEligible(rowToGrab, zone, area)) {
 						this.fillRowArea(area, rowToGrab, zone);
+					}
+				}
+
+				this.columns++;
+				this.columns--;
+			},
+			contract(area, dir, info) {
+
+				// Check if it can expand
+				console.log(area, info);
+				let areaSize = this.getAreaSize(area);
+				console.log(areaSize);
+
+				if(dir == 'right' && areaSize[0] > 1) {
+
+					let colToRemove = info.maxPoint[0];
+
+					for(var row = 0; row < this.rows; row++) {
+						if(typeof this.assignedAreas[`area${colToRemove}-${row}`] !== 'undefined' && this.assignedAreas[`area${colToRemove}-${row}`] == area) {
+							Vue.delete(this.assignedAreas, `area${colToRemove}-${row}`);
+						}
+					}
+				}
+
+				if(dir == 'left' && areaSize[0] > 1) {
+
+					let colToRemove = info.origin[0];
+
+					for(var row = 0; row < this.rows; row++) {
+						if(typeof this.assignedAreas[`area${colToRemove}-${row}`] !== 'undefined' && this.assignedAreas[`area${colToRemove}-${row}`] == area) {
+							Vue.delete(this.assignedAreas, `area${colToRemove}-${row}`);
+						}
+					}
+				}
+
+				if(dir == 'bottom' && areaSize[1] > 1) {
+
+					let rowToRemove = info.maxPoint[1];
+
+					for(var col = 0; col < this.columns; col++) {
+						if(typeof this.assignedAreas[`area${col}-${rowToRemove}`] !== 'undefined' && this.assignedAreas[`area${col}-${rowToRemove}`] == area) {
+							Vue.delete(this.assignedAreas, `area${col}-${rowToRemove}`);
+						}
+					}
+				}
+
+				if(dir == 'top' && areaSize[1] > 1) {
+
+					let rowToRemove = info.origin[1];
+
+					for(var col = 0; col < this.columns; col++) {
+						if(typeof this.assignedAreas[`area${col}-${rowToRemove}`] !== 'undefined' && this.assignedAreas[`area${col}-${rowToRemove}`] == area) {
+							Vue.delete(this.assignedAreas, `area${col}-${rowToRemove}`);
+						}
 					}
 				}
 
@@ -606,7 +712,15 @@
 
 					if(row == this.rows-1) {
 
-						alert('Cannot remove row because there are tools in the row');
+						this.$modal.show('dialog', {
+							text: 'Cannot remove row because there are tools in the row',
+							buttons: [
+								{
+									title: 'Accept',
+									handler: () => { this.$modal.hide('dialog') }
+								}
+							]
+						});
 						return;
 					}
 				}
@@ -618,10 +732,10 @@
 			selectionOcurred(cObj) {
 				this.selectCells(cObj.items);
 
-
 				for(const c in this.selectedItems) {
 					if(this.isOverlaping(this.selectedItems[c])) {
-						alert('Boxes overlapping, no good');
+
+						//alert('Boxes overlapping, no good');
 						Vue.set(this, 'selectedItems', []);
 						this.newAreaName = '';
 						this.areaSelected = false;
@@ -643,7 +757,8 @@
 				this.updateAreas++;
 
 				for(const s in this.selectedItems) {
-					this.assignedAreas[this.selectedItems[s]] = this.newAreaName || `tool-area-${ this.updateAreas }`;
+
+					Vue.set(this.assignedAreas, this.selectedItems[s], this.newAreaName || `tool-area-${ this.updateAreas }`);
 				}
 
 				this.ds.clearSelection();
@@ -661,6 +776,22 @@
 </script>
 
 <style scoped lang="less">
+
+	.controls-colrow-wrapper {
+
+		text-align: center;
+
+		.controls-colrow {
+
+			display: inline-flex;
+
+			.form-control {
+
+				width: 50px;
+				text-align: center;
+			}
+		}
+	}
 
 	.cell {
 
