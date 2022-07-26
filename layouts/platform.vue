@@ -17,7 +17,7 @@
 					</h2>
 
 					<ul class="menu-nav">
-						<li class="menu-item"><a @click.prevent="logout" href="#">My Worksheets</a></li>
+						<li class="menu-item"><nuxt-link to="/dashboard">My Worksheets</nuxt-link></li>
 						<li class="menu-item"><a @click.prevent="logout" href="#">Logout</a></li>
 					</ul>
 				</nav>
