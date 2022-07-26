@@ -1,6 +1,6 @@
 <template>
 	<div class="editor" v-if="worksheet">
-		<div class="grid-wrapper mb-default">
+		<div class="grid-wrapper mb-double">
 			<div
 				class="grid-areas"
 				@mousemove="setControl"
@@ -131,8 +131,8 @@
 			areaSelected: false,
 			currentToolArea: null,
 
-			assignedAreas: {},
 			toolAreas: {},
+			assignedAreas: {},
 
 			// Control
 			hoveredCell: [-1, -1]
@@ -166,7 +166,13 @@
 		mounted() {
 
 			const obj = this;
-			this.worksheet = this.value;
+			this.worksheet = this.$shallow(this.value);
+
+			Vue.set(this, 'assignedAreas', this.$shallow(this.worksheet.assignedAreas));
+			Vue.set(this, 'toolAreas', this.$shallow(this.worksheet.toolAreas));
+
+			this.updateAreas = Object.values(this.assignedAreas).length + 1;
+			console.log(this.updateAreas);
 
 			setTimeout(function() {
 				obj.dragInit();
@@ -850,7 +856,7 @@
 	.row-buttons {
 
 		position: absolute;
-		bottom: -38px/2;
+		bottom: -68px/2;
 		text-align: center;
 		width: 80px;
 		left: 50%;
@@ -864,7 +870,7 @@
 	.col-buttons {
 
 		position: absolute;
-		right: -35px/2;
+		right: -80px/2;
 		z-index: 100;
 		width: 35px;
 		top: 50%;

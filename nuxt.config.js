@@ -43,6 +43,7 @@ export default {
 	plugins: [
 		{ src: '~/plugins/globals.js' },
 		{ src: '~/plugins/directives.js' },
+		{ src: '~/plugins/utilities.js' },
 	],
 
 	// Auto import components: https://go.nuxtjs.dev/config-components

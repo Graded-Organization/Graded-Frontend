@@ -4,7 +4,12 @@
 			<div class="m-double">
 
 				<portal to="logo-portal">
-					<div class="breadcrumb"><nuxt-link to="/dashboard">Home</nuxt-link> | <span v-text="worksheet.name"></span></div>
+					<div class="breadcrumb">
+						<i v-if="!loading" class="fal fa-fw fa-check-circle" />
+						<i v-else class="fas fa-fw fa-circle-notch fa-spin" />
+						<nuxt-link to="/dashboard">Home</nuxt-link>
+						| <span v-text="worksheet.name"></span>
+					</div>
 				</portal>
 
 				<div class="inner boxfix-vert">
@@ -57,12 +62,21 @@
 		middleware: 'auth',
 		layout: 'platform',
 		data: () => ({
+			loading: false,
 			worksheet: null,
 			titleIsEditable: false,
 			showEditor: false,
 			currentToolArea: null,
 			toolAreaUpdate: 0,
 		}),
+		watch: {
+			worksheet: {
+				handler(n, o) {
+					this.save();
+				},
+				deep: true
+			}
+		},
 		computed: {
 			areas() {
 
@@ -172,7 +186,9 @@
 			},
 			async save() {
 
+				this.loading = true;
 				await this.$axios.$put(`worksheets/${ this.$route.params.worksheet }`, this.worksheet);
+				this.loading = false;
 			},
 			closeEditor() {
 
@@ -201,6 +217,19 @@
 <style scoped lang="less">
 
 	.breadcrumb {
+
+		display: flex;
+		align-items: center;
+
+		.fa-stack {
+
+			margin-right: @margin-default;
+		}
+
+		span, a {
+
+			margin: 0 @margin-half;
+		}
 
 		a {
 
