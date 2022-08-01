@@ -1,5 +1,14 @@
 <template>
 	<div class="editor" v-if="worksheet">
+
+		<div class="controls-colrow-wrapper">
+			<form-group class="controls-group controls controls-colrow">
+				<input v-model="columns" type="text" class="form-control">
+				<span class="group-label">&times;</span>
+				<input v-model="rows" type="text" class="form-control">
+			</form-group>
+		</div>
+
 		<div class="grid-wrapper mb-double">
 			<div
 				class="grid-areas"
@@ -82,17 +91,9 @@
 			</div>
 		</div>
 
-		<div class="controls-colrow-wrapper">
-			<form-group class="controls-group controls controls-colrow">
-				<input v-model="columns" type="text" class="form-control">
-				<span class="group-label">&times;</span>
-				<input v-model="rows" type="text" class="form-control">
-			</form-group>
-		</div>
-
-		<div class="form-group text-right">
+		<!--<div class="form-group text-right">
 			<graded-button class="button-primary" @click.prevent="setArea">Set Area</graded-button>
-		</div>
+		</div>-->
 
 		<worksheet-editor-drawer
 			:show="showEditor"
@@ -764,6 +765,8 @@
 						this.areaSelected = false;
 						return;
 					}
+
+					this.setArea();
 				}
 
 				this.currentToolArea = null;
@@ -811,7 +814,10 @@
 
 	.controls-colrow-wrapper {
 
+		position: absolute;
 		text-align: center;
+		right: 0;
+		top: -50px;
 
 		.controls-colrow {
 
