@@ -38,6 +38,7 @@
 								'is-selected': isSelected(`area${ col-1 }-${ row-1 }`) && !isOverlaping(`area${ col-1 }-${ row-1 }`),
 								'is-forbidden': isSelected(`area${ col-1 }-${ row-1 }`) && isOverlaping(`area${ col-1 }-${ row-1 }`)
 							}"
+							@mouseover="selectLayer(`area${ col-1 }-${ row-1 }`)"
 						/>
 					</template>
 				</div>
@@ -93,17 +94,6 @@
 		<div class="form-group text-right">
 			<graded-button class="button-primary" @click.prevent="setArea">Set Area</graded-button>
 		</div>
-
-		<worksheet-editor-drawer
-			:show="showEditor"
-			@close="closeEditor"
-		>
-			<worksheet-editor-tool-area-editor
-				:key="toolAreaUpdate"
-				:tool-area="currentToolArea"
-				@input="setToolAreaStyle"
-			/>
-		</worksheet-editor-drawer>
 	</div>
 </template>
 
@@ -157,13 +147,17 @@
 				this.$emit('set-tool-area', n);
 			},
 			assignedAreas: {
-				handler(n, o) {
+				handler(n) {
+
+					console.log('Watch for assignedAreas');
 					Vue.set(this.worksheet, 'assignedAreas', n);
 				},
 				deep: true
 			},
 			toolAreas: {
-				handler(n, o) {
+				handler(n) {
+
+					console.log('Watch for toolAreas');
 					Vue.set(this.worksheet, 'toolAreas', n);
 				},
 				deep: true
@@ -174,28 +168,17 @@
 			const obj = this;
 			this.worksheet = this.$shallow(this.value);
 
-			Vue.set(this, 'assignedAreas', this.worksheet.assignedAreas);
-			Vue.set(this, 'toolAreas', this.worksheet.toolAreas);
+			Vue.set(this, 'assignedAreas', this.$shallow(this.worksheet.assignedAreas));
+			Vue.set(this, 'toolAreas', this.$shallow(this.worksheet.toolAreas));
 
 			this.updateAreas = Object.values(this.assignedAreas).length + 1;
+			console.log(this.updateAreas);
 
 			setTimeout(function() {
 				obj.dragInit();
 			}, 100);
 		},
 		computed: {
-			hoveredArea() {
-
-				if(this.hoveredCell[0] != -1 && this.hoveredCell[1] != -1) {
-
-					if(
-						typeof this.areas[this.hoveredCell[1]] !== 'undefined' &&
-						typeof this.areas[this.hoveredCell[1]][this.hoveredCell[0]] !== 'undefined'
-					) return this.areas[this.hoveredCell[1]][this.hoveredCell[0]];
-				}
-
-				return null;
-			},
 			areas() {
 
 				let cells = [];
@@ -282,10 +265,6 @@
 			}
 		},
 		methods: {
-			closeEditor() {
-				this.currentToolArea = null;
-				this.showEditor = false;
-			},
 			dragInit() {
 
 				this.ds = new DragSelect({
@@ -302,6 +281,7 @@
 			expand(area, dir, info) {
 
 				// Check if it can expand
+				console.log(info);
 
 				if(dir == 'right' && !info.touchRight) {
 
@@ -353,7 +333,9 @@
 			contract(area, dir, info) {
 
 				// Check if it can expand
+				console.log(area, info);
 				let areaSize = this.getAreaSize(area);
+				console.log(areaSize);
 
 				if(dir == 'right' && areaSize[0] > 1) {
 
@@ -456,6 +438,9 @@
 			getAdjacentCol(col, zone, area) {
 				let adjacent = [];
 
+				console.group('getAdjacentCol');
+				console.log(col, zone, area);
+
 				for(var i = zone[0]; i <= zone[1]; i++) {
 
 					//Check all the adjacent areas
@@ -467,6 +452,7 @@
 
 				adjacent = adjacent.filter((v, i, a) => a.indexOf(v) === i);
 
+				console.groupEnd();
 				return adjacent;
 			},
 			colIsEligible(col, zone, area) {
@@ -480,6 +466,8 @@
 
 				//If there are adjacent areas, we need to check a little more.
 				} else {
+
+					console.log('Adjacents in COL', adjacent);
 
 					for(const a in adjacent) {
 
@@ -499,6 +487,7 @@
 					Vue.set(this.assignedAreas, `area${col}-${i}`, area);
 				}*/
 				let adjacent = this.getAdjacentCol(col, zone, area);
+				console.log('Adjacent in FillColArea', adjacent);
 
 				for(var row = 0; row < this.rows; row++) {
 					if(typeof this.assignedAreas[`area${col}-${row}`] !== 'undefined' && adjacent.includes(this.assignedAreas[`area${col}-${row}`])) {
@@ -553,6 +542,7 @@
 			fillRowArea(area, row, zone) {
 
 				let adjacent = this.getAdjacentRow(row, zone, area);
+				console.log('Adjacent in FillRowArea', adjacent);
 
 				for(var col = 0; col < this.columns; col++) {
 					if(typeof this.assignedAreas[`area${col}-${row}`] !== 'undefined' && adjacent.includes(this.assignedAreas[`area${col}-${row}`])) {
@@ -564,7 +554,9 @@
 					Vue.set(this.assignedAreas, `area${i}-${row}`, area);
 				}
 			},
-			resize() { console.log('Resize end', this.hoveredCell); },
+			resize() {
+				console.log('Resize end', this.hoveredCell);
+			},
 			clearControl(e) {
 				Vue.set(this, 'hoveredCell', [-1, -1]);
 			},
@@ -612,15 +604,6 @@
 				}
 
 				Vue.set(this, 'hoveredCell', [currentCol, currentRow]);
-
-				if(this.hoveredCell[0] != -1 && this.hoveredCell[1] != -1) {
-
-					if(
-						typeof this.areas[this.hoveredCell[1]] === 'undefined' ||
-						typeof this.areas[this.hoveredCell[1]][this.hoveredCell[0]] === 'undefined'
-					) this.cellType = 'Free';
-					else this.cellType = this.areas[this.hoveredCell[1]][this.hoveredCell[0]]?.includes('tool') ? 'Overlapping' : 'Free';
-				}
 			},
 			getToolAreas(area) {
 
@@ -781,7 +764,6 @@
 
 				for(const s in this.selectedItems) {
 
-					console.log(this.assignedAreas, this.selectedItems[s], this.newAreaName || `tool-area-${ this.updateAreas }`);
 					Vue.set(this.assignedAreas, this.selectedItems[s], this.newAreaName || `tool-area-${ this.updateAreas }`);
 				}
 
@@ -794,15 +776,7 @@
 				this.areaSelected = false;
 
 				this.reset();
-			},
-			addTool(cell) {
-				console.log(cell);
-			},
-			setToolAreaStyle(styles) {
-				if(this.currentToolArea) {
-					Vue.set(this.toolAreas[this.currentToolArea], 'styles', styles);
-				}
-			},
+			}
 		}
 	}
 </script>
@@ -828,7 +802,7 @@
 	.cell {
 
 		user-select: none;
-		min-height: 100px;
+		min-height: 50px;
 		display: flex;
 		align-items: center;
 		justify-content: center;

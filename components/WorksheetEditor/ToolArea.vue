@@ -4,37 +4,19 @@
 		v-on="listeners"
 		@click.self="$emit('edit')"
 	>
-		<!--<div
-			class="resize-area resize-left"
-			draggable="true"
-			@dragstart="resizeStart"
-			@dragend="resizeEnd"
-		/>
-		<div
-			class="resize-area resize-right"
-			draggable="true"
-			@dragstart="resizeStart"
-			@dragend="resizeEnd"
-		/>
-		<div
-			class="resize-area resize-top"
-			draggable="true"
-			@dragstart="resizeStart"
-			@dragend="resizeEnd"
-		/>
-		<div
-			class="resize-area resize-bottom"
-			draggable="true"
-			@dragstart="resizeStart"
-			@dragend="resizeEnd"
-		/>-->
 
-		<div class="buttons-group buttons-x buttons-left">
+		<div
+			class="buttons-group buttons-x buttons-left"
+			:class="{
+				'no-top': touchTop && height == 1,
+				'no-bottom': touchBottom && height == 1
+			}"
+		>
 			<a
 				v-if="!touchLeft"
 				href="#"
 				@click.prevent="expand('left')"
-				class="button button-primary button-small"
+				class="button button-size button-small"
 			>
 				<i class="fad fa-arrow-alt-from-right" />
 			</a>
@@ -42,19 +24,25 @@
 				v-if="width > 1"
 				href="#"
 				@click.prevent="contract('left')"
-				class="button button-primary button-small"
+				class="button button-size button-small"
 			>
 				<i class="fad fa-arrow-alt-from-left" />
 			</a>
 		</div>
 
 
-		<div class="buttons-group buttons-x buttons-right">
+		<div
+			class="buttons-group buttons-x buttons-right"
+			:class="{
+				'no-top': touchTop && height == 1,
+				'no-bottom': touchBottom && height == 1
+			}"
+		>
 			<a
 				v-if="!touchRight"
 				href="#"
 				@click.prevent="expand('right')"
-				class="button button-primary button-small"
+				class="button button-size button-small"
 			>
 				<i class="fad fa-arrow-alt-from-left" />
 			</a>
@@ -63,7 +51,7 @@
 				v-if="width > 1"
 				href="#"
 				@click.prevent="contract('right')"
-				class="button button-primary button-small"
+				class="button button-size button-small"
 			>
 				<i class="fad fa-arrow-alt-from-right" />
 			</a>
@@ -74,7 +62,7 @@
 				v-if="!touchTop"
 				href="#"
 				@click.prevent="expand('top')"
-				class="button button-primary button-small"
+				class="button button-size button-small"
 			>
 				<i class="fad fa-arrow-alt-from-bottom" />
 			</a>
@@ -82,7 +70,7 @@
 				v-if="height > 1"
 				href="#"
 				@click.prevent="contract('top')"
-				class="button button-primary button-small"
+				class="button button-size button-small"
 			>
 				<i class="fad fa-arrow-alt-from-top" />
 			</a>
@@ -93,7 +81,7 @@
 				v-if="!touchBottom"
 				href="#"
 				@click.prevent="expand('bottom')"
-				class="button button-primary button-small"
+				class="button button-size button-small"
 			>
 				<i class="fad fa-arrow-alt-from-top" />
 			</a>
@@ -102,16 +90,16 @@
 				v-if="height > 1"
 				href="#"
 				@click.prevent="contract('bottom')"
-				class="button button-primary button-small"
+				class="button button-size button-small"
 			>
 				<i class="fad fa-arrow-alt-from-bottom" />
 			</a>
 		</div>
 
-		<div class="component-actions p-half">
+		<div class="component-actions">
 			<button
 				type="button"
-				class="button button-small button-danger button-remove"
+				class="button button-xsmall button-danger button-remove"
 				@click="$emit('remove')"
 			>
 				<i class="fal fa-fw fa-times" />
@@ -122,7 +110,7 @@
 			<button
 				type="button"
 				@click="$emit('add-tool')"
-				class="button-add-tool button button-ghost-primary"
+				class="button-add-tool button button-small button-ghost-primary"
 			><i class="fal fa-fw fa-plus"></i></button>
 		</slot>
 	</div>
@@ -246,66 +234,100 @@
 
 <style lang="less" scoped>
 
+	.component-actions {
+
+		padding-top: 30px;
+		padding-right: 35px;
+	}
+
 	.buttons-group {
 
 		position: absolute;
 		opacity: 0;
-		transition: opacity 500ms;
 		display: flex;
+		z-index: 100;
+		transition: opacity 250ms;
+
+		.button-size {
+
+			border-radius: 0;
+			border-color: @border-1;
+			padding: @margin-third;
+			background: white;
+			color: @border-2;
+
+			&:hover {
+
+				background-color: @background-1;
+			}
+		}
 
 		&.buttons-x {
 
 			width: 30px;
 			flex-direction: column;
-			height: 100px;
+			height: calc(~"100% - 50px");
 			justify-content: center;
+			display: flex;
+			flex-direction: column;
 
-			.button { margin: @margin-half 0; }
+			&.no-top {
+
+				top: 0;
+				height: calc(~"100% - 25px");
+			}
+
+			&.no-bottom {
+
+				bottom: 0;
+				height: calc(~"100% - 25px");
+			}
+
+			.button {
+
+				flex: 1;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-top: 0 !important;
+
+				&:last-child:not(:first-child) {
+
+					border-bottom: 0 !important;
+				}
+
+				&:last-child:first-child {
+
+					border-bottom: 0 !important;
+				}
+			}
 		}
 
 		&.buttons-y {
 
-			width: 100px;
+			width: 100%;
 			justify-content: center;
+			display: flex;
 
-			.button { margin: 0 @margin-half; }
+			.button {
+
+				flex: 1;
+
+				&:first-child:not(:last-child) { border-right: 0; }
+			}
 		}
 
-
-		&.buttons-right {
-
-			right: -15px;
-			top: 50%;
-			margin-top: -50px;
-		}
-
-		&.buttons-left {
-
-			left: -15px;
-			top: 50%;
-			margin-top: -50px;
-		}
-
-		&.buttons-top {
-
-			left: 50%;
-			top: -31px/2;
-			margin-left: -50px;
-		}
-
-		&.buttons-bottom {
-
-			left: 50%;
-			bottom: -31px/2;
-			margin-left: -50px;
-		}
+		&.buttons-right { right: 0; }
+		&.buttons-left { left: 0; }
+		&.buttons-top { top: 0; }
+		&.buttons-bottom { bottom: 0; }
 	}
 
 	.button-add {
 
 		position: absolute;
 		opacity: 0;
-		transition: opacity 500ms;
+		transition: opacity 250ms;
 		width: 30px;
 
 		&.button-add-col-right {
@@ -352,13 +374,13 @@
 
 	.button-remove {
 
-		transition: opacity 500ms;
+		transition: opacity 250ms;
 		opacity: 0;
 	}
 
 	.cell {
 
-		box-shadow: @-shadow-2;
+		box-shadow: 0 0 5px fade(black, 5%);
 		min-height: 50px;
 		z-index: 10;
 		background: fade(white, 90%);
@@ -366,7 +388,7 @@
 		align-items: center;
 		justify-content: center;
 		z-index: 1;
-		border: 5px solid transparent;
+		border: 1px solid fade(black, 1%);
 
 		&:hover {
 

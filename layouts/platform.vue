@@ -1,32 +1,45 @@
 <template>
 	<div class="platform-layout">
 		<header class="site-header">
-			<nuxt-link to="/dashboard" class="site-logo">
-				<logo />
-			</nuxt-link>
 
-			<portal-target name="logo-portal" class="logo-portal">
-			</portal-target>
-
-			<div class="user-area">
-				<img class="avatar" width="40" :src="`${ this.$config.apiUrl }/users/${ $auth.user.id }/avatar`">
-
-				<nav class="user-menu">
-					<h2 class="menu-hello">
-						Hello <strong>{{ $auth.user.nicename }}</strong>
-					</h2>
-
-					<ul class="menu-nav">
-						<li class="menu-item"><nuxt-link to="/dashboard">My Worksheets</nuxt-link></li>
-						<li class="menu-item"><a @click.prevent="logout" href="#">Logout</a></li>
-					</ul>
-				</nav>
+			<div class="header-area area-left">
+				<nuxt-link to="/dashboard" class="site-logo">
+					<logo />
+				</nuxt-link>
+				<portal-target name="logo-portal" class="logo-portal">
+				</portal-target>
 			</div>
 
+			<div class="header-area area-center">
+				<portal-target name="menu-portal" class="menu-portal">
+				</portal-target>
+			</div>
+
+			<div class="header-area area-right">
+				<portal-target name="user-portal" class="user-portal">
+				</portal-target>
+
+				<div class="user-area">
+					<img class="avatar" width="40" :src="`${ this.$config.apiUrl }/users/${ $auth.user.id }/avatar`">
+
+					<nav class="user-menu">
+						<h2 class="menu-hello">
+							Hello <strong>{{ $auth.user.nicename }}</strong>
+						</h2>
+
+						<ul class="menu-nav">
+							<li class="menu-item"><nuxt-link to="/dashboard">My Worksheets</nuxt-link></li>
+							<li class="menu-item"><a @click.prevent="logout" href="#">Logout</a></li>
+						</ul>
+					</nav>
+				</div>
+			</div>
 		</header>
-		<section>
+
+		<section class="platform-section">
 			<nuxt />
 		</section>
+
 		<footer class="site-footer">
 			<div class="m-default">
 				<p>Made with <i class="fa fa-fw fa-heart" /> in Ukraine, Portugal and Mexico.</p>
@@ -54,6 +67,14 @@
 </script>
 
 <style lang="less">
+
+	.platform-section {
+
+		display: flex;
+		width: 100%;
+		justify-content: center;
+	}
+
 	.platform-layout {
 
 		min-height: 100vh;
@@ -65,6 +86,15 @@
 			display: flex;
 			align-items: center;
 			border-bottom: 1px solid @border-1;
+
+			.header-area {
+
+				display: flex;
+				flex: 1;
+				height: 100%;
+				align-items: center;
+				flex-basis: 100%/3;
+			}
 
 			.site-logo {
 
@@ -89,12 +119,29 @@
 				margin-right: auto;
 			}
 
+			.menu-portal {
+
+				width: 100%;
+				display: flex;
+				height: 100%;
+				justify-content: center;
+			}
+
+			.user-portal {
+
+				width: 100%;
+				display: flex;
+				height: 100%;
+				justify-content: center;
+			}
+
 			.user-area {
 
 				height: 100%;
 				display: flex;
 				padding: 0 @margin-default;
 				align-items: center;
+				margin-left: auto;
 
 				.avatar {
 

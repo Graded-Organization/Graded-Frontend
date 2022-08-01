@@ -39,6 +39,11 @@
 
 	.drawer-editor {
 
+		height: calc(~"100% - 67px - 43px") !important;
+		border-left: 1px solid @border-1;
+
+		top: 67px;
+		box-shadow: none;
 		transition: right 750ms;
 		width: 350px;
 		right: -350px !important;

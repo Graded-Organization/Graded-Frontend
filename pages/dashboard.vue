@@ -85,6 +85,11 @@
 
 <style scoped lang="less">
 
+	.section-dashboard {
+
+		width: 100%;
+	}
+
 	.dashboard-title {
 
 		font-size: @font-size-4;
