@@ -96,7 +96,10 @@
 			</a>
 		</div>
 
-		<div class="component-actions">
+		<div
+			class="component-actions"
+			:class="{ 'no-right': touchRight && width == 1 }"
+		>
 			<button
 				type="button"
 				class="button button-xsmall button-danger button-remove"
@@ -238,6 +241,12 @@
 
 		padding-top: 30px;
 		padding-right: 35px;
+		z-index: 100;
+
+		&.no-right {
+
+			padding-right: 5px;
+		}
 	}
 
 	.buttons-group {
@@ -362,6 +371,8 @@
 	.button-add-tool {
 
 		z-index: 100;
+		background: white;
+		outline: 3px solid white !important;
 	}
 
 	.component-controls {

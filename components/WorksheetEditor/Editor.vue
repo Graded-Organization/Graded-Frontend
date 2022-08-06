@@ -77,7 +77,7 @@
 						:key="cell"
 						:cells="getToolAreas(cell)"
 						@remove="removeArea(cell)"
-						@add-tool="addTool(cell)"
+						@add-tool="selectTool(cell)"
 						@edit="editToolArea(cell)"
 						:style="getToolAreaStyle(cell)"
 						@resize-end="resize(cell)"
@@ -86,6 +86,12 @@
 						@expand="expand"
 						@contract="contract"
 					>
+						<template v-if="getToolByArea(cell)">
+							<component
+								:value="getToolByArea(cell)"
+								:is="`worksheet-editor-tool-${ getToolByArea(cell).type }`"
+							/>
+						</template>
 					</worksheet-editor-tool-area>
 				</div>
 			</div>
@@ -96,14 +102,21 @@
 		</div>-->
 
 		<worksheet-editor-drawer
-			:show="showEditor"
-			@close="closeEditor"
+			:show="showDrawer"
+			@close="closeDrawer"
 		>
 			<worksheet-editor-tool-area-editor
+				v-if="drawerState == 'styles'"
 				:key="toolAreaUpdate"
 				:tool-area="currentToolArea"
 				@input="setToolAreaStyle"
 			/>
+
+			<worksheet-editor-tools-library
+				v-if="drawerState == 'selectTool'"
+				@selected-tool="addTool"
+			/>
+
 		</worksheet-editor-drawer>
 	</div>
 </template>
@@ -112,6 +125,9 @@
 	import Vue from 'vue';
 	import DragSelect from 'dragselect';
 	import { cloneDeep, tap, set } from 'lodash';
+	import Hashids from 'hashids';
+
+	const hashids = new Hashids();
 
 	export default {
 		name: 'WorkSheetEditor',
@@ -126,6 +142,12 @@
 						toolAreas: {}
 					}
 				}
+			},
+			tools: {
+				type: Array,
+				default() {
+					return [];
+				}
 			}
 		},
 		data: () => ({
@@ -135,12 +157,14 @@
 			// Control vars
 			updateAreas: 0,
 			toolAreaUpdate: 0,
-			showEditor: false,
+			showDrawer: false,
+			drawerState: null,
 			cellType: 'Free',
 			newAreaName: '',
 			selectedItems: [],
 			areaSelected: false,
 			currentToolArea: null,
+			cellToAddTool: null,
 
 			toolAreas: {},
 			assignedAreas: {},
@@ -149,11 +173,6 @@
 			hoveredCell: [-1, -1]
 		}),
 		watch: {
-			showEditor(n, o) {
-
-				if(n) this.$emit('show-editor');
-				else this.$emit('hide-editor');
-			},
 			currentToolArea(n, o) {
 				this.$emit('set-tool-area', n);
 			},
@@ -165,7 +184,9 @@
 			},
 			toolAreas: {
 				handler(n, o) {
+					console.log('Updating toolAreas');
 					Vue.set(this.worksheet, 'toolAreas', n);
+					this.$emit('input', this.worksheet);
 				},
 				deep: true
 			}
@@ -283,9 +304,13 @@
 			}
 		},
 		methods: {
-			closeEditor() {
+			getToolByArea(cell) {
+				return this.tools?.find(t => t.area == cell);
+			},
+			closeDrawer() {
 				this.currentToolArea = null;
-				this.showEditor = false;
+				this.showDrawer = false;
+				setTimeout(function() { this.drawerState = null; }.bind(this), 150);
 			},
 			dragInit() {
 
@@ -646,7 +671,8 @@
 					Vue.set(this.toolAreas, area, {});
 				}
 
-				this.showEditor = true;
+				this.showDrawer = true;
+				this.drawerState = 'styles';
 				this.toolAreaUpdate++;
 			},
 			removeArea(cell) {
@@ -660,7 +686,7 @@
 				delete this.toolAreas[cell];
 
 				this.currentToolArea = null;
-				this.showEditor = false;
+				this.showDrawer = false;
 
 				this.columns++;
 				this.columns--;
@@ -770,7 +796,7 @@
 				}
 
 				this.currentToolArea = null;
-				this.showEditor = false;
+				this.showDrawer = false;
 				this.areaSelected = true;
 			},
 			escape() {
@@ -782,10 +808,12 @@
 			setArea() {
 				this.updateAreas++;
 
+				let timestamp = Math.floor(Date.now() / 1000);
+
 				for(const s in this.selectedItems) {
 
-					console.log(this.assignedAreas, this.selectedItems[s], this.newAreaName || `tool-area-${ this.updateAreas }`);
-					Vue.set(this.assignedAreas, this.selectedItems[s], this.newAreaName || `tool-area-${ this.updateAreas }`);
+					console.log(this.assignedAreas, this.selectedItems[s], this.newAreaName || `tool-area-${ hashids.encode(timestamp) }`);
+					Vue.set(this.assignedAreas, this.selectedItems[s], this.newAreaName || `tool-area-${ hashids.encode(timestamp) }`);
 				}
 
 				this.ds.clearSelection();
@@ -798,14 +826,30 @@
 
 				this.reset();
 			},
-			addTool(cell) {
+			selectTool(cell) {
+
 				console.log(cell);
+				this.cellToAddTool = cell;
+
+				this.showDrawer = true;
+				this.drawerState = 'selectTool';
 			},
 			setToolAreaStyle(styles) {
 				if(this.currentToolArea) {
 					Vue.set(this.toolAreas[this.currentToolArea], 'styles', styles);
 				}
 			},
+			async addTool(tool) {
+				console.log('TOOL', tool, this.cellToAddTool);
+
+				const block = await this.$axios.$post('worksheet-blocks', {
+					id_worksheet: this.$route.params.worksheet,
+					type: tool,
+					area: this.cellToAddTool
+				});
+
+				this.$emit('tool-added', block.data);
+			}
 		}
 	}
 </script>

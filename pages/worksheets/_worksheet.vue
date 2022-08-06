@@ -3,8 +3,8 @@
 		<template v-if="!$fetchState.pending && !$fetchState.error">
 			<portal to="logo-portal">
 				<div class="breadcrumb">
-					<i v-if="!loading" class="fal fa-fw fa-check-circle" />
-					<i v-else class="fas fa-fw fa-circle-notch fa-spin" />
+					<worksheet-editor-loading :key="loading" />
+
 					<nuxt-link to="/dashboard">Home</nuxt-link>
 					| <span v-text="worksheet.name"></span>
 				</div>
@@ -45,7 +45,7 @@
 
 			const obj = this;
 
-			const worksheet = await this.$axios.$get(`/worksheets/${ this.$route.params.worksheet }`);
+			const worksheet = await this.$axios.$get(`/worksheets/${ this.$route.params.worksheet }?pdo[blocks]=getBlocks`);
 			this.setWorksheet(worksheet.data);
 		}
 	}

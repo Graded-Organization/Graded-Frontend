@@ -80,12 +80,20 @@
 		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
+		padding-top: 66px;
+		padding-bottom: 43px;
 
 		.site-header {
 
 			display: flex;
 			align-items: center;
 			border-bottom: 1px solid @border-1;
+			position: fixed;
+			top: 0;
+			left: 0;
+			background: white;
+			width: 100%;
+			z-index: 10;
 
 			.header-area {
 
@@ -227,6 +235,11 @@
 		.site-footer {
 
 			background: @background-2;
+			position: fixed;
+			z-index: 10;
+			width: 100%;
+			bottom: 0;
+			left: 0;
 
 			p {
 

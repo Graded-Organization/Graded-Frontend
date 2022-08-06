@@ -2,45 +2,32 @@
 	<div class="section-dashboard-editor">
 		<template>
 			<div class="m-double">
-
 				<div class="inner boxfix-vert">
 					<div class="m-default">
-						<div class="worksheet-name-wrapper" @click.prevent="enableNameEditable" v-click-outside="disableNameEditable">
-							<contenteditable
-								class="worksheet-name"
-								tag="h2"
-								id="worksheet-name"
-								:contenteditable="nameIsEditable"
-								v-model="worksheetName"
-								:noNL="true"
-								:noHTML="true"
-								@returned="disableNameEditable"
-							/>
-							<a href="#" v-show="!nameIsEditable"><i class="fa fa-fw fa-pencil" /></a>
-						</div>
-						<br>
-						<div class="worksheet-description-wrapper"
-							:class="{ 'is-editing' : descriptionIsEditable }"
-							@click.prevent="enableDescriptionEditable"
-							v-click-outside="disableDescriptionEditable"
-						>
-							<contenteditable
-								class="worksheet-description mb-default"
-								tag="p"
-								id="worksheet-description"
-								:contenteditable="descriptionIsEditable"
-								v-model="worksheetDescription"
-								:noNL="true"
-								:noHTML="true"
-								@returned="disableDescriptionEditable"
-							/>
-						</div>
 
+						<graded-content-editable
+							tag="h2"
+							v-model="worksheetName"
+							v-slot="slotProps"
+							class="worksheet-name-wrapper"
+							:classes="{ contenteditable: 'worksheet-name' }"
+						>
+							<a href="#" v-show="!slotProps.isEditable"><i class="fa fa-fw fa-pencil" /></a>
+						</graded-content-editable>
+
+						<br>
+
+						<graded-content-editable
+							tag="p"
+							v-model="worksheetDescription"
+							v-slot="slotProps"
+							class="worksheet-description-wrapper"
+							:classes="{ contenteditable: 'worksheet-description mb-default' }"
+						/>
 						<worksheet-editor
-							@show-editor="showEditor = true"
-							@hide-editor="showEditor = false"
-							@set-tool-area="currentToolArea = $event"
 							v-model="worksheetContent"
+							:tools="worksheet.blocks"
+							@tool-added="reFetch"
 						/>
 					</div>
 				</div>
@@ -58,13 +45,7 @@
 		name: 'WorkSheetPageEditor',
 		middleware: 'auth',
 		mixins: [ WorksheetMixin ],
-		data: () => ({
-			nameIsEditable: false,
-			descriptionIsEditable: false,
-			showEditor: false,
-			currentToolArea: null,
-			toolAreaUpdate: 0,
-		}),
+		data: () => ({}),
 		watch: {
 			worksheet: {
 				handler(n, o) {
@@ -75,146 +56,24 @@
 		},
 		computed: {
 			worksheetName: {
-				get() {
-					return this.worksheet.name;
-				},
-				set(val) {
-					this.$store.commit('worksheet/updateName', val);
-				}
+				get() { return this.worksheet.name; },
+				set(val) { this.$store.commit('worksheet/updateName', val); }
 			},
 			worksheetDescription: {
-				get() {
-					return this.worksheet.description || 'No description';
-				},
-				set(val) {
-					this.$store.commit('worksheet/updateDescription', val);
-				}
+				get() { return this.worksheet.description || 'No description'; },
+				set(val) { this.$store.commit('worksheet/updateDescription', val); }
 			},
 			worksheetContent: {
-				get() {
-					return this.worksheet.content;
-				},
-				set(v) {
-					this.updateContent(this.$shallow(v));
-				}
-			},
-			areas() {
-
-				let cells = [];
-
-				for(var i = 0; i < this.rows; i++) {
-
-					cells[i] = [];
-
-					for(var j = 0; j < this.columns; j++) {
-
-						let areaName = `area${ j }-${ i }`;
-
-						if(typeof this.assignedAreas[areaName] !== 'undefined') {
-
-							Vue.set(cells[i], j, this.assignedAreas[areaName]);
-						} else {
-
-							Vue.set(cells[i], j, areaName);
-						}
-
-					}
-				}
-				return cells;
-			},
-			cssAreas() {
-
-				let css = '';
-				for(const r in this.areas) {
-					css = `${css} "${ this.areas[r].join(' ').trim() }"`;
-				}
-
-				return css.trim();
-			},
-			gridStyle() {
-
-				let cols = [];
-				let rows = [];
-
-				for(var i = 0; i < this.columns; i++) {
-					cols.push('1fr');
-				}
-
-				for(var i = 0; i < this.rows; i++) {
-					rows.push('1fr');
-				}
-
-				return {
-					'grid-template-columns': cols.join(' '),
-					'grid-template-rows': rows.join(' ')
-				}
-			},
-			gridAreaStyle() {
-
-				let cols = [];
-				let rows = [];
-
-				for(var i = 0; i < this.columns; i++) {
-					cols.push('1fr');
-				}
-
-				for(var i = 0; i < this.rows; i++) {
-					rows.push('1fr');
-				}
-
-				return {
-					'grid-template-areas': this.cssAreas,
-					'grid-template-columns': cols.join(' '),
-					'grid-template-rows': rows.join(' ')
-				}
+				get() { return this.worksheet.content; },
+				set(v) { this.updateContent(this.$shallow(v)); }
 			}
 		},
 		methods: {
-			enterPressed() { },
-			placeCaretAtEnd(el) {
-				el.focus();
-				if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
-					var range = document.createRange();
-					range.selectNodeContents(el);
-					range.collapse(false);
-					var sel = window.getSelection();
-					sel.removeAllRanges();
-					sel.addRange(range);
-				} else if (typeof document.body.createTextRange != "undefined") {
-					var textRange = document.body.createTextRange();
-					textRange.moveToElementText(el);
-					textRange.collapse(false);
-					textRange.select();
-				}
-			},
-			enableNameEditable() {
-				const obj = this;
+			async reFetch() {
 
-				if(!obj.nameIsEditable) {
-					setTimeout(function() { obj.placeCaretAtEnd(document.getElementById('worksheet-name')); }, 0);
-				}
-
-				obj.nameIsEditable = true;
-			},
-			enableDescriptionEditable() {
-				const obj = this;
-
-				if(!obj.descriptionIsEditable) {
-					setTimeout(function() { obj.placeCaretAtEnd(document.getElementById('worksheet-description')); }, 0);
-				}
-
-				obj.descriptionIsEditable = true;
-			},
-			async disableNameEditable() {
-
-				if(this.nameIsEditable)  await this.save();
-				this.nameIsEditable = false;
-			},
-			async disableDescriptionEditable() {
-
-				if(this.descriptionIsEditable)  await this.save();
-				this.descriptionIsEditable = false;
-			},
+				const worksheet = await this.$axios.$get(`/worksheets/${ this.$route.params.worksheet }?pdo[blocks]=getBlocks`);
+				this.setWorksheet(worksheet.data);
+			}
 		}
 	}
 </script>
@@ -273,7 +132,7 @@
 		}
 	}
 
-	.worksheet-name-wrapper {
+	/deep/ .worksheet-name-wrapper {
 
 		display: inline-flex;
 		align-items: center;

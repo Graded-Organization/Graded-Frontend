@@ -4,7 +4,7 @@
 		:class="[ show ? 'is-visible' : '' ]"
 	>
 		<div class="component-actions p-half">
-			<a href="#" class="button button-primary button-small" @click.prevent="close"><i class="fa fa-fw fa-times" /></a>
+			<a href="#" class="button button-small" @click.prevent="close"><i class="fa fa-fw fa-times" /></a>
 		</div>
 
 		<div class="m-default">
@@ -44,7 +44,7 @@
 
 		top: 67px;
 		box-shadow: none;
-		transition: right 750ms;
+		transition: right 150ms;
 		width: 350px;
 		right: -350px !important;
 

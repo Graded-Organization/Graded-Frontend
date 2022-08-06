@@ -42,3 +42,49 @@ a:not([class]) {
 
 	box-shadow: @shadow-3 !important;
 }
+
+/* Block Tool (Editor) */
+/* ---------------------------------------------------------------------------------------------- */
+
+.block-tool-wrapper {
+
+	width: calc(~"100% - 60px");
+	height: calc(~"100% - 50px");
+	flex: 1;
+	margin: 25px 30px;
+	overflow-y: auto;
+	padding: @margin-half;
+	box-sizing: border-box;
+
+	.block-type {
+
+		font-size: @font-size-0;
+	}
+
+	.block-name-wrapper {
+
+		display: inline-flex;
+		align-items: center;
+		cursor: pointer;
+		margin-bottom: @margin-default;
+
+		.block-name {
+
+			font-size: @font-size-3;
+			margin-right: @margin-default;
+		}
+
+		a {
+
+			color: @gray-3;
+		}
+
+		&:hover {
+
+			a {
+
+				color: @green-5;
+			}
+		}
+	}
+}
