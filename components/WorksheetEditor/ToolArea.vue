@@ -102,6 +102,14 @@
 		>
 			<button
 				type="button"
+				class="button button-xsmall button-primary button-settings"
+				@click="$emit('edit')"
+			>
+				<i class="fal fa-fw fa-cog" />
+			</button>
+
+			<button
+				type="button"
 				class="button button-xsmall button-danger button-remove"
 				@click="$emit('remove')"
 			>
@@ -383,7 +391,7 @@
 		margin: @margin-half;
 	}
 
-	.button-remove {
+	.component-actions {
 
 		transition: opacity 250ms;
 		opacity: 0;
@@ -405,9 +413,9 @@
 
 			z-index: 10;
 
-			.button-add { opacity: 1; }
-			.button-remove { opacity: 1; }
+			.component-actions { opacity: 1; }
 
+			.button-add { opacity: 1; }
 			.buttons-group { opacity: 1; }
 		}
 	}
