@@ -9,6 +9,7 @@
 							tag="h2"
 							v-model="worksheetName"
 							v-slot="slotProps"
+							default-text="Untitled Worksheet"
 							class="worksheet-name-wrapper"
 							:classes="{ contenteditable: 'worksheet-name' }"
 						>
@@ -21,6 +22,7 @@
 							tag="p"
 							v-model="worksheetDescription"
 							v-slot="slotProps"
+							default-text="Set a description for your worksheet"
 							class="worksheet-description-wrapper"
 							:classes="{ contenteditable: 'worksheet-description mb-default' }"
 						/>

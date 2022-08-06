@@ -21,11 +21,12 @@
 			>
 				<input
 					type="checkbox"
-					v-model="block.content.options[i].selected"
+					v-model="block.content.options[i].correct"
 				>
 
 				<graded-content-editable
 					tag="p"
+					default-text="Option"
 					class="option-text"
 					v-model="block.content.options[i].text"
 					:default="`Option Text`"
@@ -62,12 +63,12 @@
 			if(!this.block?.content?.options) {
 				this.block.content.options = [
 					{
-						text: 'Option',
-						selected: true
+						text: '',
+						correct: true
 					},
 					{
-						text: 'Option',
-						selected: false
+						text: '',
+						correct: false
 					},
 				];
 			}
@@ -76,8 +77,8 @@
 			addOption() {
 
 				this.block.content.options.push({
-					text: 'Option',
-					selected: false
+					text: '',
+					correct: false
 				});
 			},
 			removeOption(i) {

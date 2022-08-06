@@ -10,8 +10,9 @@
 			v-model="content"
 			:noNL="noNL"
 			:noHTML="noHTML"
+			:placeholder="defaultText"
 			@returned="disableEditable"
-			:class="['contenteditable', classes.contenteditable]"
+			:class="['contenteditable', classes.contenteditable, content == defaultText ? 'no-content' : '']"
 		/>
 		<slot :is-editable="isEditable"></slot>
 	</div>
@@ -29,7 +30,7 @@
 				type: String,
 				default: 'div',
 			},
-			default: {
+			defaultText: {
 				type: String,
 				default: 'No value'
 			},
@@ -55,7 +56,7 @@
 			this.id = 'content_editable_' + this._uid;
 			this.content = this.value;
 
-			if(this.default && !this.content) this.content = this.default;
+			if(this.defaultText && !this.content) this.content = this.defaultText;
 		},
 		methods: {
 			enterPressed() { },
@@ -80,7 +81,7 @@
 			},
 			enableEditable() {
 
-				if(this.default && !this.content) this.content = this.default;
+				if(this.defaultText && !this.content || this.content == this.defaultText) this.content = '';
 
 				if(!this.isEditable) {
 					setTimeout(function() { this.placeCaretAtEnd(document.getElementById(this.id)); }.bind(this), 0);
@@ -90,7 +91,7 @@
 			},
 			disableEditable() {
 
-				if(this.default && !this.content) this.content = this.default;
+				if(this.defaultText && !this.content) this.content = this.defaultText;
 
 				this.isEditable = false;
 				this.$emit('input', this.content);
@@ -98,3 +99,19 @@
 		}
 	}
 </script>
+
+<style lang="less" scoped>
+
+	.no-content {
+
+		color: @body-color-muted;
+	}
+
+	[placeholder]:empty:before {
+
+		content: attr(placeholder);
+		color: @body-color-muted;
+	}
+
+
+</style>

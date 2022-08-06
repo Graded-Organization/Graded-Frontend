@@ -5,7 +5,6 @@ export default {
 		block: {
 			handler(n, o) {
 				this.blockUpdateKey++;
-
 				this.save();
 			},
 			deep: true
