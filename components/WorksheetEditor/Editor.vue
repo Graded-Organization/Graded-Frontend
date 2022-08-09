@@ -1,6 +1,5 @@
 <template>
 	<div class="editor" v-if="worksheet">
-
 		<div class="controls-colrow-wrapper">
 			<form-group class="controls-group controls controls-colrow">
 				<input v-model="columns" type="text" class="form-control">

@@ -34,6 +34,7 @@
     "vue-drag-select": "^0.2.0",
     "vue-fragment": "^1.6.0",
     "vue-js-modal": "^2.0.1",
+    "vue-masonry-wall": "^0.3.2",
     "vue-password-strength-meter": "^1.7.2",
     "vue-server-renderer": "^2.6.14",
     "vue-template-compiler": "^2.6.14",

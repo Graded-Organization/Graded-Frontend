@@ -4,7 +4,7 @@ export default {
 	watch: {
 		block: {
 			handler(n, o) {
-				this.blockUpdateKey++;
+				this.blockUpdateKey = Math.floor(Date.now() / 1000);
 				this.save();
 			},
 			deep: true
@@ -29,6 +29,8 @@ export default {
 			setLoading: 'worksheet/setLoading',
 		}),
 		async save() {
+
+			console.log('WAX');
 
 			this.setLoading(true);
 			await this.$axios.$put(`worksheet-blocks/${ this.block.id }`, this.block);

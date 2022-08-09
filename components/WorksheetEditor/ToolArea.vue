@@ -2,9 +2,7 @@
 	<div
 		class="cell"
 		v-on="listeners"
-		@click.self="$emit('edit')"
 	>
-
 		<div
 			class="buttons-group buttons-x buttons-left"
 			:class="{

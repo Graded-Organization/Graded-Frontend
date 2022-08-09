@@ -52,13 +52,14 @@
 
 <script>
 	import BlockMixin from './tool.mixin.js';
+	import Vue from 'vue';
 
 	export default {
 		mixins: [ BlockMixin ],
 		data: () => ({}),
 		mounted() {
 
-			console.log(this.block?.content?.options);
+			console.log('Mounting again');
 
 			if(!this.block?.content?.options) {
 				this.block.content.options = [
@@ -76,10 +77,14 @@
 		methods: {
 			addOption() {
 
-				this.block.content.options.push({
+				console.log('WAX');
+
+				Vue.set(this.block.content.options, this.block.content.options.length, {
 					text: '',
 					correct: false
 				});
+
+				this.$forceUpdate();
 			},
 			removeOption(i) {
 
@@ -112,6 +117,11 @@
 
 				flex: 1;
 				margin-right: @margin-default;
+
+				/deep/ .contenteditable {
+
+					word-break: break-all !important;
+				}
 			}
 
 			&.option-add {

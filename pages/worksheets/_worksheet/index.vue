@@ -58,11 +58,11 @@
 		},
 		computed: {
 			worksheetName: {
-				get() { return this.worksheet.name; },
+				get() { return this.worksheet.name || 'Untitled Worksheet'; },
 				set(val) { this.$store.commit('worksheet/updateName', val); }
 			},
 			worksheetDescription: {
-				get() { return this.worksheet.description || 'No description'; },
+				get() { return this.worksheet.description || 'Set a description for your worksheet'; },
 				set(val) { this.$store.commit('worksheet/updateDescription', val); }
 			},
 			worksheetContent: {
