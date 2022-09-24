@@ -35,6 +35,11 @@
 						title: 'Plain Text',
 						slug: 'plain-text',
 						icon: ['fal', 'fa-align-justify']
+					},
+					{
+						title: 'Image',
+						slug: 'image',
+						icon: ['fal', 'fa-image']
 					}
 				]
 			}

@@ -7,7 +7,7 @@
 			<a href="#" class="button button-small" @click.prevent="close"><i class="fa fa-fw fa-times" /></a>
 		</div>
 
-		<div class="m-default">
+		<div class="drawer-content">
 			<slot></slot>
 		</div>
 
@@ -47,6 +47,13 @@
 		transition: right 150ms;
 		width: 350px;
 		right: -350px !important;
+
+		.component-actions {
+
+			position: sticky;
+			float: right;
+			z-index: 101;
+		}
 
 		&.is-visible {
 

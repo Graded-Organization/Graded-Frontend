@@ -1,12 +1,18 @@
 <template>
 	<div class="unsplash-search">
-		<form-group label="Search any keyword">
-			<input
-				v-model="searchTerm"
-				@input="debouncedOnChange"
-				type="text"
-				class="input-block form-control"
-			>
+		<form-group label="Search any keyword to get sweet images">
+			<div>
+				<input
+					v-model="searchTerm"
+					@input="debouncedOnChange"
+					type="text"
+					class="input-block form-control"
+					placeholder="Enter a search term"
+				>
+				<transition name="fade">
+					<a v-show="searchTerm" class="clear" @click.prevent="searchTerm = ''" href="#"><i class="fal fa-fw fa-times" /></a>
+				</transition>
+			</div>
 		</form-group>
 
 		<vue-masonry-wall v-if="searchResults" :options="{ padding: 7.5 }" :items="searchResults">
@@ -69,6 +75,19 @@
 </script>
 
 <style scoped lang="less">
+
+	.clear {
+
+		position: absolute;
+		top: 50%;
+		margin-top: -25/2px;
+		right: @margin-default;
+
+		&:hover {
+
+			color: @primary;
+		}
+	}
 
 	.result {
 

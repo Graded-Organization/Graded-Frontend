@@ -4,7 +4,6 @@
 			<div class="m-double">
 				<div class="inner boxfix-vert">
 					<div class="m-default">
-
 						<graded-content-editable
 							tag="h2"
 							v-model="worksheetName"
@@ -27,8 +26,6 @@
 							:classes="{ contenteditable: 'worksheet-description mb-default' }"
 						/>
 						<worksheet-editor
-							v-model="worksheetContent"
-							:tools="worksheet.blocks"
 							@tool-added="reFetch"
 						/>
 					</div>
@@ -40,6 +37,7 @@
 
 <script>
 	import Vue from 'vue';
+	import { mapGetters, mapActions } from 'vuex';
 	import DragSelect from 'dragselect';
 	import WorksheetMixin from '../worksheet.mixin.js';
 
@@ -71,11 +69,7 @@
 			}
 		},
 		methods: {
-			async reFetch() {
-
-				const worksheet = await this.$axios.$get(`/worksheets/${ this.$route.params.worksheet }?pdo[blocks]=getBlocks`);
-				this.setWorksheet(worksheet.data);
-			}
+			async reFetch() { await this.fetchWorksheet(this.$route.params.worksheet); }
 		}
 	}
 </script>

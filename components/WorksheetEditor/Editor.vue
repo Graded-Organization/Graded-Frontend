@@ -1,5 +1,6 @@
 <template>
 	<div class="editor" v-if="worksheet">
+
 		<div class="controls-colrow-wrapper">
 			<form-group class="controls-group controls controls-colrow">
 				<input v-model="columns" type="text" class="form-control">
@@ -15,13 +16,21 @@
 				@mouseleave="clearControl"
 			>
 				<div class="row-buttons">
-					<graded-button class="button-primary button-small button-pill" @click.prevent="addRow"><i class="fas fa-fw fa-plus" /></graded-button>
-					<graded-button class="button-primary button-small button-pill" @click.prevent="removeRow"><i class="fas fa-fw fa-minus" /></graded-button>
+					<graded-button class="button-primary button-small button-pill" @click.prevent="addRow">
+						<i class="fas fa-fw fa-plus" />
+					</graded-button>
+					<graded-button class="button-primary button-small button-pill" @click.prevent="removeRow">
+						<i class="fas fa-fw fa-minus" />
+					</graded-button>
 				</div>
 
 				<div class="col-buttons">
-					<graded-button class="button-primary button-small button-pill" @click.prevent="addCol"><i class="fas fa-fw fa-plus" /></graded-button>
-					<graded-button class="button-primary button-small button-pill" @click.prevent="removeCol"><i class="fas fa-fw fa-minus" /></graded-button>
+					<graded-button class="button-primary button-small button-pill" @click.prevent="addCol">
+						<i class="fas fa-fw fa-plus" />
+					</graded-button>
+					<graded-button class="button-primary button-small button-pill" @click.prevent="removeCol">
+						<i class="fas fa-fw fa-minus" />
+					</graded-button>
 				</div>
 
 				<div
@@ -69,7 +78,7 @@
 					</template>
 
 					<worksheet-editor-tool-area
-						v-for="cell in Object.values(assignedAreas).filter((v, i, a) => a.indexOf(v) === i)"
+						v-for="cell in areasList"
 						class="tool-area"
 						:class="cell"
 						:id="cell"
@@ -96,18 +105,16 @@
 			</div>
 		</div>
 
-		<!--<div class="form-group text-right">
-			<graded-button class="button-primary" @click.prevent="setArea">Set Area</graded-button>
-		</div>-->
-
 		<worksheet-editor-drawer
 			:show="showDrawer"
 			@close="closeDrawer"
 		>
 			<worksheet-editor-tool-area-editor
-				v-if="drawerState == 'styles'"
+				v-if="drawerState == 'toolEditor'"
 				:key="toolAreaUpdate"
 				:tool-area="currentToolArea"
+				:value="currentToolAreaStyles"
+				:block="styledTools.find(t => t.area == currentToolArea)"
 				@input="setToolAreaStyle"
 			/>
 
@@ -115,7 +122,6 @@
 				v-if="drawerState == 'selectTool'"
 				@selected-tool="addTool"
 			/>
-
 		</worksheet-editor-drawer>
 	</div>
 </template>
@@ -126,32 +132,14 @@
 	import { cloneDeep, tap, set } from 'lodash';
 	import Hashids from 'hashids';
 
+	import { mapGetters, mapActions } from 'vuex';
+
 	const hashids = new Hashids();
 
 	export default {
 		name: 'WorkSheetEditor',
-		props: {
-			value: {
-				type: Object,
-				default() {
-					return {
-						rows: 6,
-						columns: 6,
-						assignedAreas: {},
-						toolAreas: {}
-					}
-				}
-			},
-			tools: {
-				type: Array,
-				default() {
-					return [];
-				}
-			}
-		},
 		data: () => ({
 			ds: null,
-			worksheet: null,
 
 			// Control vars
 			updateAreas: 0,
@@ -166,7 +154,6 @@
 			cellToAddTool: null,
 
 			toolAreas: {},
-			assignedAreas: {},
 
 			// Control
 			hoveredCell: [-1, -1]
@@ -177,14 +164,15 @@
 			},
 			assignedAreas: {
 				handler(n, o) {
-					Vue.set(this.worksheet, 'assignedAreas', n);
+					this.setAssignedAreas(n);
 				},
 				deep: true
 			},
 			toolAreas: {
 				handler(n, o) {
-					console.log('Updating toolAreas');
-					Vue.set(this.worksheet, 'toolAreas', n);
+					//Vue.set(this.worksheet, 'toolAreas', n);
+					console.log('watch toolAreas', n);
+					this.setToolAreas(n);
 					this.$emit('input', this.worksheet);
 				},
 				deep: true
@@ -193,10 +181,8 @@
 		mounted() {
 
 			const obj = this;
-			this.worksheet = this.$shallow(this.value);
 
-			Vue.set(this, 'assignedAreas', this.worksheet.assignedAreas);
-			Vue.set(this, 'toolAreas', this.worksheet.toolAreas);
+			this.toolAreas = this.worksheet.content.toolAreas;
 
 			this.updateAreas = Object.values(this.assignedAreas).length + 1;
 
@@ -205,6 +191,33 @@
 			}, 100);
 		},
 		computed: {
+			...mapGetters({
+				worksheet: 'worksheet/worksheet',
+				currentBlock: 'worksheet/currentBlock',
+				currentBlockArea: 'worksheet/currentBlockArea',
+				assignedAreas: 'worksheet/assignedAreas',
+				blocks: 'worksheet/blocks',
+				areas: 'worksheet/areas',
+				areasList: 'worksheet/areasList',
+				rows: 'worksheet/rows',
+				columns: 'worksheet/columns',
+			}),
+			styledTools() {
+
+				let styledTools = this.$shallow(this.worksheet.blocks);
+
+				for(const a in styledTools) {
+
+					if(typeof this.toolAreas[styledTools[a].area] !== 'undefined') {
+						Vue.set(styledTools[a], 'styles', this.toolAreas[styledTools[a].area].styles);
+					}
+				}
+
+				return styledTools;
+			},
+			currentToolAreaStyles() {
+				return this.toolAreas[this.currentToolArea]?.styles;
+			},
 			hoveredArea() {
 
 				if(this.hoveredCell[0] != -1 && this.hoveredCell[1] != -1) {
@@ -216,30 +229,6 @@
 				}
 
 				return null;
-			},
-			areas() {
-
-				let cells = [];
-
-				for(var i = 0; i < this.rows; i++) {
-
-					cells[i] = [];
-
-					for(var j = 0; j < this.columns; j++) {
-
-						let areaName = `area${ j }-${ i }`;
-
-						if(typeof this.assignedAreas[areaName] !== 'undefined') {
-
-							Vue.set(cells[i], j, this.assignedAreas[areaName]);
-						} else {
-
-							Vue.set(cells[i], j, areaName);
-						}
-
-					}
-				}
-				return cells;
 			},
 			cssAreas() {
 
@@ -287,28 +276,26 @@
 					'grid-template-rows': rows.join(' ')
 				}
 			},
-			rows: {
-				get() { return this.worksheet.rows; },
-				set(v) {
-					Vue.set(this.worksheet, 'rows', v);
-					this.$emit('input', this.worksheet);
-				}
-			},
-			columns: {
-				get() { return this.worksheet.columns; },
-				set(v) {
-					Vue.set(this.worksheet, 'columns', v);
-					this.$emit('input', this.worksheet);
-				}
-			}
 		},
 		methods: {
+			...mapActions({
+				setCurrentBlockArea: 'worksheet/setCurrentBlockArea',
+				setAssignedAreas: 'worksheet/setAssignedAreas',
+				setAssignedArea: 'worksheet/setAssignedArea',
+				deleteArea: 'worksheet/deleteArea',
+				setRows: 'worksheet/setRows',
+				setColumns: 'worksheet/setColumns',
+				setToolAreas: 'worksheet/setToolAreas'
+			}),
 			getToolByArea(cell) {
-				return this.tools?.find(t => t.area == cell);
+
+				return this.blocks?.find(t => t.area == cell);
 			},
 			closeDrawer() {
 				this.currentToolArea = null;
 				this.showDrawer = false;
+				this.setCurrentBlockArea('');
+
 				setTimeout(function() { this.drawerState = null; }.bind(this), 150);
 			},
 			dragInit() {
@@ -372,8 +359,8 @@
 					}
 				}
 
-				this.columns++;
-				this.columns--;
+				//this.setColumns(this.columns+1);
+				//this.setColumns(this.columns-1);
 			},
 			contract(area, dir, info) {
 
@@ -386,7 +373,7 @@
 
 					for(var row = 0; row < this.rows; row++) {
 						if(typeof this.assignedAreas[`area${colToRemove}-${row}`] !== 'undefined' && this.assignedAreas[`area${colToRemove}-${row}`] == area) {
-							Vue.delete(this.assignedAreas, `area${colToRemove}-${row}`);
+							this.deleteArea(`area${colToRemove}-${row}`);
 						}
 					}
 				}
@@ -397,7 +384,7 @@
 
 					for(var row = 0; row < this.rows; row++) {
 						if(typeof this.assignedAreas[`area${colToRemove}-${row}`] !== 'undefined' && this.assignedAreas[`area${colToRemove}-${row}`] == area) {
-							Vue.delete(this.assignedAreas, `area${colToRemove}-${row}`);
+							this.deleteArea(`area${colToRemove}-${row}`);
 						}
 					}
 				}
@@ -408,7 +395,7 @@
 
 					for(var col = 0; col < this.columns; col++) {
 						if(typeof this.assignedAreas[`area${col}-${rowToRemove}`] !== 'undefined' && this.assignedAreas[`area${col}-${rowToRemove}`] == area) {
-							Vue.delete(this.assignedAreas, `area${col}-${rowToRemove}`);
+							this.deleteArea(`area${col}-${rowToRemove}`);
 						}
 					}
 				}
@@ -419,13 +406,13 @@
 
 					for(var col = 0; col < this.columns; col++) {
 						if(typeof this.assignedAreas[`area${col}-${rowToRemove}`] !== 'undefined' && this.assignedAreas[`area${col}-${rowToRemove}`] == area) {
-							Vue.delete(this.assignedAreas, `area${col}-${rowToRemove}`);
+							this.deleteArea(`area${col}-${rowToRemove}`);
 						}
 					}
 				}
 
-				this.columns++;
-				this.columns--;
+				//this.setColumns(this.columns+1);
+				//this.setColumns(this.columns-1);
 			},
 			getAreaSize(area) {
 
@@ -471,9 +458,9 @@
 
 				let styles = { 'grid-area': area };
 
-				if(typeof this.toolAreas[area] !== 'undefined') {
+				if(typeof this.worksheet.content?.toolAreas[area] !== 'undefined') {
 
-					styles = {...styles, ...(this.toolAreas[area]?.styles || {})};
+					styles = {...styles, ...(this.worksheet.content.toolAreas[area]?.styles || {})};
 				}
 
 				return styles;
@@ -522,17 +509,22 @@
 			fillColArea(area, col, zone) {
 				/*for(var i = zone[0]; i <= zone[1]; i++) {
 					Vue.set(this.assignedAreas, `area${col}-${i}`, area);
+					this.setAssignedArea({ name: `area${col}-${i}`, value: area });
 				}*/
 				let adjacent = this.getAdjacentCol(col, zone, area);
 
 				for(var row = 0; row < this.rows; row++) {
 					if(typeof this.assignedAreas[`area${col}-${row}`] !== 'undefined' && adjacent.includes(this.assignedAreas[`area${col}-${row}`])) {
-						Vue.delete(this.assignedAreas, `area${col}-${row}`);
+						this.deleteArea(`area${col}-${row}`);
 					}
 				}
 
 				for(var i = zone[0]; i <= zone[1]; i++) {
-					Vue.set(this.assignedAreas, `area${col}-${i}`, area);
+					this.setAssignedArea({
+						name: `area${col}-${i}`,
+						value: area
+					});
+					//Vue.set(this.assignedAreas, `area${col}-${i}`, area);
 				}
 			},
 			getAdjacentRow(row, zone, area) {
@@ -581,12 +573,18 @@
 
 				for(var col = 0; col < this.columns; col++) {
 					if(typeof this.assignedAreas[`area${col}-${row}`] !== 'undefined' && adjacent.includes(this.assignedAreas[`area${col}-${row}`])) {
-						Vue.delete(this.assignedAreas, `area${col}-${row}`);
+						this.deleteArea(`area${col}-${row}`);
 					}
 				}
 
 				for(var i = zone[0]; i <= zone[1]; i++) {
-					Vue.set(this.assignedAreas, `area${i}-${row}`, area);
+
+					this.setAssignedArea({
+						name: `area${i}-${row}`,
+						value: area
+					});
+
+					//Vue.set(this.assignedAreas, `area${i}-${row}`, area);
 				}
 			},
 			resize() { console.log('Resize end', this.hoveredCell); },
@@ -661,23 +659,31 @@
 
 				return cells;
 			},
+			getSelectedBlock(area) {
+				return this.styledTools.find(t => t.area == area);
+			},
 			editToolArea(area) {
 
 				this.currentToolArea = null;
 				this.currentToolArea = area;
+
+				this.setCurrentBlockArea(area);
+
+				console.log('editToolArea', area);
 
 				if(typeof this.toolAreas[area] === 'undefined') {
 					Vue.set(this.toolAreas, area, {});
 				}
 
 				this.showDrawer = true;
-				this.drawerState = 'styles';
+				this.drawerState = 'toolEditor';
 				this.toolAreaUpdate++;
 			},
 			removeArea(cell) {
 
 				for(const i in this.assignedAreas) {
 					if(this.assignedAreas[i] == cell) {
+						this.deleteArea(i);
 						delete this.assignedAreas[i];
 					}
 				}
@@ -687,8 +693,8 @@
 				this.currentToolArea = null;
 				this.showDrawer = false;
 
-				this.columns++;
-				this.columns--;
+				//this.setColumns(this.columns+1);
+				//this.setColumns(this.columns-1);
 			},
 			selectLayer(cell) {
 				let cellType = this.isOverlaping(cell) ? 'Overlapping' : 'Free';
@@ -717,11 +723,11 @@
 				}, 100);
 			},
 			addCol() {
-				this.columns++;
+				this.setColumns(this.columns+1);
 				this.reset();
 			},
 			addRow() {
-				this.rows++;
+				this.setRows(this.rows+1);
 				this.reset();
 			},
 			removeCol() {
@@ -748,7 +754,7 @@
 					}
 				}
 
-				if(this.columns > 6) this.columns--;
+				if(this.columns > 6) this.setColumns(this.columns-1);
 				this.reset();
 			},
 			removeRow() {
@@ -775,7 +781,7 @@
 				}
 
 
-				if(this.rows > 6) this.rows--;
+				if(this.rows > 6) this.setRows(this.rows-1);
 				this.reset();
 			},
 			selectionOcurred(cObj) {
@@ -811,13 +817,15 @@
 
 				for(const s in this.selectedItems) {
 
-					console.log(this.assignedAreas, this.selectedItems[s], this.newAreaName || `tool-area-${ hashids.encode(timestamp) }`);
-					Vue.set(this.assignedAreas, this.selectedItems[s], this.newAreaName || `tool-area-${ hashids.encode(timestamp) }`);
+					this.setAssignedArea({
+						name: this.selectedItems[s],
+						value: this.newAreaName || `tool-area-${ hashids.encode(timestamp) }`
+					});
 				}
 
 				this.ds.clearSelection();
-				this.columns++;
-				this.columns--;
+				//this.setColumns(this.columns+1);
+				//this.setColumns(this.columns-1);
 
 				Vue.set(this, 'selectedItems', []);
 				this.newAreaName = '';
@@ -827,19 +835,19 @@
 			},
 			selectTool(cell) {
 
-				console.log(cell);
 				this.cellToAddTool = cell;
 
 				this.showDrawer = true;
 				this.drawerState = 'selectTool';
 			},
 			setToolAreaStyle(styles) {
-				if(this.currentToolArea) {
-					Vue.set(this.toolAreas[this.currentToolArea], 'styles', styles);
+
+				if(this.currentBlockArea) {
+
+					Vue.set(this.toolAreas[this.currentBlockArea], 'styles', styles);
 				}
 			},
 			async addTool(tool) {
-				console.log('TOOL', tool, this.cellToAddTool);
 
 				const block = await this.$axios.$post('worksheet-blocks', {
 					id_worksheet: this.$route.params.worksheet,
@@ -847,6 +855,7 @@
 					area: this.cellToAddTool
 				});
 
+				this.editToolArea(this.cellToAddTool);
 				this.$emit('tool-added', block.data);
 			}
 		}

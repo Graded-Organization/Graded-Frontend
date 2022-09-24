@@ -6,6 +6,11 @@ import Vue from 'vue';
 import Vuelidate from 'vuelidate';
 Vue.use(Vuelidate);
 
+import {ColorPicker, ColorPanel} from 'one-colorpicker';
+
+Vue.use(ColorPanel);
+Vue.use(ColorPicker);
+
 
 /* Other Stuff */
 /* ---------------------------------------------------------------------------------------------- */

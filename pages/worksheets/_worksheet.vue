@@ -42,11 +42,7 @@
 		data: () => ({}),
 		methods: {},
 		async fetch() {
-
-			const obj = this;
-
-			const worksheet = await this.$axios.$get(`/worksheets/${ this.$route.params.worksheet }?pdo[blocks]=getBlocks`);
-			this.setWorksheet(worksheet.data);
+			await this.fetchWorksheet(this.$route.params.worksheet);
 		}
 	}
 </script>
@@ -71,6 +67,7 @@
 		height: 100%;
 		display: flex;
 		align-items: flex-end;
+		margin-top: 20px;
 
 		.menu-item {
 

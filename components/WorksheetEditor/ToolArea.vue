@@ -120,7 +120,7 @@
 				type="button"
 				@click="$emit('add-tool')"
 				class="button-add-tool button button-small button-ghost-primary"
-			><i class="fal fa-fw fa-plus"></i></button>
+			><i class="fal fa-fw fa-plus" /></button>
 		</slot>
 	</div>
 </template>

@@ -22,18 +22,35 @@ export default {
 	}),
 	mounted() { this.block = this.$shallow(this.value); },
 	computed: {
-		...mapGetters({ worksheet: 'worksheet/worksheet', loading: 'worksheet/loading' })
+		...mapGetters({
+			worksheet: 'worksheet/worksheet',
+			loading: 'worksheet/loading',
+			currentBlock: 'worksheet/currentBlock',
+			currentBlockArea: 'worksheet/currentBlockArea',
+		}),
+		contrastColor() {
+			if(this.value.styles?.backgroundColor) {
+				return this.$contrastColor(this.value.styles?.backgroundColor);
+			}
+
+			return '';
+		},
+		isCurrentBlock() {
+
+			return this.block?.id == this.currentBlock?.id;
+		}
 	},
 	methods: {
 		...mapActions({
 			setLoading: 'worksheet/setLoading',
+			updateBlock: 'worksheet/updateBlock'
 		}),
 		async save() {
 
-			console.log('WAX');
-
 			this.setLoading(true);
 			await this.$axios.$put(`worksheet-blocks/${ this.block.id }`, this.block);
+			this.updateBlock(this.$shallow(this.block));
+
 			this.setLoading(false);
 		}
 	},

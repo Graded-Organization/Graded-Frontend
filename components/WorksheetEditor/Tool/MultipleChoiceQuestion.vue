@@ -1,5 +1,5 @@
 <template>
-	<div class="block-tool-wrapper" v-if="block" :key="blockUpdateKey">
+	<div class="block-tool-wrapper" v-if="block">
 
 		<p class="block-type">Multiple Choice Question</p>
 		<graded-content-editable
@@ -13,15 +13,16 @@
 			<a href="#" v-show="!slotProps.isEditable"><i class="fa fa-fw fa-pencil" /></a>
 		</graded-content-editable>
 
-
 		<div class="options">
 			<div
 				v-for="(option, i) in block.content.options"
 				class="option"
 			>
 				<input
-					type="checkbox"
-					v-model="block.content.options[i].correct"
+					:type="block.content.type"
+					name="block-tool-inputs"
+					@input="setOptionCorrect(i, $event.target.checked)"
+					:checked="block.content.options[i].correct"
 				>
 
 				<graded-content-editable
@@ -47,6 +48,28 @@
 				</a>
 			</div>
 		</div>
+
+		<portal v-if="isCurrentBlock" to="tool-area-editor">
+
+			<worksheet-editor-drawer-block title="Tool Options">
+
+				<form-group label="Question Type">
+					<select class="input input-block form-control" v-model="block.content.type">
+						<option value="radio">One answer</option>
+						<option value="checkbox">Multiple Answers</option>
+					</select>
+				</form-group>
+			</worksheet-editor-drawer-block>
+
+			<worksheet-editor-drawer-block title="Grading">
+
+				<toggle-switch
+					v-model="block.content.grading.active"
+					label="Question is part of grading"
+					off-label="Question is not part of grading"
+				/>
+			</worksheet-editor-drawer-block>
+		</portal>
 	</div>
 </template>
 
@@ -57,9 +80,26 @@
 	export default {
 		mixins: [ BlockMixin ],
 		data: () => ({}),
+		watch: {
+			'block.content.type'(n, o) {
+				if(n == 'radio') {
+					for(const o in this.block.content.options) {
+						Vue.set(this.block.content.options[o], 'correct', false);
+
+						if(o == 0) Vue.set(this.block.content.options[o], 'correct', true);
+					}
+				}
+			}
+		},
 		mounted() {
 
-			console.log('Mounting again');
+			if(!this.block?.content?.type) {
+				this.block.content.type = 'checkbox';
+			}
+
+			if(!this.block?.content?.grading) {
+				Vue.set(this.block.content, 'grading', { active: false });
+			}
 
 			if(!this.block?.content?.options) {
 				this.block.content.options = [
@@ -77,18 +117,25 @@
 		methods: {
 			addOption() {
 
-				console.log('WAX');
-
 				Vue.set(this.block.content.options, this.block.content.options.length, {
 					text: '',
 					correct: false
 				});
-
-				this.$forceUpdate();
 			},
 			removeOption(i) {
 
 				this.block.content.options.splice(i, 1);
+			},
+			setOptionCorrect(index, val) {
+
+				if(this.block.content.type == 'radio') {
+					for(const o in this.block.content.options) {
+						Vue.set(this.block.content.options[o], 'correct', false);
+					}
+				}
+
+
+				Vue.set(this.block.content.options[index], 'correct', val);
 			}
 		}
 	}
