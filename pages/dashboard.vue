@@ -26,6 +26,12 @@
 							<nuxt-link tag="div" :to="`/worksheets/${ worksheet.id }`" class="card-wrapper">
 								<h3 class="card-title">{{ worksheet.name }}</h3>
 							</nuxt-link>
+
+							<div class="worksheet-actions">
+								<a href="#" @click.prevent="showDeleteWorksheet(worksheet.id)" class="button button-small button-danger">
+									<i class="fal fa-fw fa-times" />
+								</a>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -33,7 +39,11 @@
 
 		</div>
 
-		<modal name="new-folder" height="auto">
+		<graded-modal
+			v-model="newFolderModal"
+			name="new-folder"
+			:show-close="false"
+		>
 			<div class="new-folder">
 				<div class="the-content">
 					<h2>New folder</h2>
@@ -45,11 +55,28 @@
 				</form-group>
 
 				<p class="text-right">
-					<a href="#" @click.prevent="hideNewFolder" class="button button-ghost-gray">Cancel</a>
+					<a href="#" @click.prevent="close" class="button button-ghost-gray">Cancel</a>
 					<a href="#" class="button button-primary">Create</a>
 				</p>
 			</div>
-		</modal>
+		</graded-modal>
+
+		<graded-modal
+			v-model="deleteModal"
+			name="delete-worksheet"
+			title="Are you sure you want to delete this worksheet?"
+			:show-close="false"
+		>
+			<template v-slot="{ params, close }">
+				<div class="delete-worksheet">
+
+					<p class="text-right">
+						<a href="#" @click.prevent="close" class="button button-ghost-gray">Nevermind</a>
+						<a href="#" @click.prevent="deleteWorkSheet(params.id)" class="button button-primary">Yes, delete worksheet</a>
+					</p>
+				</div>
+			</template>
+		</graded-modal>
 	</div>
 </template>
 
@@ -61,13 +88,18 @@
 		mounted() {},
 		data: () => ({
 			worksheets: [],
+			newFolderModal: false,
+			deleteModal: false
 		}),
 		methods: {
-			newFolder() {
-				this.$modal.show('new-folder');
-			},
-			hideNewFolder() {
-				this.$modal.hide('new-folder');
+			newFolder() { this.$vfm.show('new-folder'); },
+			showDeleteWorksheet(id) { this.$vfm.show('delete-worksheet', { id: id }); },
+			async deleteWorkSheet(id) {
+
+				const worksheet = await this.$axios.$delete(`/users/me/worksheets/${id}`);
+				const worksheets = await this.$axios.$get('/users/me/worksheets');
+				this.deleteModal = false;
+				this.worksheets = worksheets.data;
 			},
 			async newWorksheet() {
 
@@ -123,6 +155,24 @@
 			}
 		}
 
+		.worksheet-actions {
+
+			opacity: 0;
+			transition: opacity 500ms;
+			position: absolute;
+			right: 0;
+			bottom: 0;
+			padding: @margin-double;
+		}
+
+		&:hover {
+
+			.worksheet-actions {
+
+				opacity: 1;
+			}
+		}
+
 		&.worksheet-add {
 
 			border-style: dashed;
@@ -167,7 +217,6 @@
 
 	.new-folder {
 
-		padding: @margin-double;
 
 		.the-content {
 

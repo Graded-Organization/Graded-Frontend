@@ -1,7 +1,7 @@
 <template>
 	<div class="block-tool-wrapper" v-if="block">
 
-		<p :class="contrastColor" class="block-type">Plain Text</p>
+		<p :class="contrastColor" class="block-type">Short Text input</p>
 		<graded-content-editable
 			tag="h2"
 			v-model="block.name"
@@ -13,17 +13,9 @@
 			<a href="#" v-show="!slotProps.isEditable"><i class="fa fa-fw fa-pencil" /></a>
 		</graded-content-editable>
 
-		<graded-content-editable
-			tag="p"
-			class="mb-double"
-			:noNL="false"
-			v-model="block.content.text"
-			default-text="Set a text for this block"
-		/>
-
-		<!--<div class="message message-alert" v-if="$contrast(value.styles.color, value.styles.backgroundColor) < 4.5">
-			<p>The contrast between your text color and background color is off. We recomend you improve the contrast for readability.</p>
-		</div>-->
+		<form-group>
+			<input readonly type="text" class="input-block form-control" placeholder="Enter your answer here">
+		</form-group>
 
 		<portal v-if="isCurrentBlock" to="tool-area-editor">
 		</portal>
@@ -36,10 +28,6 @@
 	export default {
 		mixins: [ BlockMixin ],
 		mounted() {
-
-			if(!this.block?.content?.text) {
-				this.block.content.text = '';
-			}
 		},
 	}
 </script>

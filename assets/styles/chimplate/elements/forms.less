@@ -96,6 +96,8 @@
 
 	&.has-error .form-control { border-color: var(--danger); }
 	&.has-success .form-control { border-color: var(--success); }
+
+	&.is-inline { display: inline-block !important; }
 }
 
 .form-check {
@@ -193,6 +195,8 @@
 		margin-bottom: auto;
 	}
 
+	&.is-inline { display: inline-flex !important; }
+
 	span.group-label {
 
 		.comb;
@@ -201,10 +205,18 @@
 		text-align: center;
 		flex: 0;
 
+		border-left-color: transparent;
+		border-right-color: transparent;
+
 		&.group-label-large { .comb-large; }
 		&.group-label-medium { .comb-medium; }
 		&.group-label-small { .comb-small; }
 		&.group-label-xsmall { .comb-xsmall; }
+
+		&:last-child {
+
+			border-right-color: var(--border-2);
+		}
 	}
 
 	& > * {

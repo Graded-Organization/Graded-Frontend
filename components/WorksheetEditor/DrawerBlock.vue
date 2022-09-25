@@ -58,6 +58,7 @@
 			padding: @margin-half !important;
 			border-bottom: 1px solid @gray-1;
 			cursor: pointer;
+			overflow: hidden;
 
 			.toggle-icon {
 

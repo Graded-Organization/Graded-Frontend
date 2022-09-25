@@ -121,6 +121,8 @@
 					text: '',
 					correct: false
 				});
+
+				this.$forceUpdate();
 			},
 			removeOption(i) {
 

@@ -18,7 +18,12 @@
 		<vue-masonry-wall v-if="searchResults" :options="{ padding: 7.5 }" :items="searchResults">
 			<template v-slot:default="{ item }">
 				<div class="result">
-					<img @click="returnImage(item.urls.regular)" :src="item.urls.regular" :alt="item.alt_description">
+					<img
+						@click="returnImage(item.urls.regular)"
+						:src="item.urls.regular"
+						:alt="item.alt_description"
+						loading="lazy"
+					>
 					<p>{{ item.alt_description || 'No description 🙈' }}</p>
 				</div>
 			</template>

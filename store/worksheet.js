@@ -6,10 +6,15 @@ export const state = () => ({
 	currentBlock: null,
 	currentBlockArea: '',
 	toolAreas: {},
+	blocks: null,
 });
 
 export const mutations = {
-	setWorksheet(state, worksheet) { Vue.set(state, 'worksheet', worksheet); },
+	setWorksheet(state, worksheet) {
+
+		Vue.set(state, 'worksheet', worksheet);
+		Vue .set(state, 'blocks', this.$shallow(worksheet.blocks));
+	},
 	updateName(state, name) { Vue.set(state.worksheet, 'name', name); },
 	updateDescription(state, description) { Vue.set(state.worksheet, 'description', description); },
 	updateContent(state, content) { Vue.set(state.worksheet, 'content', content); },
@@ -17,6 +22,7 @@ export const mutations = {
 	addBlock(state, block) { state.blocks.push(block); },
 
 	setWorksheetProp(state, prop) { Vue.set(state.worksheet.content, prop.name, prop.value); },
+	setWorksheetGradingProp(state, prop) { Vue.set(state.worksheet.content.grading, prop.name, prop.value); },
 
 	setRows(state, rows) { Vue.set(state.worksheet.content, 'rows', rows); },
 	setColumns(state, columns) { Vue.set(state.worksheet.content, 'columns', columns); },
@@ -35,14 +41,15 @@ export const mutations = {
 
 	updateBlock(state, block) {
 
-		let blockIndex = state.worksheet.blocks.findIndex(b => b.id == block.id);
-		Vue.set(state.worksheet.blocks, blockIndex, block);
+		let blockIndex = state.blocks.findIndex(b => b.id == block.id);
+		Vue.set(state.blocks, blockIndex, block);
 	}
 }
 
 export const actions = {
 	setWorksheet({ commit }, payload) { commit('setWorksheet', payload); },
 	setWorksheetProp({ commit }, payload) { commit('setWorksheetProp', payload); },
+	setWorksheetGradingProp({ commit }, payload) { commit('setWorksheetGradingProp', payload); },
 	updateContent({ commit }, payload) { commit('updateContent', payload); },
 	setLoading({ commit }, payload) { commit('setLoading', payload); },
 	addBlock({ commit }, payload) { commit('addBlock', payload); },
@@ -119,7 +126,7 @@ export const getters = {
 
 	blocks: (state, getters) => {
 
-		let styledTools = $nuxt.$shallow(state.worksheet.blocks);
+		let styledTools = $nuxt.$shallow(state.blocks);
 
 		for(const a in styledTools) {
 

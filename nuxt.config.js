@@ -73,6 +73,7 @@ export default {
 	// Modules: https://go.nuxtjs.dev/config-modules
 	modules: [
 		// https://go.nuxtjs.dev/axios
+		'nuxt-clipboard',
 		'@nuxtjs/axios',
 		'@nuxtjs/auth-next',
 		'@nuxtjs/i18n',

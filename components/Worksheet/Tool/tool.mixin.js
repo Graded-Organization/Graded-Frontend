@@ -1,30 +1,48 @@
 import { mapGetters, mapActions } from 'vuex';
+import Vue from 'vue';
 
 export default {
-	watch: {
-		block: {
-			handler(n, o) {
-
-				if(!o) return;
-
-				this.blockUpdateKey = Math.floor(Date.now() / 1000);
-				this.save();
-			},
-			deep: true
-		}
-	},
 	props: {
 		value: {
 			type: Object,
 			required: true,
-			source: null
+		},
+		respondedAnswer: {
+			type: Object,
+			default: null
 		}
 	},
 	data: () => ({
+		source: null,
 		block: null,
-		blockUpdateKey: 0
+		blockUpdateKey: 0,
+		answer: null
 	}),
-	mounted() { this.block = this.$shallow(this.value); },
+	watch: {
+		respondedAnswer: {
+			handler(n, o) {
+				console.log('Getting responded answers', n, o);
+				if(this.respondedAnswer?.answer) Vue.set(this, 'answer', this.respondedAnswer.answer);
+			},
+			deep: true
+		},
+		answer(n, o) {
+
+			console.log('UPDATING value', n, o);
+
+			if(JSON.stringify(n) != JSON.stringify(o)) {
+
+				this.$emit('response', {
+
+					id: this.block.id,
+					answer: n
+				});
+			}
+		}
+	},
+	mounted() {
+		this.block = this.$shallow(this.value);
+	},
 	computed: {
 		...mapGetters({
 			worksheet: 'worksheet/worksheet',
@@ -49,18 +67,5 @@ export default {
 			setLoading: 'worksheet/setLoading',
 			updateBlock: 'worksheet/updateBlock'
 		}),
-		async save() {
-
-			if(!!this.source) this.source.cancel('User saved again');
-			this.source = this.$axios.CancelToken.source();
-
-			this.setLoading(true);
-			await this.$axios.$put(`worksheet-blocks/${ this.block.id }`, this.block, {
-				cancelToken: this.source.token
-			});
-			this.updateBlock(this.$shallow(this.block));
-
-			this.setLoading(false);
-		}
 	},
 }

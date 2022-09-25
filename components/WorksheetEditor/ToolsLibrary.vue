@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h2>Tools Library</h2>
+		<h2 class="drawer-title">Tools Library</h2>
 
 		<div class="tool-cards">
 			<div class="row row-collapse flexcol">
@@ -37,6 +37,11 @@
 						icon: ['fal', 'fa-align-justify']
 					},
 					{
+						title: 'Short Text Input',
+						slug: 'short-text-input',
+						icon: ['fal', 'fa-pencil']
+					},
+					{
 						title: 'Image',
 						slug: 'image',
 						icon: ['fal', 'fa-image']
@@ -53,6 +58,15 @@
 </script>
 
 <style lang="less" scoped>
+
+	.drawer-title {
+
+		position: sticky;
+		top: 0;
+		padding: @margin-default;
+		z-index: 100;
+		background: @gray-1 url('~/assets/images/template/topology.png') center center no-repeat;
+	}
 
 	.tool-cards {
 

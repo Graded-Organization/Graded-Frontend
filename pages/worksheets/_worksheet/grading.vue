@@ -3,28 +3,30 @@
 		<div class="inner boxfix-vert">
 			<div class="m-double">
 				<div class="grading-wrapper">
-					<div class="grading-content">
+					<div class="grading-content" v-if="worksheet">
 						<div class="the-content">
 							<h2>Question Weight</h2>
 							<p class="mb-double">Each question can contribute with a different weight towards the final grade. Edit below if you wish to attribute different weights to each question. The sum must always be 100%.</p>
 
-							<form-group class="text-right">
+							<form-group class="text-right" :class="{ 'has-error': grading.maxPoints != weightSum }">
 								<strong>Question weight sum</strong>
-								<input type="number" class="form-control form-control-small form-control-weight">
+								<input type="text" readonly :value="weightSum" class="form-control form-control-small form-control-weight">
 							</form-group>
 
 							<div class="questions">
 								<form-group
 									class="question"
-									v-for="block in blocks"
-									v-if="block.type == 'multiple-choice-question' && !!block.content.grading.active"
+									v-for="block in questionBlocks"
+									v-if="typeof grading.questionWeights[`block-${ block.id }`] !== 'undefined'"
+									:key="`block-${ block.id }-${ grading.questionWeights[`block-${ block.id }`]}`"
 								>
-									<input type="number" class="form-control form-control-small form-control-weight">
+
+									<number-input v-model="grading.questionWeights[`block-${ block.id }`]" class="controls are-small is-inline" />
 									<span>{{ block.name || 'Question with no name' }}</span>
 								</form-group>
 							</div>
 
-							<p class="text-right"><a href="#" class="button button-link">Reset Distribution</a></p>
+							<p class="text-right"><a href="#" @click.prevent="resetDistribution" class="button button-link">Reset Distribution</a></p>
 						</div>
 					</div>
 					<aside class="grading-sidebar">
@@ -80,7 +82,7 @@
 						</form-group>
 
 						<p class="text-right">
-							<a href="#" class="button button-link">Reset Grading</a>
+							<a href="#" @click.prevent="resetGrading" class="button button-link">Reset Grading</a>
 						</p>
 					</aside>
 				</div>
@@ -94,6 +96,16 @@
 	import { mapGetters, mapActions } from 'vuex';
 	import WorksheetMixin from '../worksheet.mixin.js';
 
+	const defaultGrading = {
+		maxPoints: 100,
+		minToPass: 75,
+		hideDecimals: false,
+		numberOfAttempts: 1,
+		showCorrectResponses: false,
+		minQuestionsBeforeSubmission: 0,
+		questionWeights: {}
+	};
+
 	export default {
 		name: 'WorkSheetPageGrading',
 		middleware: 'auth',
@@ -101,6 +113,9 @@
 		watch: {
 			grading: {
 				handler(n, o) {
+
+					console.log('We are entering!!!');
+
 					this.setWorksheetProp({name: 'grading', value: this.$shallow(n) });
 					this.save();
 				},
@@ -108,28 +123,70 @@
 			}
 		},
 		data: () => ({
-			grading: null,
+			grading: null
 		}),
 		mounted() {
 
-
-
 			if(!this.worksheet?.content?.grading) {
-				this.setWorksheetProp({name: 'grading', value: {
-					maxPoints: 100,
-					minToPass: 75,
-					hideDecimals: false,
-					numberOfAttempts: 1,
-					showCorrectResponses: false,
-					minQuestionsBeforeSubmission: 0
-				}});
+				this.setWorksheetProp({name: 'grading', value: defaultGrading});
 			}
+
+			this.setWorksheetProp({name: 'grading', value: {...this.worksheet?.content?.grading , ...defaultGrading}});
+
 			Vue.set(this, 'grading', this.$shallow(this.worksheet.content.grading));
+
+			this.setQuestionsWeight();
+		},
+		computed: {
+			questionBlocks() {
+				return this.blocks.filter(b => b.type == 'multiple-choice-question' && !!b.content.grading.active)
+			},
+			weightSum() {
+
+				let sum = 0;
+
+				let vals = Object.values(this.grading.questionWeights);
+
+				for(const q in vals) {
+					sum += vals[q];
+				}
+
+				return sum;
+			}
 		},
 		methods: {
 			...mapActions({
-				setWorksheetProp: 'worksheet/setWorksheetProp'
-			})
+				setWorksheetProp: 'worksheet/setWorksheetProp',
+				setWorksheetGradingProp: 'worksheet/setWorksheetGradingProp'
+			}),
+
+			setQuestionsWeight() {
+
+				let fractions = false;
+
+				for(const b in this.questionBlocks) {
+					var block = this.questionBlocks[b];
+
+					if(this.grading.maxPoints / Object.values(this.questionBlocks).length > Math.floor(this.grading.maxPoints / Object.values(this.questionBlocks).length)) fractions = true;
+
+					Vue.set(this.grading.questionWeights, `block-${block.id}`, Math.floor(this.grading.maxPoints / Object.values(this.questionBlocks).length));
+
+					console.log('b', b, b == this.questionBlocks.length-1);
+
+					if(b == this.questionBlocks.length-1) {
+						Vue.set(this.grading.questionWeights, `block-${block.id}`, Math.floor(this.grading.maxPoints / Object.values(this.questionBlocks).length) + (fractions ? 1 : 0));
+					}
+				}
+			},
+
+			resetDistribution() {
+				this.setQuestionsWeight();
+			},
+
+			resetGrading() {
+				Vue.set(this, 'grading', this.$shallow(defaultGrading));
+				this.setQuestionsWeight();
+			}
 		}
 	}
 </script>
@@ -168,6 +225,7 @@
 		.form-control-weight {
 
 			width: 50px;
+			text-align: center;
 		}
 
 		.question {

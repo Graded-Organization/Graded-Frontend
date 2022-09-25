@@ -11,6 +11,9 @@ import {ColorPicker, ColorPanel} from 'one-colorpicker';
 Vue.use(ColorPanel);
 Vue.use(ColorPicker);
 
+import { vfmPlugin } from 'vue-final-modal/lib';
+Vue.use(vfmPlugin);
+
 
 /* Other Stuff */
 /* ---------------------------------------------------------------------------------------------- */
@@ -33,5 +36,22 @@ Vue.use(Fragment.Plugin);
 import contenteditable from 'vue-contenteditable';
 Vue.use(contenteditable);
 
-import FloatingVue from 'floating-vue';
-Vue.use(FloatingVue);
+import {
+	// Directives
+	VTooltip,
+	VClosePopper,
+	// Components
+	Dropdown,
+	Tooltip,
+	hideAllPoppers,
+	Menu
+} from 'floating-vue';
+
+Vue.directive('tooltip', VTooltip);
+Vue.directive('close-popper', VClosePopper);
+
+Vue.component('v-dropdown', Dropdown);
+Vue.component('VTooltip', Tooltip);
+Vue.component('VMenu', Menu);
+
+import 'floating-vue/dist/style.css';

@@ -49,6 +49,12 @@
 		watch: {
 			worksheet: {
 				handler(n, o) {
+
+					console.log('Worksheet', n, o);
+
+					if(!o) return;
+
+					console.log('Calling worksheet save');
 					this.save();
 				},
 				deep: true

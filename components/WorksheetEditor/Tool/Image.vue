@@ -35,7 +35,7 @@
 		mounted() {
 
 			if(!this.block?.content?.image) {
-				Vue.set(this.block.content, 'image', {});
+				Vue.set(this.block.content, 'image', { url: '' });
 			}
 		},
 		methods: {

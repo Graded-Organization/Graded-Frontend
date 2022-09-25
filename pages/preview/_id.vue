@@ -1,49 +1,20 @@
 <template>
-	<div class="inner">
+	<div class="inner" v-if="worksheet">
 
-		<div class="grid-wrapper">
-			<div
-				class="grid-areas"
-			>
-				<div
-					class="grid-area grid-area-blocks"
-					:style="gridAreaStyle"
-				>
-					<div
-						v-for="cell in Object.values(assignedAreas).filter((v, i, a) => a.indexOf(v) === i)"
-						:class="cell"
-						:id="cell"
-						:key="cell"
-						:style="getToolAreaStyle(cell)"
-					>
-					</div>
-					<!-- <worksheet-editor-tool-area
-						v-for="cell in Object.values(assignedAreas).filter((v, i, a) => a.indexOf(v) === i)"
-						class="tool-area"
-						:class="cell"
-						:id="cell"
-						:key="cell"
-						:cells="getToolAreas(cell)"
-						@remove="removeArea(cell)"
-						@add-tool="selectTool(cell)"
-						@edit="editToolArea(cell)"
-						:style="getToolAreaStyle(cell)"
-						@resize-end="resize(cell)"
-						:max-cols="columns"
-						:max-rows="rows"
-					>
-						<template v-if="getToolByArea(cell)">
-						</template>
-					</worksheet-editor-tool-area> -->
-				</div>
+		<div class="inner boxfix-vert">
+			<div class="m-default">
+				<h2 class="worksheet-name-wrapper">{{ worksheetName }}</h2>
+				<p v-if="worksheetDescription" class="worksheet-description-wrapper">{{ worksheetDescription }}</p>
 			</div>
 		</div>
+
+		<worksheet />
 
 	</div>
 </template>
 
 <script>
-	import WorksheetMixin from '../../worksheet.mixin.js';
+	import WorksheetMixin from '../worksheets/worksheet.mixin.js';
 	import Vue from 'vue';
 
 	export default {
@@ -55,8 +26,8 @@
 		computed: {
 			assignedAreas() { return this.worksheet.content.assignedAreas; },
 			toolAreas() { return this.worksheet.content.toolAreas; },
-			rows() { return this.worksheet.content.rows; },
-			columns() { return this.worksheet.content.columns; },
+			worksheetName() {return this.worksheet.name || 'Untitled Worksheet'; },
+			worksheetDescription() { return this.worksheet.description },
 			areas() {
 
 				let cells = [];
@@ -125,6 +96,10 @@
 				return styles;
 			},
 		},
+		async fetch() {
+
+			await this.fetchWorksheet(this.$route.params.id);
+		}
 	}
 </script>
 

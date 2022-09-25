@@ -21,7 +21,7 @@
 
 			<portal to="user-portal">
 				<div class="preview-wrapper">
-					<a href="#" class="button button-small button-primary">Preview Worksheet</a>
+					<a :href="`/preview/${ worksheet.id }`" target="_blank" class="button button-small button-primary">Preview Worksheet</a>
 				</div>
 			</portal>
 

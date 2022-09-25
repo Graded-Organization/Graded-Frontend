@@ -2,6 +2,7 @@
 	<div
 		class="cell"
 		v-on="listeners"
+		@mouseleave="hideConfirm()"
 	>
 		<div
 			class="buttons-group buttons-x buttons-left"
@@ -106,13 +107,25 @@
 				<i class="fal fa-fw fa-cog" />
 			</button>
 
-			<button
-				type="button"
-				class="button button-xsmall button-danger button-remove"
-				@click="$emit('remove')"
-			>
-				<i class="fal fa-fw fa-times" />
-			</button>
+			<v-dropdown>
+				<button
+					type="button"
+					class="button button-xsmall button-danger button-remove"
+				>
+					<i class="fal fa-fw fa-times" />
+				</button>
+
+				<template #popper>
+					<div class="delete-confirm">
+						<h3>Are you sure you want to delete this block?</h3>
+						<div class="row">
+							<div class="col-6"><a href="#" @click.prevent="hideConfirm(true)" class="button button-block button-xsmall button-primary">No</a></div>
+							<div class="col-6"><a href="#" @click.prevent="$emit('remove')" class="button button-block button-xsmall button-danger">Yes</a></div>
+						</div>
+					</div>
+				</template>
+
+			</v-dropdown>
 		</div>
 
 		<slot>
@@ -126,6 +139,8 @@
 </template>
 
 <script>
+	import { hideAllPoppers } from 'floating-vue';
+
 	export default {
 		props: {
 			id: {
@@ -236,6 +251,11 @@
 			resizeEnd() {
 				console.log('resizeEnd');
 				this.$emit('resize-end');
+			},
+			hideConfirm(bypass = false) {
+				if(!document.querySelector('.v-popper__popper:hover') || bypass) {
+					hideAllPoppers();
+				}
 			}
 		}
 	}
@@ -243,11 +263,27 @@
 
 <style lang="less" scoped>
 
+	.delete-confirm {
+
+		padding: @margin-default;
+		max-width: 150px;
+		text-align: center;
+
+		h3 {
+
+			font-size: 0.8rem;
+			margin-bottom: @margin-half;
+		}
+	}
+
 	.component-actions {
 
 		padding-top: 30px;
 		padding-right: 35px;
 		z-index: 100;
+		white-space: nowrap;
+
+		& > div { display: inline-block; }
 
 		&.no-right {
 
@@ -389,7 +425,7 @@
 		margin: @margin-half;
 	}
 
-	.component-actions {
+	.component-actions > *:not(.v-popper--shown) {
 
 		transition: opacity 250ms;
 		opacity: 0;
@@ -411,7 +447,7 @@
 
 			z-index: 10;
 
-			.component-actions { opacity: 1; }
+			.component-actions > * { opacity: 1; }
 
 			.button-add { opacity: 1; }
 			.buttons-group { opacity: 1; }
