@@ -97,11 +97,12 @@ export default {
 	},
 
 	publicRuntimeConfig: {
-		apiUrl: process.env.API_URL || 'http://graded.test/back'
+		apiUrl: process.env.API_URL || 'http://graded.test/back',
+		baseUrl: process.env.BASE_URL || 'http://localhost:3000'
 	},
 
 	axios: {
-		baseURL: process.env.API_URL || 'http://graded.test/back'
+		baseUrl: process.env.API_URL || 'http://graded.test/back'
 	},
 
 	auth: {

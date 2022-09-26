@@ -13,7 +13,7 @@
 					<form-group>
 
 						<div class="input-block form-control">
-							<a @click.prevent="copy(`https://graded.chimp.mx/worksheet/${ worksheet.uid }`)" v-tooltip.right="'Click to copy link'">https://graded.io/worksheet/{{ worksheet.uid }}</a>
+							<a @click.prevent="copy(`${ $config.baseUrl }/worksheet/${ worksheet.uid }`)" v-tooltip.right="'Click to copy link'">{{ $config.baseUrl }}/worksheet/{{ worksheet.uid }}</a>
 						</div>
 					</form-group>
 				</div>

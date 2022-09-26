@@ -7,6 +7,7 @@ export const state = () => ({
 	currentBlockArea: '',
 	toolAreas: {},
 	blocks: null,
+	application: null
 });
 
 export const mutations = {
@@ -43,7 +44,10 @@ export const mutations = {
 
 		let blockIndex = state.blocks.findIndex(b => b.id == block.id);
 		Vue.set(state.blocks, blockIndex, block);
-	}
+	},
+
+	// Application
+	setApplication(state, application) { state.application = application; },
 }
 
 export const actions = {
@@ -73,7 +77,10 @@ export const actions = {
 		const worksheet = await this.$axios.$get(`/worksheets/${ payload }?pdo[blocks]=getBlocks`);
 		commit('setWorksheet', worksheet.data);
 	},
-	updateBlock({ commit }, payload) { commit('updateBlock', payload); }
+	updateBlock({ commit }, payload) { commit('updateBlock', payload); },
+
+	// Application
+	setApplication({ commit }, payload) { commit('setApplication', payload); },
 }
 
 export const getters = {
@@ -137,4 +144,7 @@ export const getters = {
 
 		return styledTools;
 	},
+
+	// Applications
+	application: state => state.application,
 }

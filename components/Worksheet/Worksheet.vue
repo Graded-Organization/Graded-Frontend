@@ -62,10 +62,8 @@
 						:style="getToolAreaStyle(cell)"
 					>
 						<component
-							v-if="answers"
 							:value="getToolByArea(cell)"
 							:is="`worksheet-tool-${ getToolByArea(cell).type }`"
-							:responded-answer='{ answer: value[`block-${ getToolByArea(cell).id }`] || null }'
 							@response="receiveResponse"
 						/>
 					</div>
@@ -114,10 +112,7 @@
 			const obj = this;
 
 			this.toolAreas = this.worksheet.content.toolAreas;
-
 			this.updateAreas = Object.values(this.assignedAreas).length + 1;
-
-			if(this.value) Vue.set(this, 'answers', this.$shallow(this.value));
 		},
 		computed: {
 			...mapGetters({
@@ -130,6 +125,7 @@
 				areasList: 'worksheet/areasList',
 				rows: 'worksheet/rows',
 				columns: 'worksheet/columns',
+				application: 'worksheet/application'
 			}),
 			styledTools() {
 
@@ -218,8 +214,6 @@
 			}),
 
 			receiveResponse(response) {
-
-				console.log('Receiving response', `block-${ response.id }`, response.answer);
 
 				Vue.set(this.answers, `block-${ response.id }`, response.answer);
 				this.$emit('input', this.answers);

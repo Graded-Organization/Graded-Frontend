@@ -8,7 +8,8 @@ export default {
 		...mapGetters({
 			worksheet: 'worksheet/worksheet',
 			loading: 'worksheet/loading',
-			blocks: 'worksheet/blocks'
+			blocks: 'worksheet/blocks',
+			application: 'worksheet/application',
 		})
 	},
 	methods: {
@@ -17,6 +18,7 @@ export default {
 			setWorksheet: 'worksheet/setWorksheet',
 			updateContent: 'worksheet/updateContent',
 			setLoading: 'worksheet/setLoading',
+			setApplication: 'worksheet/setApplication',
 		}),
 		async save() {
 

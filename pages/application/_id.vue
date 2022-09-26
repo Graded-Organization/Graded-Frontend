@@ -60,7 +60,6 @@
 		layout: 'preview',
 		mixins: [ WorksheetMixin ],
 		data: () => ({
-			application: null,
 			answers: {},
 			sureModal: false
 		}),
@@ -153,11 +152,10 @@
 		async fetch() {
 
 			const application = await this.$axios.$get(`/applications/${ this.$route.params.id }`);
+			this.setApplication(application.data);
 
-			this.application = application.data;
 			await this.fetchWorksheet(this.application.id_worksheet);
-
-			Vue.set(this, 'answers', this.application.answers);
+			Vue.set(this, 'answers', this.$shallow(this.application.answers));
 		}
 	}
 </script>

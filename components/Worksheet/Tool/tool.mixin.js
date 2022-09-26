@@ -19,16 +19,7 @@ export default {
 		answer: null
 	}),
 	watch: {
-		respondedAnswer: {
-			handler(n, o) {
-				console.log('Getting responded answers', n, o);
-				if(this.respondedAnswer?.answer) Vue.set(this, 'answer', this.respondedAnswer.answer);
-			},
-			deep: true
-		},
 		answer(n, o) {
-
-			console.log('UPDATING value', n, o);
 
 			if(JSON.stringify(n) != JSON.stringify(o)) {
 
@@ -42,6 +33,12 @@ export default {
 	},
 	mounted() {
 		this.block = this.$shallow(this.value);
+
+		if(this.application && this.application.answers) {
+
+			Vue.set(this, 'answer', this.application.answers[`block-${ this.value.id }`]);
+		}
+
 	},
 	computed: {
 		...mapGetters({
@@ -49,6 +46,7 @@ export default {
 			loading: 'worksheet/loading',
 			currentBlock: 'worksheet/currentBlock',
 			currentBlockArea: 'worksheet/currentBlockArea',
+			application: 'worksheet/application',
 		}),
 		contrastColor() {
 			if(this.value.styles?.backgroundColor) {
