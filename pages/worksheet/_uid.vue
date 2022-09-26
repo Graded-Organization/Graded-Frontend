@@ -1,5 +1,5 @@
 <template>
-	<div class="application-wrapper" v-if="worksheet && application">
+	<div class="application-wrapper" v-if="worksheet">
 
 		<div class="application-header">
 			<div class="inner boxfix-vert">
@@ -10,49 +10,63 @@
 					</div>
 
 					<div class="header-actions">
-						<template v-if="application.status != 'Completed'">
-							<a href="#" @click.prevent="sureModal = true" class="button button-primary">Submit</a>
-						</template>
-
-						<template v-else>
-							<p>Submited by {{ application.user_name }} on {{ application.modified }}</p>
+						<template>
+							<a href="#" @click.prevent="enterModal = true" class="button button-primary">Edit</a>
 						</template>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="application-body" :class="{ 'is-completed': application.status == 'Completed' }">
+		<div class="application-body" @click="enterModal = true">
 			<div class="inner">
 
 				<div class="my-default">
-					<worksheet v-model="answers" />
+					<worksheet />
 				</div>
-
-				<graded-modal
-					v-model="sureModal"
-					name="submit-application"
-					title="Are you sure you want to submit your answers?"
-					:show-close="false"
-				>
-					<template v-slot="{ params, close }">
-						<div class="submit-application">
-
-							<p class="text-right">
-								<a href="#" @click.prevent="close" class="button button-ghost-gray">Nevermind</a>
-								<a href="#" @click.prevent="submitApplication" class="button button-primary">Yes, submit</a>
-							</p>
-						</div>
-					</template>
-				</graded-modal>
 			</div>
 		</div>
+
+		<graded-modal
+			v-model="enterModal"
+			name="submit-application"
+			title="Please authenticate to edit worksheet"
+		>
+			<template v-slot="{ params, close }">
+				<div class="submit-application" :class="{ 'animate__animated animate__shakeX': authenticateHasError }">
+
+					<div class="row">
+						<div class="col col-6">
+							<form-group label="First name" :class="{ 'has-error': $v.user.firstname.$error }">
+								<input type="text" v-model.trim="$v.user.firstname.$model" class="input-block form-control">
+							</form-group>
+						</div>
+
+						<div class="col col-6">
+							<form-group label="Last name" :class="{ 'has-error': $v.user.lastname.$error }">
+								<input type="text" v-model.trim="$v.user.lastname.$model" class="input-block form-control">
+							</form-group>
+						</div>
+					</div>
+
+					<form-group label="Email" :class="{ 'has-error': $v.user.email.$error }">
+						<input type="email" v-model.trim="$v.user.email.$model" class="input-block form-control">
+					</form-group>
+
+
+					<p class="text-right">
+						<a href="#" @click.prevent="authenticate" class="button button-primary">Access</a>
+					</p>
+				</div>
+			</template>
+		</graded-modal>
 	</div>
 </template>
 
 <script>
 	import WorksheetMixin from '../worksheets/worksheet.mixin.js';
 	import Vue from 'vue';
+	import { required, email } from 'vuelidate/lib/validators';
 
 	export default {
 		name: 'WorkSheetApplication',
@@ -61,9 +75,21 @@
 		mixins: [ WorksheetMixin ],
 		data: () => ({
 			application: null,
-			answers: {},
-			sureModal: false
+			enterModal: true,
+			authenticateHasError: false,
+			user: {
+				firstname: '',
+				lastname: '',
+				email: ''
+			}
 		}),
+		validations: {
+			user: {
+				firstname: { required },
+				lastname: { required },
+				email: { required, email }
+			}
+		},
 		computed: {
 			assignedAreas() { return this.worksheet.content.assignedAreas; },
 			toolAreas() { return this.worksheet.content.toolAreas; },
@@ -136,28 +162,35 @@
 
 				return styles;
 			},
+			async authenticate() {
 
-			async submitApplication() {
+				this.$v.$touch();
+				if (this.$v.$invalid) {
+					this.authenticateHasError = true;
+					setTimeout(function() {
+						this.authenticateHasError = false;
+
+					}.bind(this), 1000);
+					return;
+				}
 
 				var application = {
 					id_worksheet: this.worksheet.id,
-					status: 'Completed',
-					user_name: this.application.user_name,
-					user_email: this.application.user_email,
-					answers: this.answers
+					status: 'Pending',
+					user_name: `${ this.user.firstname } ${ this.user.lastname }`,
+					user_email: this.user.email,
+					answers: {}
 				};
 
-				const applicationSubmit = await this.$axios.$put(`/applications/${ this.$route.params.id }`, application);
+				const authenticate = await this.$axios.$post(`/applications/`, application);
+
+				this.$router.push({ path: `/application/${ authenticate.data.uid }` });
+
 			}
 		},
 		async fetch() {
 
-			const application = await this.$axios.$get(`/applications/${ this.$route.params.id }`);
-
-			this.application = application.data;
-			await this.fetchWorksheet(this.application.id_worksheet);
-
-			Vue.set(this, 'answers', this.application.answers);
+			await this.fetchWorksheet(this.$route.params.uid);
 		}
 	}
 </script>
