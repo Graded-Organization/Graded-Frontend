@@ -84,7 +84,9 @@
 		props: {
 			value: {
 				type: Object,
-				required: true
+				default() {
+					return {};
+				}
 			}
 		},
 		data: () => ({
@@ -115,8 +117,7 @@
 
 			this.updateAreas = Object.values(this.assignedAreas).length + 1;
 
-			Vue.set(this, 'answers', this.$shallow(this.value));
-
+			if(this.value) Vue.set(this, 'answers', this.$shallow(this.value));
 		},
 		computed: {
 			...mapGetters({
