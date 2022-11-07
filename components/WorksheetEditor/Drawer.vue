@@ -42,7 +42,7 @@
 		height: calc(~"100% - 67px - 43px") !important;
 		border-left: 1px solid @border-1;
 
-		top: 67px;
+		top: 63px;
 		box-shadow: none;
 		transition: right 150ms;
 		width: 350px;

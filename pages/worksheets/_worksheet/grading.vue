@@ -195,6 +195,7 @@
 
 	.section-dashboard-grading {
 
+		width: 100%;
 		display: flex;
 
 		.inner, .inner > div {

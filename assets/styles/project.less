@@ -51,15 +51,138 @@ a:not([class]) {
 .fade-enter-active, .fade-leave-active { transition: opacity .25s }
 .fade-enter, .fade-leave-to { opacity: 0 }
 
+/* Vue Table */
+/* ---------------------------------------------------------------------------------------------- */
+
+.VueTables {
+
+	.table-responsive {
+
+		width: 100%;
+		overflow-y: hidden;
+		-ms-overflow-style: -ms-autohiding-scrollbar;
+
+		.table {
+
+			overflow: hidden;
+			width: 100%;
+			max-width: 100%;
+			background-color: transparent;
+
+			& > tbody > tr > td,
+			& > tbody > tr > th,
+			& > tfoot > tr > td,
+			& > tfoot > tr > th,
+			& > thead > tr > td,
+			& > thead > tr > th {
+
+				padding: 8px;
+				line-height: 1.42857143;
+				vertical-align: middle;
+				border-top: 1px solid @border-1;
+			}
+		}
+
+		.is-striped > tbody > tr:nth-of-type(odd) {
+
+			background-color: @background-1;
+		}
+
+		th.VueTables__sortable {
+
+			padding-right: 30px !important;
+		}
+
+		.is-bordered > tbody > tr > td,
+		.is-bordered > tbody > tr > th,
+		.is-bordered > tfoot > tr > td,
+		.is-bordered > tfoot > tr > th,
+		.is-bordered > thead > tr > td,
+		.is-bordered > thead > tr > th {
+
+			border: 1px solid @border-1;
+		}
+
+		.sort-icon {
+
+			position: absolute;
+			right: 0;
+			top: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 100%;
+			width: 20px;
+		}
+	}
+
+	.VuePagination {
+		padding-top: @margin-default;
+
+		nav {
+
+			display: flex;
+			flex-direction: row-reverse;
+		}
+
+		.VuePagination__count {
+
+			margin-right: auto;
+		}
+
+		ul {
+
+			display: flex;
+
+			li {
+
+				a {
+
+					display: block;
+					width: 30px;
+					height: 30px;
+					text-align: center;
+				}
+			}
+		}
+	}
+}
+
+/* Notifications */
+/* ---------------------------------------------------------------------------------------------- */
+
+.vue-notification-group {
+
+	bottom: calc(~"43px + @{margin-default}") !important;
+	right: @margin-default !important;
+}
+
+.graded-notification {
+
+	border: 1px solid @border-1;
+	padding: @margin-default;
+	margin-top: @margin-default;
+
+	.notification-title {
+
+		font-size: 1rem;
+		font-weight: bold;
+	}
+
+	.notification-content {
+
+		font-size: 0.8rem;
+	}
+}
+
+
 /* Block Tool (Editor) */
 /* ---------------------------------------------------------------------------------------------- */
 
 .block-tool-wrapper {
 
-	width: calc(~"100% - 60px");
-	height: calc(~"100% - 50px");
 	flex: 1;
-	margin: 25px 30px;
+	//margin: 25px 30px;
 	overflow-y: auto;
 	padding: @margin-half;
 	box-sizing: border-box;

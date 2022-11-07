@@ -30,10 +30,13 @@
 		<graded-modal
 			v-model="enterModal"
 			name="submit-application"
-			title="Please authenticate to edit worksheet"
 		>
 			<template v-slot="{ params, close }">
 				<div class="submit-application" :class="{ 'animate__animated animate__shakeX': authenticateHasError }">
+					<div class="modal-image">
+						<img src="~/assets/images/template/stop.png" alt="Please authenticate to edit worksheet">
+					</div>
+					<h2 class="modal-title">Please authenticate to edit worksheet</h2>
 
 					<div class="row">
 						<div class="col col-6">
@@ -196,6 +199,40 @@
 </script>
 
 <style scoped lang="less">
+
+	.modal-title {
+
+		text-align: center;
+		font-size: 1.2rem;
+		font-weight: bold;
+		margin-bottom: @margin-double;
+	}
+
+	.modal-image {
+
+		background: @primary;
+		width: 120px;
+		height: 120px;
+		margin: 0 auto;
+		margin-top: -70px;
+		border-radius: @radius-round;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		img {
+
+			image-rendering: pixelated;
+			width: 47px*2;
+			display: block;
+			margin: 0 auto;
+		}
+	}
+
+	.application-wrapper {
+
+		width: 100%;
+	}
 
 	.application-header {
 

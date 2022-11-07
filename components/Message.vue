@@ -10,7 +10,7 @@
 				class="message-close"
 				@click="message = ''"
 			>
-				<i class="la la-fw la-close"></i>
+				<i class="fal fa-fw fa-times" />
 			</a>
 		</div>
 	</transition-slide>

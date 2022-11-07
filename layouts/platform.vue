@@ -4,7 +4,7 @@
 
 			<div class="header-area area-left">
 				<nuxt-link to="/dashboard" class="site-logo">
-					<logo />
+					<graded-logo :size="2" />
 				</nuxt-link>
 				<portal-target name="logo-portal" class="logo-portal">
 				</portal-target>
@@ -29,6 +29,7 @@
 
 						<ul class="menu-nav">
 							<li class="menu-item"><nuxt-link to="/dashboard">My Worksheets</nuxt-link></li>
+							<li class="menu-item"><nuxt-link to="/profile">My Profile</nuxt-link></li>
 							<li class="menu-item"><a @click.prevent="logout" href="#">Logout</a></li>
 						</ul>
 					</nav>
@@ -47,6 +48,7 @@
 		</footer>
 
 		<v-dialog />
+		<notifications group="graded" position="bottom right" classes="graded-notification" />
 	</div>
 </template>
 
@@ -68,6 +70,11 @@
 
 <style lang="less">
 
+	body {
+
+		padding: 0 !important;
+	}
+
 	.platform-section {
 
 		display: flex;
@@ -80,27 +87,25 @@
 		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
-		padding-top: 66px;
+		padding-top: 63px;
 		padding-bottom: 43px;
 
 		.site-header {
 
 			display: flex;
-			align-items: center;
+			align-items: stretch;
 			border-bottom: 1px solid @border-1;
 			position: fixed;
 			top: 0;
 			left: 0;
 			background: white;
 			width: 100%;
-			z-index: 100;
+			z-index: 1000;
 
 			.header-area {
 
 				display: flex;
 				flex: 1;
-				height: 100%;
-				align-items: center;
 				flex-basis: 100%/3;
 			}
 
@@ -124,6 +129,7 @@
 
 			.logo-portal {
 
+				display: flex;
 				margin-right: auto;
 			}
 
@@ -141,6 +147,7 @@
 				display: flex;
 				height: 100%;
 				justify-content: center;
+				padding-right: @margin-default;
 			}
 
 			.user-area {
@@ -154,12 +161,12 @@
 				.avatar {
 
 					border: 1px solid @border-1;
+					cursor: pointer;
 				}
 
 				.user-menu {
 
 					background: @body-background;
-					border-top: 1px solid @border-1;
 					display: none;
 					position: absolute;
 					top: 100%;
@@ -175,16 +182,17 @@
 
 					.menu-hello {
 
+						color: white;
 						padding: @margin-default;
 						padding-top: @margin-double;
 						line-height: 1;
-						background: @green-5 url('~/assets/images/template/topology.png') center center no-repeat;
-						background-size: cover;
+						image-rendering: pixelated;
+						background: @green-5 url('~/assets/images/template/texture.png') top left fixed;
+						background-size: 120px;
 						border-bottom: 1px solid @border-1;
 
 						strong {
 
-							color: white;
 							display: block;
 							font-size: @font-size-4;
 						}
@@ -219,6 +227,10 @@
 
 				&:hover {
 
+					image-rendering: pixelated;
+					background: @green-5 url('~/assets/images/template/texture.png') top left fixed;
+					background-size: 120px;
+
 					.user-menu {
 
 						display: block;
@@ -234,12 +246,14 @@
 
 		.site-footer {
 
-			background: @background-2;
+			background: @background-2 url('~/assets/images/template/rb-texture.png') right bottom no-repeat;;
 			position: fixed;
 			z-index: 100;
 			width: 100%;
 			bottom: 0;
 			left: 0;
+			image-rendering: pixelated;
+			background-size: 120px*3;
 
 			p {
 

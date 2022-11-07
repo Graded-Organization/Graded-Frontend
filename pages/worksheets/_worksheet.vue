@@ -52,6 +52,7 @@
 	.section-dashboard {
 
 		display: flex;
+		width: 100%;
 	}
 
 	.preview-wrapper {
@@ -67,7 +68,6 @@
 		height: 100%;
 		display: flex;
 		align-items: flex-end;
-		margin-top: 20px;
 
 		.menu-item {
 

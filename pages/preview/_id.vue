@@ -1,25 +1,36 @@
 <template>
-	<div class="inner" v-if="worksheet">
+	<div class="worksheet-preview-wrapper" v-if="worksheet">
+		<header class="preview-header">
 
-		<div class="inner boxfix-vert">
-			<div class="m-default">
-				<h2 class="worksheet-name-wrapper">{{ worksheetName }}</h2>
-				<p v-if="worksheetDescription" class="worksheet-description-wrapper">{{ worksheetDescription }}</p>
+			<nuxt-link to="/dashboard" class="site-logo">
+				<graded-logo :size="2" />
+			</nuxt-link>
+
+			<div class="worksheet-title">
+				<div>
+					<h2 class="worksheet-name-wrapper">{{ worksheetName }}</h2>
+					<p v-if="worksheetDescription" class="worksheet-description-wrapper">{{ worksheetDescription }}</p>
+				</div>
+			</div>
+		</header>
+
+		<div class="worksheet-wrapper">
+			<div class="inner">
+				<worksheet />
 			</div>
 		</div>
-
-		<worksheet />
-
 	</div>
 </template>
 
 <script>
+	import Logo from "~/assets/images/template/logo-mono.svg?inline";
 	import WorksheetMixin from '../worksheets/worksheet.mixin.js';
 	import Vue from 'vue';
 
 	export default {
 		name: 'WorkSheetPreview',
 		middleware: 'auth',
+		components: { Logo },
 		layout: 'preview',
 		mixins: [ WorksheetMixin ],
 		data: () => ({}),
@@ -105,6 +116,59 @@
 
 <style scoped lang="less">
 
+	.worksheet-preview-wrapper {
+
+		flex: 1;
+		background: @green-5 url('~/assets/images/template/texture-x1000.png') center center fixed !important;
+		padding-top: calc(~'80px + @{margin-double}');
+	}
+
+	.preview-header {
+
+		display: flex;
+		align-items: stretch;
+		border-bottom: 1px solid @border-1;
+		position: fixed;
+		top: 0;
+		left: 0;
+		background: white;
+		width: 100%;
+		z-index: 100;
+
+		.site-logo {
+
+			margin: @margin-default;
+			margin-right: @margin-default;
+
+			svg {
+
+				width: 70px;
+
+				rect,
+				polygon,
+				path {
+
+					fill: @-green-6;
+				}
+			}
+		}
+
+		.worksheet-title {
+
+			display: flex;
+			align-items: center;
+
+			h2 {
+
+				font-weight: bolder;
+			}
+
+			p {
+
+				font-size: 0.8rem;
+			}
+		}
+	}
 
 	.grid-wrapper {
 
@@ -124,6 +188,12 @@
 				min-height: 100px;
 			}
 		}
+	}
+
+	.editor {
+
+		background: white;
+		border-radius: @radius-2;
 	}
 
 </style>

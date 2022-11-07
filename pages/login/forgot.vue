@@ -6,7 +6,7 @@
 		@submit.prevent="forgot"
 	>
 		<div class="logo-wrapper">
-			<logo />
+			<graded-logo :size="8" />
 		</div>
 
 		<div class="form-copy">
@@ -77,7 +77,6 @@
 
 <script>
 	import { required, email } from 'vuelidate/lib/validators';
-	import Logo from "~/assets/images/template/logo-mono.svg?inline";
 
 	export default {
 		name: 'LoginPageForgot',
@@ -85,7 +84,6 @@
 		middleware: 'auth',
 		auth: 'guest',
 		transition: 'slide-big',
-		components: { Logo },
 		data: () => ({
 			messages: {
 				forgot: {

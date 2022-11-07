@@ -14,6 +14,8 @@ Vue.use(ColorPicker);
 import { vfmPlugin } from 'vue-final-modal/lib';
 Vue.use(vfmPlugin);
 
+import Notifications from 'vue-notification';
+Vue.use(Notifications);
 
 /* Other Stuff */
 /* ---------------------------------------------------------------------------------------------- */

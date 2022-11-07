@@ -82,6 +82,11 @@
 
 <style scoped lang="less">
 
+	.section-dashboard-editor {
+
+		width: 100%;
+	}
+
 	.worksheet-general-menu {
 
 		height: 100%;

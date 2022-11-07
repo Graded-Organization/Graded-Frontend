@@ -129,11 +129,13 @@
 		</div>
 
 		<slot>
-			<button
-				type="button"
-				@click="$emit('add-tool')"
-				class="button-add-tool button button-small button-ghost-primary"
-			><i class="fal fa-fw fa-plus" /></button>
+			<div class="add-tool-wrapper">
+				<button
+					type="button"
+					@click="$emit('add-tool')"
+					class="button-add-tool button button-small button-ghost-primary"
+				><i class="fal fa-fw fa-plus" /></button>
+			</div>
 		</slot>
 	</div>
 </template>
@@ -278,8 +280,7 @@
 
 	.component-actions {
 
-		padding-top: 30px;
-		padding-right: 35px;
+		padding: @margin-default;
 		z-index: 100;
 		white-space: nowrap;
 
@@ -299,13 +300,20 @@
 		z-index: 100;
 		transition: opacity 250ms;
 
+		&:hover {
+
+			opacity: 1;
+		}
+
 		.button-size {
 
-			border-radius: 0;
+			border-radius: @radius-1;
 			border-color: @border-1;
 			padding: @margin-third;
 			background: white;
 			color: @border-2;
+			width: 30px;
+			height: 30px;
 
 			&:hover {
 
@@ -315,34 +323,49 @@
 
 		&.buttons-x {
 
+			height: 100%;
 			width: 30px;
 			flex-direction: column;
-			height: calc(~"100% - 50px");
 			justify-content: center;
 			display: flex;
 			flex-direction: column;
 
+			&:before {
+
+				content: '';
+				width: 4px;
+				height: 100%;
+				position: absolute;
+				left: 50%;
+				background: @primary;
+			}
+
 			&.no-top {
 
 				top: 0;
-				height: calc(~"100% - 25px");
+				//height: calc(~"100% - 25px");
 			}
 
 			&.no-bottom {
 
 				bottom: 0;
-				height: calc(~"100% - 25px");
+				//height: calc(~"100% - 25px");
 			}
 
 			.button {
 
-				flex: 1;
+				//flex: 1;
+
+				margin: @margin-third 0;
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				border-top: 0 !important;
+				position: relative;
+				right: 0;
 
-				&:last-child:not(:first-child) {
+				//border-top: 0 !important;
+
+				/*&:last-child:not(:first-child) {
 
 					border-bottom: 0 !important;
 				}
@@ -350,7 +373,7 @@
 				&:last-child:first-child {
 
 					border-bottom: 0 !important;
-				}
+				}*/
 			}
 		}
 
@@ -359,19 +382,41 @@
 			width: 100%;
 			justify-content: center;
 			display: flex;
+			height: 30px;
+
+			&:before {
+
+				content: '';
+				height: 4px;
+				width: 100%;
+				position: absolute;
+				top: 50%;
+				background: @primary;
+			}
 
 			.button {
 
-				flex: 1;
-
-				&:first-child:not(:last-child) { border-right: 0; }
+				margin: 0 @margin-third;
+				position: relative;
+				bottom: 0;
+				//flex: 1;
+				//&:first-child:not(:last-child) { border-right: 0; }
 			}
 		}
 
-		&.buttons-right { right: 0; }
-		&.buttons-left { left: 0; }
-		&.buttons-top { top: 0; }
-		&.buttons-bottom { bottom: 0; }
+		&.buttons-left { left: -15px; }
+		&.buttons-right {
+			right: -15px;
+			&:before { left: auto; right: 50%; }
+		}
+
+
+		&.buttons-top { top: -15px; }
+
+		&.buttons-bottom {
+			bottom: -15px;
+			&:before { top: auto; bottom: 50%; }
+		}
 	}
 
 	.button-add {
@@ -410,6 +455,13 @@
 		}
 	}
 
+	.add-tool-wrapper {
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
 	.button-add-tool {
 
 		z-index: 100;
@@ -438,7 +490,7 @@
 		z-index: 10;
 		background: fade(white, 90%);
 		display: flex;
-		align-items: center;
+		align-items: stretch;
 		justify-content: center;
 		z-index: 1;
 		border: 1px solid fade(black, 1%);
@@ -450,7 +502,7 @@
 			.component-actions > * { opacity: 1; }
 
 			.button-add { opacity: 1; }
-			.buttons-group { opacity: 1; }
+			//.buttons-group { opacity: 1; }
 		}
 	}
 

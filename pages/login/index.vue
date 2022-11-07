@@ -6,7 +6,7 @@
 		novalidate
 	>
 		<div class="logo-wrapper">
-			<logo />
+			<graded-logo :size="10" />
 		</div>
 
 		<div class="form-copy">
@@ -28,8 +28,8 @@
 			data-aos-delay="100"
 		>
 			<p class="mb-double">
-				<a href="#" @click.prevent="googleLogin" class="button button-gray button-block">
-					<span class="icon"><i class="fab fa-fw fa-google" /></span>
+				<a href="#" @click.prevent="googleLogin" class="button button-google button-block">
+					<span class="icon"><g-logo /></span>
 					Access with Google Account
 				</a>
 			</p>
@@ -110,6 +110,7 @@
 <script>
 	import { required, email } from 'vuelidate/lib/validators';
 	import Logo from "~/assets/images/template/logo-mono.svg?inline";
+	import GLogo from "~/assets/images/template/g-logo.svg?inline";
 
 	export default {
 		name: 'LoginPageIndex',
@@ -117,7 +118,7 @@
 		middleware: 'auth',
 		auth: 'guest',
 		transition: 'slide-big',
-		components: { Logo },
+		components: { Logo, GLogo },
 		data: () => ({
 			messages: {
 				login: {

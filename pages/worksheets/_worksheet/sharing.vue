@@ -3,21 +3,29 @@
 		<div class="inner boxfix-vert">
 			<div class="m-double">
 
-				<toggle-switch
-					v-model="sharing.public"
-					label="Disable shared worksheet link"
-					off-label="Enable shared worksheet link"
-				/>
+				<h2 class="sharing-title">Share by Link</h2>
 
-				<div class="card" v-if="sharing.public">
-					<form-group>
+				<div class="sharing-block">
+					<toggle-switch
+						v-model="sharing.public"
+						label="Disable shared worksheet link"
+						off-label="Enable shared worksheet link"
+					/>
 
-						<div class="input-block form-control">
-							<a @click.prevent="copy(`${ $config.baseUrl }/worksheet/${ worksheet.uid }`)" v-tooltip.right="'Click to copy link'">{{ $config.baseUrl }}/worksheet/{{ worksheet.uid }}</a>
-						</div>
-					</form-group>
+					<div class="card" v-if="sharing.public">
+						<form-group>
+
+							<div class="input-block form-control">
+								<a @click.prevent="copy(`${ $config.baseUrl }/worksheet/${ worksheet.uid }`)" v-tooltip.right="'Click to copy link'">{{ $config.baseUrl }}/worksheet/{{ worksheet.uid }}</a>
+							</div>
+						</form-group>
+					</div>
 				</div>
 
+				<h2 class="sharing-title">Email invite</h2>
+
+				<div class="sharing-block">
+				</div>
 			</div>
 		</div>
 	</div>
@@ -56,6 +64,14 @@
 			async copy(text) {
 				try {
 					await this.$copyText(text);
+
+
+					this.$notify({
+						group: 'graded',
+						title: 'Copied!',
+						text: 'Text copied to clipboard, sweet!'
+					});
+
 				} catch (e) {
 					console.error(e);
 				}
@@ -65,4 +81,25 @@
 </script>
 
 <style scoped lang="less">
+
+	.section-dashboard-sharing {
+
+		width: 100%;
+		background: @background-1;
+
+		.sharing-title {
+
+			font-size: 1.2rem;
+			margin-bottom: @margin-half;
+		}
+
+		.sharing-block {
+
+			background: white;
+			padding: @margin-default;
+			border-radius: @radius-2;
+			margin-bottom: @margin-double;
+		}
+	}
+
 </style>

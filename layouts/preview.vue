@@ -16,4 +16,10 @@
 
 <style lang="less">
 
+	.worksheet-preview {
+
+		display: flex;
+		flex: 1;
+		width: 100%;
+	}
 </style>

@@ -162,6 +162,11 @@
 
 <style scoped lang="less">
 
+	.application-wrapper {
+
+		width: 100%;
+	}
+
 	.application-header {
 
 		position: sticky;

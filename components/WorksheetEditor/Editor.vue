@@ -712,6 +712,9 @@
 				return this.selectedItems.includes(cls);
 			},
 			isOverlaping(cls) {
+				console.log('isOverlaping', Object.keys(this.assignedAreas), cls);
+				console.log('YES ITS OVERLAPPING NON NO NONONONONO', Object.keys(this.assignedAreas).includes(cls));
+
 				return Object.keys(this.assignedAreas).includes(cls);
 			},
 			reset() {
@@ -787,18 +790,19 @@
 			selectionOcurred(cObj) {
 				this.selectCells(cObj.items);
 
+				console.log('selectionOcurred', this.selectedItems);
+
 				for(const c in this.selectedItems) {
 					if(this.isOverlaping(this.selectedItems[c])) {
 
-						//alert('Boxes overlapping, no good');
 						Vue.set(this, 'selectedItems', []);
 						this.newAreaName = '';
 						this.areaSelected = false;
 						return;
 					}
-
-					this.setArea();
 				}
+
+				this.setArea();
 
 				this.currentToolArea = null;
 				this.showDrawer = false;

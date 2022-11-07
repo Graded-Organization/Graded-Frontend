@@ -7,9 +7,9 @@
 		v-on="$listeners"
 		:class="{ 'show-close': showClose }"
 	>
-		<span v-if="title" class="modal-title">
+		<div v-if="title" class="modal-title">
 			<h2>{{ title }}</h2>
-		</span>
+		</div>
 
 		<div class="modal-inner-content">
 			<slot v-bind:params="params" :close="close"></slot>

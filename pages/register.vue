@@ -6,7 +6,7 @@
 		novalidate
 	>
 		<div class="logo-wrapper">
-			<logo />
+			<graded-logo :size="8" />
 		</div>
 
 		<transition-slide>
@@ -157,14 +157,13 @@
 <script>
 	import { required, email } from 'vuelidate/lib/validators';
 	import Password from 'vue-password-strength-meter';
-	import Logo from "~/assets/images/template/logo-mono.svg?inline";
 
 	export default {
 		name: 'RegisterPage',
 		layout: 'gate',
 		middleware: 'auth',
 		auth: 'guest',
-		components: { Password, Logo },
+		components: { Password },
 		data: () => ({
 			success: false,
 			messages: {

@@ -2,10 +2,10 @@
 	<div class="block-tool-wrapper is-live" v-if="block">
 
 		<div class="m-default">
-			<h2 class="block-name-wrapper">{{ block.name }}</h2>
+			<h2 class="block-name-wrapper"><span class="block-name">{{ block.name }}</span></h2>
 
 			<div class="options">
-				<div
+				<label
 					v-for="(option, i) in block.content.options"
 					class="option"
 				>
@@ -18,7 +18,7 @@
 					>
 
 					<p class="option-text">{{ block.content.options[i].text }}</p>
-				</div>
+				</label>
 			</div>
 		</div>
 	</div>

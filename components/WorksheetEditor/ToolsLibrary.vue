@@ -7,7 +7,8 @@
 				<div v-for="card in cards" class="col col-6">
 					<div class="tool-card" @click="selectTool(card.slug)">
 						<div class="card-icon">
-							<i :class="card.icon.join(' ')" />
+							<img :src="require(`~/assets/images/template/icons/${card.slug}-small.png`)" alt="">
+							<!--<i :class="card.icon.join(' ')" />-->
 						</div>
 						<h2 class="card-title">{{ card.title }}</h2>
 					</div>
@@ -80,17 +81,28 @@
 			display: flex;
 			flex-direction: column;
 			align-items: center;
+			justify-content: center;
 			cursor: pointer;
 			flex: 1;
+			aspect-ratio: 1;
 
 			.card-icon {
 
 				font-size: 3rem;
+				margin-bottom: @margin-default;
+
+				img {
+
+					image-rendering: pixelated;
+					width: 48px;
+					height: 48px;
+				}
 			}
 
 			.card-title {
 
 				text-align: center;
+				height: 40px;
 				font-size: 0.8rem;
 			}
 

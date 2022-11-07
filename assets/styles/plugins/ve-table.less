@@ -1,0 +1,172 @@
+/* Vue Easy Table */
+
+
+.data-table {
+
+	.ve-table {
+
+		&.ve-table-border-around {
+
+			border: 0;
+		}
+
+		.ve-table-container {
+
+			table.ve-table-content {
+
+				thead.ve-table-header {
+
+					tr.ve-table-header-tr {
+
+						th.ve-table-header-th {
+
+							background-color: var(--background-1);
+							color: currentColor;
+						}
+					}
+				}
+
+				tbody.ve-table-body {
+
+					tr.ve-table-body-tr td.ve-table-body-td,
+					tr.ve-table-expand-tr td.ve-table-body-td,
+					tr.ve-table-body-tr td.ve-table-expand-td,
+					tr.ve-table-expand-tr td.ve-table-expand-td {
+
+						color: currentColor;
+						background: var(--body-background);
+					}
+
+					&.ve-table-row-highlight tr.ve-table-body-tr.ve-table-tr-highlight td {
+
+						//background: var(--primary-washed) !important;
+					}
+
+					&.ve-table-row-hover tr.ve-table-body-tr:hover td {
+
+						background: var(--background-0);
+					}
+
+					.ve-table-body-tr .ve-table-body-td.ve-table-cell-selection {
+
+						//border: 1px solid var(--primary);
+						border: 0;
+					}
+				}
+			}
+
+			.ve-table-border-x th,
+			.ve-table-border-x td {
+
+				border-bottom: 1px solid var(--border-1) !important;
+			}
+
+
+			.ve-checkbox-label {
+
+				display: block;
+				text-align: center;
+			}
+		}
+	}
+
+	.ve-pagination {
+
+		color: currentColor;
+		background-color: var(--body-background);
+
+		.ve-pagination-goto,
+		.ve-pagination-total {
+
+			color: currentColor;
+		}
+
+		.ve-pagination-goto {
+
+			.ve-pagination-goto-input {
+
+				border: 1px solid var(--border-1);
+				background-color: var(--body-background);
+				text-align: center;
+				color: currentColor;
+			}
+		}
+
+		.ve-pagination-li {
+
+			background: transparent;
+			border-color: transparent;
+
+			a {
+
+				color: currentColor;
+			}
+
+			&.ve-pagination-li-active {
+
+				border-color: var(--primary);
+				background: var(--primary);
+
+				a {
+
+					color: var(--light);
+				}
+
+				&:hover {
+
+					border-color: var(--primary-dark);
+					background: var(--primary-dark);
+
+					a {
+
+						color: var(--light);
+					}
+				}
+			}
+		}
+	}
+
+	.ve-dropdown {
+
+		.ve-dropdown-dt-selected {
+
+			width: auto !important;
+			border: 1px solid var(--border-1);
+			border-radius: 4px;
+
+			& > span {
+
+				display: block;
+				padding-right: 27px;
+
+				.ve-select-selected-span {
+
+					width: 100%;
+					padding: 0 4px;
+				}
+			}
+		}
+
+		a, a:visited {
+
+			color: currentColor;
+		}
+
+	}
+
+	.ve-select {
+
+		.ve-select-selected-span {
+
+			color: var(--body-color);
+		}
+	}
+
+	.ve-loading {
+
+		&.ve-loading-overlay {
+
+			background: var(--light-transparency-1) !important;
+		}
+	}
+}

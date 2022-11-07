@@ -119,7 +119,7 @@
 
 	.section-dashboard {
 
-		width: 100%;
+		width: 100% !important;
 	}
 
 	.dashboard-title {
