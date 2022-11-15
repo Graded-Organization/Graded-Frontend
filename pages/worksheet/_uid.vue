@@ -73,7 +73,6 @@
 
 	export default {
 		name: 'WorkSheetApplication',
-		middleware: 'auth',
 		layout: 'preview',
 		mixins: [ WorksheetMixin ],
 		data: () => ({

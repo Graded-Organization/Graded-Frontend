@@ -114,8 +114,6 @@
 			grading: {
 				handler(n, o) {
 
-					console.log('We are entering!!!');
-
 					this.setWorksheetProp({name: 'grading', value: this.$shallow(n) });
 					this.save();
 				},
@@ -131,7 +129,7 @@
 				this.setWorksheetProp({name: 'grading', value: defaultGrading});
 			}
 
-			this.setWorksheetProp({name: 'grading', value: {...this.worksheet?.content?.grading , ...defaultGrading}});
+			this.setWorksheetProp({name: 'grading', value: {...defaultGrading, ...this.worksheet?.content?.grading}});
 
 			Vue.set(this, 'grading', this.$shallow(this.worksheet.content.grading));
 

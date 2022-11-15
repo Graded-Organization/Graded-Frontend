@@ -26,6 +26,11 @@ Vue.use(Notifications);
 //import VTooltip from 'v-tooltip';
 //Vue.use(VTooltip);
 
+import VueGoodTable from 'vue-good-table';
+import 'vue-good-table/dist/vue-good-table.css';
+import '@/assets/styles/plugins/vue-good-table.css';
+Vue.use(VueGoodTable);
+
 import VModal from 'vue-js-modal';
 Vue.use(VModal, { dialog: true });
 

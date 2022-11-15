@@ -66,9 +66,14 @@
 								/>
 							</form-group>
 
-							<p class="text-right"><a href="#" @click.prevent="updateProfile"
-													 class="button button-primary" :class="{ 'is-loading': loading }">Save
-								Details</a></p>
+							<p class="text-right">
+								<a
+									href="#"
+									@click.prevent="updateProfile"
+									class="button button-primary"
+									:class="{ 'is-loading': loading }"
+								>SaveDetails</a>
+							</p>
 						</div>
 
 						<h3 class="profile-title">Security</h3>
@@ -88,100 +93,100 @@
 </template>
 
 <script>
-import {required} from 'vuelidate/lib/validators';
-import Password from 'vue-password-strength-meter';
+	import {required} from 'vuelidate/lib/validators';
+	import Password from 'vue-password-strength-meter';
 
-export default {
-	name: 'ProfilePage',
-	middleware: 'auth',
-	layout: 'platform',
-	components: {Password},
-	data: () => ({
-		loading: false,
-		messages: {
-			update: {
-				type: '',
-				text: ''
+	export default {
+		name: 'ProfilePage',
+		middleware: 'auth',
+		layout: 'platform',
+		components: {Password},
+		data: () => ({
+			loading: false,
+			messages: {
+				update: {
+					type: '',
+					text: ''
+				}
+			},
+			profile: {
+				metas: {
+					firstname: '',
+					lastname: '',
+				}
+			}
+		}),
+		validations: {
+			profile: {
+				metas: {
+					firstname: {required},
+					lastname: {required},
+				}
 			}
 		},
-		profile: {
-			metas: {
-				firstname: '',
-				lastname: '',
+		mounted() {
+
+			this.profile.metas.firstname = this.$auth.user.metas.firstname;
+			this.profile.metas.lastname = this.$auth.user.metas.lastname;
+		},
+		methods: {
+			async updateProfile() {
+				const obj = this;
+
+				this.loading = true;
+
+				obj.$v.profile.$touch();
+				if (obj.$v.profile.$invalid) {
+
+					return;
+				}
+
+				await this.$axios.$put('/users/me', this.profile);
+
+				this.messages.update.type = "success";
+				this.messages.update.text = "Alrighty then! Your information has been updated.";
+
+				this.loading = false;
 			}
-		}
-	}),
-	validations: {
-		profile: {
-			metas: {
-				firstname: {required},
-				lastname: {required},
-			}
-		}
-	},
-	mounted() {
-
-		this.profile.metas.firstname = this.$auth.user.metas.firstname;
-		this.profile.metas.lastname = this.$auth.user.metas.lastname;
-	},
-	methods: {
-		async updateProfile() {
-			const obj = this;
-
-			this.loading = true;
-
-			obj.$v.profile.$touch();
-			if (obj.$v.profile.$invalid) {
-
-				return;
-			}
-
-			await this.$axios.$put('/users/me', this.profile);
-
-			this.messages.update.type = "success";
-			this.messages.update.text = "Alrighty then! Your information has been updated.";
-
-			this.loading = false;
 		}
 	}
-}
 </script>
 
 <style scoped lang="less">
 
-.section-profile {
+	.section-profile {
 
-	width: 100%;
-	background: @background-1;
-}
-
-
-.profile-wrapper {
-
-	max-width: 640px;
-	margin: 0 auto;
-
-	.dashboard-title {
-
-		font-size: @font-size-4;
-		margin-bottom: @margin-default;
-		text-align: center;
+		width: 100%;
+		background: @background-1;
 	}
 
-	.profile-title {
 
-		font-size: 1.2rem;
-		margin-bottom: @margin-half;
+	.profile-wrapper {
+
+		max-width: 640px;
+		margin: 0 auto;
+
+		.dashboard-title {
+
+			font-size: @font-size-4;
+			margin-bottom: @margin-default;
+			text-align: center;
+		}
+
+		.profile-title {
+
+			font-size: 1.2rem;
+			margin-bottom: @margin-half;
+		}
+
+		.profile-block {
+
+			background: white;
+			padding: @margin-default;
+			border-radius: @radius-2;
+			margin-bottom: @margin-double;
+		}
+
 	}
-
-	.profile-block {
-
-		background: white;
-		padding: @margin-default;
-		border-radius: @radius-2;
-		margin-bottom: @margin-double;
-	}
-
-}
 
 </style>

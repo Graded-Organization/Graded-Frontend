@@ -73,8 +73,7 @@
 	.user-avatar {
 
 		display: block;
-		margin: 0 auto;
-		margin-bottom: @margin-default;
+		margin: 0 auto @margin-default;
 	}
 
 	.details-block {

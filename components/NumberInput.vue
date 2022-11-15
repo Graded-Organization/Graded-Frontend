@@ -51,19 +51,19 @@ export default {
 			this.$emit('input', this.number);
 		},
 		increment() {
-			if(!this.interval) {
-				this.interval = setInterval(function() {
+			if (!this.interval) {
+				this.interval = setInterval(function () {
 
-					if(this.number < this.max) this.number++;
+					if (this.number < this.max) this.number++;
 
 				}.bind(this), 100);
 			}
 		},
 		decrement() {
-			if(!this.interval) {
-				this.interval = setInterval(function() {
+			if (!this.interval) {
+				this.interval = setInterval(function () {
 
-					if(this.number > this.min) this.number--;
+					if (this.number > this.min) this.number--;
 
 				}.bind(this), 100);
 			}
@@ -74,15 +74,14 @@ export default {
 
 <style scoped lang="less">
 
-	a {
+a {
 
-		cursor: pointer;
-	}
+	cursor: pointer;
+}
 
-	input {
+input {
 
-		text-align: center;
-		width: 4.5em;
-	}
-
+	text-align: center;
+	width: 4.5em;
+}
 </style>

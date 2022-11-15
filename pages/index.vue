@@ -1,7 +1,6 @@
 <template>
 	<div class="site-wrapper">
 		<header class="site-header">
-
 			<nuxt-link to="/dashboard" class="site-logo">
 				<logo />
 			</nuxt-link>
@@ -9,7 +8,6 @@
 			<div class="header-actions">
 				<nuxt-link class="button button-primary" to="dashboard">Access your account here</nuxt-link>
 			</div>
-
 		</header>
 
 		<main class="site-main">
@@ -69,7 +67,6 @@
 			display: flex;
 			align-items: center;
 			margin: @margin-default;
-			margin-right: @margin-default;
 
 			svg {
 

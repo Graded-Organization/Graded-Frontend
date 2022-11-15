@@ -1,33 +1,40 @@
 <template>
 	<div class="application-wrapper" v-if="worksheet && application">
 
-		<div class="application-header">
-			<div class="inner boxfix-vert">
-				<div class="header-content">
-					<div class="m-half">
-						<h2 class="worksheet-name">{{ worksheetName }}</h2>
-						<p v-if="worksheetDescription" class="worksheet-description">{{ worksheetDescription }}</p>
-					</div>
+		<header class="application-header">
+			<nuxt-link to="/dashboard" class="site-logo">
+				<graded-logo :size="2" />
+			</nuxt-link>
 
-					<div class="header-actions">
-						<template v-if="application.status != 'Completed'">
-							<a href="#" @click.prevent="sureModal = true" class="button button-primary">Submit</a>
-						</template>
-
-						<template v-else>
-							<p>Submited by {{ application.user_name }} on {{ application.modified }}</p>
-						</template>
-					</div>
+			<div class="worksheet-title">
+				<div>
+					<h2 class="worksheet-name-wrapper">{{ worksheetName }}</h2>
+					<p v-if="worksheetDescription" class="worksheet-description-wrapper">{{ worksheetDescription }}</p>
 				</div>
 			</div>
-		</div>
+
+			<div class="header-actions">
+
+				<template v-if="application.status != 'Completed'">
+					<div class="student-info">
+						<h3>{{ application.user_name }}</h3>
+						<p>{{ application.user_email }}</p>
+					</div>
+
+
+					<a href="#" @click.prevent="sureModal = true" class="button button-primary">Submit</a>
+				</template>
+
+				<template v-else>
+					<p>Submited by {{ application.user_name }} on {{ application.modified }}</p>
+				</template>
+			</div>
+		</header>
 
 		<div class="application-body" :class="{ 'is-completed': application.status == 'Completed' }">
 			<div class="inner">
 
-				<div class="my-default">
-					<worksheet v-model="answers" />
-				</div>
+				<worksheet v-model="answers" />
 
 				<graded-modal
 					v-model="sureModal"
@@ -56,7 +63,6 @@
 
 	export default {
 		name: 'WorkSheetApplication',
-		middleware: 'auth',
 		layout: 'preview',
 		mixins: [ WorksheetMixin ],
 		data: () => ({
@@ -169,31 +175,75 @@
 
 	.application-header {
 
-		position: sticky;
-		top: 0;
-		background: white;
-		z-index: 100;
+		display: flex;
+		align-items: stretch;
 		border-bottom: 1px solid @border-1;
+		position: fixed;
+		top: 0;
+		left: 0;
+		background: white;
+		width: 100%;
+		z-index: 100;
 
-		.worksheet-name {
+		.site-logo {
 
-			font-size: 1.5rem;
+			margin: @margin-default;
+			margin-right: @margin-default;
+
+			svg {
+
+				width: 70px;
+
+				rect,
+				polygon,
+				path {
+
+					fill: @-green-6;
+				}
+			}
 		}
 
-		.worksheet-description {
-
-			font-size: 0.8rem;
-		}
-
-		.header-content {
+		.worksheet-title {
 
 			display: flex;
 			align-items: center;
-			padding: 0 @margin-double;
 
-			.header-actions {
+			h2 {
 
-				margin-left: auto;
+				font-weight: bolder;
+			}
+
+			p {
+
+				font-size: 0.8rem;
+			}
+		}
+
+		.header-actions {
+
+			display: flex;
+			align-items: center;
+			margin-left: auto;
+			padding-right: @margin-default;
+
+			.student-info {
+
+				padding-right: @margin-default;
+				text-align: right;
+
+				h3 {
+
+					font-size: 1rem;
+					line-height: 1;
+					font-weight: 700;
+					margin-bottom: @margin-third;
+				}
+
+				p {
+
+					font-size: 0.8rem;
+					line-height: 1;
+				}
 			}
 		}
 	}
@@ -219,9 +269,14 @@
 		}
 	}
 
-	.application-body.is-completed {
+	.application-body {
 
-		pointer-events: none;
+		padding-top: calc(~'80px + @{margin-double}');
+
+		&.is-completed {
+
+			pointer-events: none;
+		}
 	}
 
 </style>

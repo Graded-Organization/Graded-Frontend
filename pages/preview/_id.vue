@@ -1,7 +1,6 @@
 <template>
 	<div class="worksheet-preview-wrapper" v-if="worksheet">
 		<header class="preview-header">
-
 			<nuxt-link to="/dashboard" class="site-logo">
 				<graded-logo :size="2" />
 			</nuxt-link>

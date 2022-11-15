@@ -3,9 +3,9 @@
 		<div class="form-control">
 			<a
 				href="#"
-				@click.prevent="passwordType = passwordType == 'password' ? 'text' : 'password'"
+				@click.prevent="passwordType = passwordType === 'password' ? 'text' : 'password'"
 				class="form-control-password-reveal fa fa-fw"
-				:class="passwordType == 'password' ? 'fa-eye' : 'fa-eye-slash'"
+				:class="passwordType === 'password' ? 'fa-eye' : 'fa-eye-slash'"
 			/>
 			<input
 				:type="passwordType"
@@ -100,7 +100,7 @@
 				&:focus {
 
 					outline: 0;
-					box-shadow: 0;
+					box-shadow: none;
 				}
 			}
 

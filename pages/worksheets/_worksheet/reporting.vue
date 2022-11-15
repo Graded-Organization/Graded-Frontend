@@ -12,14 +12,41 @@
 						</div>
 					</div>
 
-					<data-table
+					<graded-data-table
+						:columns="columns"
+						:url="`/worksheets/${ $route.params.worksheet }/applications`"
+						:max-height="`calc(100vh - 310px)`"
+					>
+						<template v-slot="view">
+							<p>HOLA</p>
+						</template>
+					</graded-data-table>
+
+					<!-- <data-table
 						:columns="columns"
 						:options="options"
 						:url="`/worksheets/${ $route.params.worksheet }/applications`"
-					/>
+					/> -->
 				</section>
 			</div>
 		</div>
+
+		<graded-modal
+			v-model="applicationModal"
+			name="delete-worksheet"
+			title="Are you sure you want to delete this worksheet?"
+			:show-close="false"
+		>
+			<template v-slot="{ params, close }">
+				<div class="delete-worksheet">
+
+					<p class="text-right">
+						<a href="#" @click.prevent="close" class="button button-ghost-gray">Nevermind</a>
+						<a href="#" @click.prevent="deleteWorkSheet(params.id)" class="button button-primary">Yes, delete worksheet</a>
+					</p>
+				</div>
+			</template>
+		</graded-modal>
 	</div>
 </template>
 
@@ -30,66 +57,34 @@
 		name: 'WorkSheetPageReporting',
 		middleware: 'auth',
 		data: () => ({
+			applicationModal: false,
+			app: 0,
 			columns: [
 				{
+					label: 'ID',
+					field: 'id',
+				},
+				{
+					label: 'Name',
 					field: 'user_name',
-					key: 'user_name',
-					title: 'User Name',
-					width: 200,
-					align: 'left',
-					renderBodyCell: ({ row, column, rowIndex }, h) => {
-
-						const mailTo = `mailto:${ row.user_email }`;
-
-						return (
-							<div>
-								<p>{ row['user_name'] }</p>
-								<p><a href={mailTo}>{ row['user_email'] }</a></p>
-							</div>
-						);
-					},
 				},
 				{
 					field: 'status',
-					key: 'status',
-					width: 100,
-					title: 'Status',
-					align: 'left'
+					label: 'Status',
 				},
 				{
 					field: 'created',
-					key: 'submissionDate',
-					title: 'Submission Date',
-					width: 150,
-					align: 'left'
+					label: 'Submission Date',
+					type: 'date',
+					dateInputFormat: 'yyyy-MM-dd HH:mm:ss', // expects 2018-03-16
+					dateOutputFormat: 'MMM do yyyy',
 				},
 				{
-					field: 'grade',
-					key: 'grade',
-					title: 'Grade',
-					width: 100,
-					align: 'left'
-				},
-
-				{
-					key: 'view',
-					title: 'View',
-					width: 100,
-					align: 'center',
-					renderBodyCell: ({ row, column, rowIndex }, h) => {
-						return (<a class="button button-small button-primary">View Submission</a>);
-					},
-				},
+					field: 'view',
+					label: 'View'
+				}
 			],
 		}),
-		computed: {
-			options() {
-
-				return {
-
-				}
-			}
-		}
 	}
 </script>
 
