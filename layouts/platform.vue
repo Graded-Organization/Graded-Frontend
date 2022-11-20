@@ -20,7 +20,7 @@
 				</portal-target>
 
 				<div class="user-area">
-					<img class="avatar" width="40" :src="`${ this.$config.apiUrl }/users/${ $auth.user.id }/avatar`">
+					<img class="avatar" width="40" :src="`${ this.$config.apiUrl }/users/${ $auth.user.id }/avatar?size=35&cache=${ $store.state.avatarCacheKey }`">
 
 					<nav class="user-menu">
 						<h2 class="menu-hello">

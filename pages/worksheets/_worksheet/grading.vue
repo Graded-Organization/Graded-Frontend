@@ -20,7 +20,6 @@
 									v-if="typeof grading.questionWeights[`block-${ block.id }`] !== 'undefined'"
 									:key="`block-${ block.id }-${ grading.questionWeights[`block-${ block.id }`]}`"
 								>
-
 									<number-input v-model="grading.questionWeights[`block-${ block.id }`]" class="controls are-small is-inline" />
 									<span>{{ block.name || 'Question with no name' }}</span>
 								</form-group>
@@ -137,7 +136,7 @@
 		},
 		computed: {
 			questionBlocks() {
-				return this.blocks.filter(b => b.type == 'multiple-choice-question' && !!b.content.grading.active)
+				return this.blocks.filter(b => (b.type == 'multiple-choice-question' || b.type == 'short-text-input') && !!b.content.grading.active)
 			},
 			weightSum() {
 
@@ -161,6 +160,7 @@
 			setQuestionsWeight() {
 
 				let fractions = false;
+				Vue.set(this.grading, 'questionWeights', {});
 
 				for(const b in this.questionBlocks) {
 					var block = this.questionBlocks[b];
@@ -168,8 +168,6 @@
 					if(this.grading.maxPoints / Object.values(this.questionBlocks).length > Math.floor(this.grading.maxPoints / Object.values(this.questionBlocks).length)) fractions = true;
 
 					Vue.set(this.grading.questionWeights, `block-${block.id}`, Math.floor(this.grading.maxPoints / Object.values(this.questionBlocks).length));
-
-					console.log('b', b, b == this.questionBlocks.length-1);
 
 					if(b == this.questionBlocks.length-1) {
 						Vue.set(this.grading.questionWeights, `block-${block.id}`, Math.floor(this.grading.maxPoints / Object.values(this.questionBlocks).length) + (fractions ? 1 : 0));

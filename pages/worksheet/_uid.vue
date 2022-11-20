@@ -76,7 +76,6 @@
 		layout: 'preview',
 		mixins: [ WorksheetMixin ],
 		data: () => ({
-			application: null,
 			enterModal: true,
 			authenticateHasError: false,
 			user: {

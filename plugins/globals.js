@@ -17,6 +17,8 @@ Vue.use(vfmPlugin);
 import Notifications from 'vue-notification';
 Vue.use(Notifications);
 
+Vue.use(require('vue-moment'));
+
 /* Other Stuff */
 /* ---------------------------------------------------------------------------------------------- */
 

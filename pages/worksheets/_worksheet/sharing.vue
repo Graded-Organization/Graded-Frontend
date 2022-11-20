@@ -26,6 +26,8 @@
 						</div>
 					</div>
 
+					<!-- -->
+
 					<h2 class="sharing-title">Email invite</h2>
 
 					<div class="sharing-block">
@@ -36,18 +38,19 @@
 						/>
 
 						<div class="mt-default" v-if="sharing.email">
-							<form-group label="Email" required :class="{ 'has-error': $v.invitee.email.$error }">
-								<input
-									type="email"
-									:disabled="loading"
-									placeholder="elon@twitter.com"
-									v-model.trim="$v.invitee.email.$model"
-									class="input-block form-control"
-								>
-							</form-group>
-
 							<div class="row">
-								<div class="col col-6">
+								<div class="col col-4">
+									<form-group label="Email" required :class="{ 'has-error': $v.invitee.email.$error }">
+										<input
+											type="email"
+											:disabled="sharingLoading"
+											placeholder="elon@twitter.com"
+											v-model.trim="$v.invitee.email.$model"
+											class="input-block form-control"
+										>
+									</form-group>
+								</div>
+								<div class="col col-4">
 									<form-group
 										label="First name"
 										required
@@ -55,7 +58,7 @@
 									>
 										<input
 											type="text"
-											:disabled="loading"
+											:disabled="sharingLoading"
 											placeholder="Elon"
 											v-model.trim="$v.invitee.firstname.$model"
 											class="input-block form-control"
@@ -63,7 +66,7 @@
 									</form-group>
 								</div>
 
-								<div class="col col-6">
+								<div class="col col-4">
 									<form-group
 										label="Last name"
 										required
@@ -72,7 +75,7 @@
 										<input
 											type="text"
 											placeholder="Musk"
-											:disabled="loading"
+											:disabled="sharingLoading"
 											v-model.trim="$v.invitee.lastname.$model"
 											class="input-block form-control"
 										>
@@ -82,27 +85,37 @@
 
 							<form-group label="Message (optional)">
 								<textarea
-									:disabled="loading"
+									:disabled="sharingLoading"
 									v-model.trim="invitee.message"
 									class="input-block form-control"
 								></textarea>
 							</form-group>
 
 							<p class="text-right mb-double">
-								<button @click="sendInvite" class="button button-primary" :disabled="loading">Send invite</button>
+								<button @click="sendInvite" class="button button-primary" :disabled="sharingLoading">Send invite</button>
 							</p>
-							<graded-data-table
-								ref="invitationsTable"
-								:columns="columns"
-								:url="`/worksheets/${ $route.params.worksheet }/invitations`"
-								:max-height="`500px`"
-							>
-								<div slot="view" slot-scope="props">
-									<a href="#" class="button button-small button-primary">View</a>
-								</div>
-							</graded-data-table>
 						</div>
+					</div>
 
+					<!-- -->
+
+					<h2 class="sharing-title">Users</h2>
+
+					<div class="sharing-block">
+						<graded-data-table
+							ref="invitationsTable"
+							:columns="columns"
+							:url="`/worksheets/${ $route.params.worksheet }/invitations`"
+							:max-height="`500px`"
+						>
+							<div slot="user" slot-scope="props">
+								<p>{{ props.row.user_name }}</p>
+								<p><small>{{ props.row.user_email }}</small></p>
+							</div>
+							<div slot="permissions" slot-scope="props">
+								<a href="#" class="button button-small button-danger">Delete</a>
+							</div>
+						</graded-data-table>
 					</div>
 				</div>
 			</div>
@@ -135,7 +148,7 @@
 			}
 		},
 		data: () => ({
-			loading: false,
+			sharingLoading: false,
 			sharing: null,
 			invitee: {
 				firstname: '',
@@ -145,19 +158,23 @@
 			},
 			columns: [
 				{
-					label: 'Name',
-					field: 'user_name',
+					label: 'User',
+					field: 'user',
 				},
 				{
 					field: 'created',
-					label: 'Invitation Date',
+					label: 'Invited',
 					type: 'date',
 					dateInputFormat: 'yyyy-MM-dd HH:mm:ss', // expects 2018-03-16
 					dateOutputFormat: 'MMM do yyyy',
 				},
 				{
-					field: 'view',
-					label: 'View',
+					field: 'source',
+					label: 'Source',
+				},
+				{
+					field: 'permissions',
+					label: 'Permissions',
 					tdClass: 'text-center'
 				}
 			],
@@ -207,11 +224,11 @@
 					return;
 				}
 
-				this.loading = true;
+				this.sharingLoading = true;
 
 				const res = await this.$axios.$post(`/worksheets/${ obj.$route.params.worksheet }/email-invite`, this.invitee);
 
-				this.loading = false;
+				this.sharingLoading = false;
 
 				this.$v.$reset();
 
@@ -242,7 +259,6 @@
 
 	.sharing-wrapper {
 
-		max-width: 640px;
 		margin: 0 auto;
 	}
 

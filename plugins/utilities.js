@@ -2,6 +2,18 @@ import parse from 'parse-css-color';
 
 export default (context, inject) => {
 
+	const randomString = function(
+		length = 10,
+		allowed = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+	) {
+		let result = '';
+		for (let i = 0; i < length; i++) {
+			result += allowed.charAt(Math.floor(Math.random() * allowed.length));
+		}
+		return result;
+	}
+	inject('randomString', randomString);
+
 	// Shallow copy
 
 	const shallow = (value) => JSON.parse(JSON.stringify(value));

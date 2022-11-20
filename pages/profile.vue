@@ -16,39 +16,57 @@
 					<div class="form-fields">
 						<h3 class="profile-title">My Information</h3>
 						<div class="profile-block">
-							<form-group
-								:label="$t('register.field.firstname')"
-								required
-								:has-error="$v.profile.metas.firstname.$error"
-							>
-								<input
-									v-model.trim="$v.profile.metas.firstname.$model"
-									type="text"
-									tabindex="1"
-									:disabled="loading"
-									class="form-control input-block"
-									autocorrect="off"
-									spellcheck="false"
-								/>
-								<template #help-block>This field is required</template>
-							</form-group>
 
-							<form-group
-								:label="$t('register.field.lastname')"
-								required
-								:has-error="$v.profile.metas.lastname.$error"
-							>
-								<input
-									v-model.trim="$v.profile.metas.lastname.$model"
-									type="text"
-									tabindex="2"
-									:disabled="loading"
-									class="form-control input-block"
-									autocorrect="off"
-									spellcheck="false"
-								/>
-								<template #help-block>This field is required</template>
-							</form-group>
+							<div class="row">
+
+								<div class="col col-3">
+									<thumbnail-uploader
+										:value="`${ this.$config.apiUrl }/users/${ $auth.user.id }/avatar?size=200`"
+										@uploaded="avatarUploaded"
+									>
+										<template #uploader-drop-text>
+											<p>Drop your image here</p>
+										</template>
+									</thumbnail-uploader>
+								</div>
+
+								<div class="col col-9">
+									<form-group
+										:label="$t('register.field.firstname')"
+										required
+										:has-error="$v.profile.metas.firstname.$error"
+									>
+										<input
+											v-model.trim="$v.profile.metas.firstname.$model"
+											type="text"
+											tabindex="1"
+											:disabled="loading"
+											class="form-control input-block"
+											autocorrect="off"
+											spellcheck="false"
+										/>
+										<template #help-block>This field is required</template>
+									</form-group>
+
+									<form-group
+										:label="$t('register.field.lastname')"
+										required
+										:has-error="$v.profile.metas.lastname.$error"
+									>
+										<input
+											v-model.trim="$v.profile.metas.lastname.$model"
+											type="text"
+											tabindex="2"
+											:disabled="loading"
+											class="form-control input-block"
+											autocorrect="off"
+											spellcheck="false"
+										/>
+										<template #help-block>This field is required</template>
+									</form-group>
+
+								</div>
+							</div>
 
 							<form-group
 								:label="$t('register.field.username')"
@@ -72,7 +90,7 @@
 									@click.prevent="updateProfile"
 									class="button button-primary"
 									:class="{ 'is-loading': loading }"
-								>SaveDetails</a>
+								>Save details</a>
 							</p>
 						</div>
 
@@ -130,6 +148,9 @@
 			this.profile.metas.lastname = this.$auth.user.metas.lastname;
 		},
 		methods: {
+			avatarUploaded() {
+				this.$store.dispatch('updateAvatarCacheKey');
+			},
 			async updateProfile() {
 				const obj = this;
 

@@ -18,16 +18,30 @@
 		</form-group>
 
 		<portal v-if="isCurrentBlock" to="tool-area-editor">
+
+			<worksheet-editor-drawer-block title="Grading">
+
+				<toggle-switch
+					v-model="block.content.grading.active"
+					label="Question is part of grading"
+					off-label="Question is not part of grading"
+				/>
+			</worksheet-editor-drawer-block>
 		</portal>
 	</div>
 </template>
 
 <script>
 	import BlockMixin from './tool.mixin.js';
+	import Vue from 'vue';
 
 	export default {
 		mixins: [ BlockMixin ],
 		mounted() {
+
+			if(!this.block?.content?.grading) {
+				Vue.set(this.block.content, 'grading', { active: false });
+			}
 		},
 	}
 </script>

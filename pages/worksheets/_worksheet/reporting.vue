@@ -2,25 +2,28 @@
 	<div class="section-dashboard-reporting">
 		<div class="boxfix-vert">
 			<div class="reporting-wrapper">
-				<aside>
+				<!--<aside>
 					<h2>Filters</h2>
-				</aside>
+				</aside>-->
 				<section>
-					<div class="reporting-actions">
+					<!--<div class="reporting-actions">
 						<div class="buttons">
-							<a href="#" class="button button-primary">Download Report</a>
+							<a href="#" class="button button-ghost-primary">Download Report</a>
 						</div>
-					</div>
+					</div>-->
 
-					<graded-data-table
-						:columns="columns"
-						:url="`/worksheets/${ $route.params.worksheet }/applications`"
-						:max-height="`calc(100vh - 310px)`"
-					>
-						<template v-slot="view">
-							<p>HOLA</p>
-						</template>
-					</graded-data-table>
+					<div class="inner">
+
+						<graded-data-table
+							:columns="columns"
+							:url="`/worksheets/${ $route.params.worksheet }/applications`"
+							:max-height="`calc(100vh - 225px)`"
+						>
+							<div slot="view" slot-scope="props">
+								<a href="#" @click.prevent="showApplication(props.row)" class="button button-small button-ghost-primary button-pill">View</a>
+							</div>
+						</graded-data-table>
+					</div>
 
 					<!-- <data-table
 						:columns="columns"
@@ -32,18 +35,12 @@
 		</div>
 
 		<graded-modal
-			v-model="applicationModal"
-			name="delete-worksheet"
-			title="Are you sure you want to delete this worksheet?"
-			:show-close="false"
+			v-model="showModal"
+			name="application-worksheet"
 		>
 			<template v-slot="{ params, close }">
-				<div class="delete-worksheet">
-
-					<p class="text-right">
-						<a href="#" @click.prevent="close" class="button button-ghost-gray">Nevermind</a>
-						<a href="#" @click.prevent="deleteWorkSheet(params.id)" class="button button-primary">Yes, delete worksheet</a>
-					</p>
+				<div class="inner">
+					<worksheet :key="updateSheet" />
 				</div>
 			</template>
 		</graded-modal>
@@ -52,13 +49,15 @@
 
 <script>
 	import Vue from 'vue';
+	import { mapGetters, mapActions } from 'vuex';
 
 	export default {
 		name: 'WorkSheetPageReporting',
 		middleware: 'auth',
 		data: () => ({
-			applicationModal: false,
+			showModal: false,
 			app: 0,
+			updateSheet: 0,
 			columns: [
 				{
 					label: 'ID',
@@ -70,7 +69,15 @@
 				},
 				{
 					field: 'status',
+					label: 'Activity',
+				},
+				{
+					field: 'pass_status',
 					label: 'Status',
+				},
+				{
+					field: 'grade',
+					label: 'Grade',
 				},
 				{
 					field: 'created',
@@ -81,10 +88,23 @@
 				},
 				{
 					field: 'view',
-					label: 'View'
+					label: 'View',
+					width: '100px',
+					tdClass: 'text-center'
 				}
 			],
 		}),
+		methods: {
+			...mapActions({
+				setApplication: 'worksheet/setApplication',
+			}),
+			showApplication(app) {
+
+				this.showModal = true;
+				this.updateSheet++;
+				this.setApplication(app);
+			}
+		}
 	}
 </script>
 
@@ -142,12 +162,23 @@
 					}
 				}
 
-				/deep/ .ve-table {
+				/deep/ .vgt-responsive {
 
-					max-height: calc(~'100vh - 310px') !important;
+					height: calc(~'100vh - 210px') !important;
 				}
 			}
 		}
+	}
+
+	/deep/ .modal-close {
+
+		background: @primary !important;
+		width: 30px;
+		height: 30px;
+		right: -10px;
+		top: -10px;
+		color: white;
+		border-radius: @radius-round;
 	}
 
 </style>

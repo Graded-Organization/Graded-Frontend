@@ -14,8 +14,11 @@
 		>
 			<template slot="table-row" slot-scope="props">
 				<template v-for="key in tableSlotsKeys">
-					<slot v-if="props.column.field == key" :name="key" />
-					<template v-else>{{props.formattedRow[props.column.field]}}</template>
+					<slot v-if="props.column.field == key" :name="key" :row="props.row" />
+				</template>
+
+				<template>
+					{{props.formattedRow[props.column.field]}}
 				</template>
 			</template>
 		</vue-good-table>

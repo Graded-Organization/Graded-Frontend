@@ -93,7 +93,8 @@ export default {
 
 	googleFonts: {
 		families: {
-			Inter: [300, 400, 500, 700, 900]
+			Inter: [300, 400, 500, 700, 900],
+			'Patrick Hand': [400]
 		},
 	},
 

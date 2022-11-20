@@ -15,24 +15,31 @@
 
 			<div class="header-actions">
 
+				<div class="student-info">
+					<h3>{{ application.user_name }}</h3>
+					<p>{{ application.user_email }}</p>
+				</div>
+
 				<template v-if="application.status != 'Completed'">
-					<div class="student-info">
-						<h3>{{ application.user_name }}</h3>
-						<p>{{ application.user_email }}</p>
-					</div>
-
-
 					<a href="#" @click.prevent="sureModal = true" class="button button-primary">Submit</a>
-				</template>
-
-				<template v-else>
-					<p>Submited by {{ application.user_name }} on {{ application.modified }}</p>
 				</template>
 			</div>
 		</header>
 
 		<div class="application-body" :class="{ 'is-completed': application.status == 'Completed' }">
 			<div class="inner">
+
+				<div class="application-submitted" v-if="application.status == 'Completed'">
+					<div class="date">
+						<!-- 2022-11-17 17:51:42 -->
+						<p>Submited by <strong>{{ application.user_name }}</strong> on {{ application.modified | moment("dddd, MMMM Do YYYY") }}</p>
+					</div>
+				</div>
+
+				<div class="grade" v-if="application.status == 'Completed'">
+					<img src="~/assets/images/template/grade.svg" alt="">
+					<h2>{{ application.grade }}</h2>
+				</div>
 
 				<worksheet v-model="answers" />
 
@@ -153,6 +160,11 @@
 				};
 
 				const applicationSubmit = await this.$axios.$put(`/applications/${ this.$route.params.id }`, application);
+
+				const applicationRefetch = await this.$axios.$get(`/applications/${ this.$route.params.id }`);
+				this.setApplication(applicationRefetch.data);
+
+				this.sureModal = false;
 			}
 		},
 		async fetch() {
@@ -248,7 +260,6 @@
 		}
 	}
 
-
 	.grid-wrapper {
 
 		.comb;
@@ -276,6 +287,57 @@
 		&.is-completed {
 
 			pointer-events: none;
+		}
+	}
+
+	.application-submitted {
+
+		display: flex;
+		align-items: flex-end;
+		margin-bottom: @margin-default;
+
+		.grade {
+
+			line-height: 1;
+			color: @red-8;
+
+			small {
+
+				display: block;
+			}
+
+			h2 {
+
+				font-size: 4rem;
+				font-weight: 900;
+			}
+		}
+
+		.date {
+
+			margin-left: auto;
+		}
+	}
+
+	.grade {
+
+		width: 150px;
+		position: absolute;
+		z-index: 100;
+		right: @margin-default;
+		top: 50px;
+
+		h2 {
+
+			font-size: 3rem;
+			.overlay-element();
+			color: #D82F02;
+			font-family: 'Patrick Hand', cursive;
+			display: flex;
+			align-items: center;
+			font-style: italic;
+			justify-content: center;
+			transform: rotate(-15deg);
 		}
 	}
 

@@ -1,6 +1,5 @@
 <template>
 	<div class="editor" v-if="worksheet">
-
 		<div class="grid-wrapper mb-double">
 			<div
 				class="grid-areas"
