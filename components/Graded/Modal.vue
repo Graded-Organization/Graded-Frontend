@@ -89,7 +89,13 @@
 	.modal-close {
 
 		position: absolute;
-		top: 0.5rem;
-		right: 0.5rem;
+		background: @primary !important;
+		width: 30px;
+		height: 30px;
+		right: -10px;
+		top: -10px;
+		color: white;
+		border-radius: @radius-round;
 	}
+
 </style>

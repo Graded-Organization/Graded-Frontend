@@ -1,13 +1,14 @@
 <template>
 	<div class="application-wrapper" v-if="worksheet">
+		<div class="gate-overlay" v-if="!staying"></div>
 
-		<div class="application-header">
+		<div class="application-header" v-if="showHeader">
 
 			<nuxt-link to="/dashboard" class="site-logo">
-				<graded-logo :size="2" />
+				<graded-logo :size="2" v-if="showBranding" />
 			</nuxt-link>
 
-			<div class="worksheet-title">
+			<div class="worksheet-title" v-if="showSheetInfo">
 				<div>
 					<h2 class="worksheet-name-wrapper">{{ worksheetName }}</h2>
 					<p v-if="worksheetDescription" class="worksheet-description-wrapper">{{ worksheetDescription }}</p>
@@ -15,13 +16,13 @@
 			</div>
 
 			<div class="header-actions">
-				<template>
+				<template v-if="showActions">
 					<a href="#" @click.prevent="enterModal = true" class="button button-primary">Edit</a>
 				</template>
 			</div>
 		</div>
 
-		<div class="application-body" @click="enterModal = true">
+		<div class="application-body" :class="{ 'has-header': showHeader }" @click="enterModal = true && showActions">
 			<div class="inner">
 
 				<div class="my-default">
@@ -36,7 +37,7 @@
 		>
 			<template v-slot="{ params, close }">
 				<div class="submit-application" :class="{ 'animate__animated animate__shakeX': authenticateHasError }">
-					<div class="modal-image">
+					<div class="modal-image" v-if="showBranding">
 						<img src="~/assets/images/template/stop.png" alt="Please authenticate to edit worksheet">
 					</div>
 					<h2 class="modal-title">Please authenticate to edit worksheet</h2>
@@ -70,7 +71,7 @@
 </template>
 
 <script>
-	import WorksheetMixin from '../worksheets/worksheet.mixin.js';
+	import WorksheetMixin from '../../worksheets/worksheet.mixin.js';
 	import Vue from 'vue';
 	import { required, email } from 'vuelidate/lib/validators';
 
@@ -79,7 +80,8 @@
 		layout: 'preview',
 		mixins: [ WorksheetMixin ],
 		data: () => ({
-			enterModal: true,
+			staying: false,
+			enterModal: false,
 			authenticateHasError: false,
 			user: {
 				firstname: '',
@@ -94,7 +96,17 @@
 				email: { required, email }
 			}
 		},
+		mounted() {
+
+			this.enterModal = this.$shallow(this.showActions);
+		},
 		computed: {
+			// Query Params
+			showHeader() { return this.$route.query?.header != parseInt(0); },
+			showBranding() { return this.$route.query?.branding != parseInt(0); },
+			showSheetInfo() { return this.$route.query?.sheet_info != parseInt(0); },
+			showActions() { return this.$route.query?.actions != parseInt(0); },
+
 			assignedAreas() { return this.worksheet.content.assignedAreas; },
 			toolAreas() { return this.worksheet.content.toolAreas; },
 			worksheetName() {return this.worksheet.name || 'Untitled Worksheet'; },
@@ -188,13 +200,26 @@
 
 				const authenticate = await this.$axios.$post(`/applications/`, application);
 
-				this.$router.push({ path: `/application/${ authenticate.data.uid }` });
+				this.$router.push({ path: `/application/embed/${ authenticate.data.uid }`, query: this.$route.query });
 
 			}
 		},
 		async fetch() {
 
 			await this.fetchWorksheet(this.$route.params.uid);
+
+			this.user.firstname = this.$route.query.firstname;
+			this.user.lastname = this.$route.query.lastname;
+			this.user.email = this.$route.query.email;
+
+			setTimeout(function() {
+				if(this.user.firstname && this.user.lastname && this.user.email) this.authenticate();
+			}.bind(this), 250);
+
+			if(!(this.user.firstname && this.user.lastname && this.user.email)) {
+
+				this.staying = true;
+			}
 		}
 	}
 </script>
@@ -237,6 +262,7 @@
 
 	.application-header {
 
+		min-height: 63px;
 		display: flex;
 		align-items: stretch;
 		border-bottom: 1px solid @border-1;
@@ -331,9 +357,21 @@
 		}
 	}
 
+	.gate-overlay {
+
+		.overlay-element();
+		z-index: 10000;
+		background: white;
+	}
+
 	.application-body {
 
-		padding-top: calc(~'80px + @{margin-double}');
+		padding-top: @margin-double;
+
+		&.has-header {
+
+			padding-top: calc(~'80px + @{margin-double}');
+		}
 
 		&.is-completed {
 

@@ -15,7 +15,6 @@
 
 						<div class="mt-default" v-if="sharing.public">
 							<form-group>
-
 								<div class="input-block form-control">
 									<a
 										@click.prevent="copy(`${ $config.baseUrl }/worksheet/${ worksheet.uid }`)"
@@ -99,6 +98,89 @@
 
 					<!-- -->
 
+					<h2 class="sharing-title">Embed</h2>
+
+					<div class="sharing-block">
+
+						<p class="embeding-switch" :class="{ 'is-active': sharing.embeding }">
+							<toggle-switch
+								v-model="sharing.embeding"
+								label="Embeding enabled"
+								off-label="Embeding disabled"
+							/>
+						</p>
+
+						<div class="row" v-if="sharing.embeding">
+							<div class="col col-4">
+
+								<div class="m-default">
+									<p class="mb-default">
+										<toggle-switch
+											v-model="embed.showHeader"
+											label="Show Header"
+											off-label="Hide Header"
+										/>
+									</p>
+
+									<p class="mb-default ml-default" v-if="embed.showHeader">
+										<toggle-switch
+											v-model="embed.showSheetInfo"
+											label="Show Worksheet Information"
+											off-label="Hide Worksheet Information"
+										/>
+									</p>
+
+									<p class="mb-default ml-default" v-if="embed.showHeader">
+										<toggle-switch
+											v-model="embed.showUserInfo"
+											label="Show User Information"
+											off-label="Hide User Information"
+										/>
+									</p>
+
+									<p class="mb-default">
+										<toggle-switch
+											v-model="embed.showBranding"
+											label="Show Branding"
+											off-label="Hide Branding"
+										/>
+									</p>
+
+									<p class="mb-default">
+										<toggle-switch
+											v-model="embed.showActions"
+											label="Show Actions"
+											off-label="Hide Actions"
+										/>
+									</p>
+								</div>
+
+							</div>
+							<div class="col">
+
+								<p class="text-right mb-default">
+
+									<a
+										class="button button-link button-small"
+										@click.prevent="showPreview"
+									><i class="icon fa-fw far fa-external-link-alt" /> Preview</a>
+
+									<a
+										@click.prevent="copy(embedCode)"
+										v-tooltip.bottom="'Click to copy link'"
+										class="button button-primary button-small"
+									><i class="icon fa-fw fal fa-copy" /> Copy Embed</a>
+								</p>
+
+								<div class="code-wrapper">
+									{{ embedCode }}
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- -->
+
 					<h2 class="sharing-title">Users</h2>
 
 					<div class="sharing-block">
@@ -117,9 +199,84 @@
 							</div>
 						</graded-data-table>
 					</div>
+
+					<!-- -->
 				</div>
 			</div>
 		</div>
+
+		<graded-modal
+			v-model="showModal"
+			name="application-worksheet"
+		>
+			<template v-slot="{ params, close }">
+				<div class="modal-wrapper">
+
+					<div class="controls">
+						<div class="control">
+							<toggle-switch
+								v-model="embed.showHeader"
+								label="Show Header"
+								off-label="Hide Header"
+							/>
+						</div>
+
+						<div class="control" v-if="embed.showHeader">
+							<toggle-switch
+								v-model="embed.showSheetInfo"
+								label="Show Worksheet Information"
+								off-label="Hide Worksheet Information"
+							/>
+						</div>
+
+						<div class="control" v-if="embed.showHeader">
+							<toggle-switch
+								v-model="embed.showUserInfo"
+								label="Show User Information"
+								off-label="Hide User Information"
+							/>
+						</div>
+
+						<div class="control">
+							<toggle-switch
+								v-model="embed.showBranding"
+								label="Show Branding"
+								off-label="Hide Branding"
+							/>
+						</div>
+
+						<div class="control">
+							<toggle-switch
+								v-model="embed.showActions"
+								label="Show Actions"
+								off-label="Hide Actions"
+							/>
+						</div>
+
+						<div class="actions">
+							<a
+								@click.prevent="copy(embedCode)"
+								v-tooltip.bottom="'Click to copy link'"
+								class="button button-primary button-small"
+							><i class="icon fa-fw fal fa-copy" /> Copy Embed</a>
+						</div>
+					</div>
+
+					<div class="previews">
+						<div class="desktop">
+							<h2>Desktop Embed Preview</h2>
+
+							<div v-html="embedCode"></div>
+						</div>
+
+						<div class="mobile">
+							<h2>Mobile Embed Preview</h2>
+							<!-- <div v-html="embedCode"></div> -->
+						</div>
+					</div>
+				</div>
+			</template>
+		</graded-modal>
 	</div>
 </template>
 
@@ -148,6 +305,7 @@
 			}
 		},
 		data: () => ({
+			showModal: false,
 			sharingLoading: false,
 			sharing: null,
 			invitee: {
@@ -155,6 +313,13 @@
 				lastname: '',
 				email: '',
 				message: ''
+			},
+			embed: {
+				showHeader: true,
+				showBranding: true,
+				showSheetInfo: true,
+				showUserInfo: true,
+				showActions: true,
 			},
 			columns: [
 				{
@@ -186,6 +351,24 @@
 				email: { required, email }
 			}
 		},
+		computed: {
+
+			embedCode() {
+
+				let params = {};
+
+				if(!this.embed.showHeader) params['header'] = 0;
+				if(!this.embed.showBranding) params['branding'] = 0;
+				if(!this.embed.showSheetInfo) params['sheet_info'] = 0;
+				if(!this.embed.showUserInfo) params['user_info'] = 0;
+				if(!this.embed.showActions) params['actions'] = 0;
+
+				let result = Object.values(params).length ? '?' + new URLSearchParams(params).toString() : '';
+
+
+				return '<iframe class="graded-embed" src="' + `${ this.$config.baseUrl }/worksheet/embed/${ this.worksheet.uid }${result}` + '" backgroundColor="gray" frameborder="0" onmousewheel="" width="100%" height="533" style="background: transparent; border: 1px solid #ccc;"></iframe>';
+			}
+		},
 		mounted() {
 
 			if(!this.worksheet?.content?.sharing) {
@@ -200,6 +383,9 @@
 			...mapActions({
 				setWorksheetProp: 'worksheet/setWorksheetProp',
 			}),
+			showPreview() {
+				this.showModal = true;
+			},
 			async copy(text) {
 				try {
 					await this.$copyText(text);
@@ -281,5 +467,78 @@
 			margin-bottom: @margin-double;
 		}
 	}
+
+	.code-wrapper {
+
+		border-radius: @radius-2;
+		background: @background-9;
+		color: white;
+		word-break: break-all;
+		font-family: monospace;
+		padding: @margin-double;
+	}
+
+	.embeding-switch {
+
+		&.is-active {
+
+			border-bottom: 1px solid @border-1;
+			padding-bottom: @margin-default;
+			margin-bottom: @margin-default;
+		}
+	}
+
+	/deep/ .modal-content {
+
+		max-width: 100%;
+
+		.modal-wrapper {
+
+			width: 90vw;
+			box-sizing: border-box;
+
+			.controls {
+
+				display: flex;
+				border-bottom: 1px solid @border-1;
+				margin-bottom: @margin-default;
+				align-items: center;
+				padding-bottom: @margin-default;
+
+				.control {
+
+					margin-right: @margin-default;
+				}
+
+				.actions {
+
+					margin-left: auto;
+				}
+			}
+
+			.previews {
+
+				display: flex;
+
+				h2 {
+
+					font-size: 1.2rem;
+					margin-bottom: @margin-default;
+				}
+
+				.desktop {
+
+					flex: 1;
+					margin-right: @margin-double;
+				}
+
+				.mobile {
+
+					width: 320px;
+				}
+			}
+		}
+	}
+
 
 </style>
