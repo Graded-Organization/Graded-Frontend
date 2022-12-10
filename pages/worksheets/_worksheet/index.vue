@@ -16,7 +16,6 @@
 						</graded-content-editable>
 
 						<br>
-
 						<graded-content-editable
 							tag="p"
 							v-model="worksheetDescription"
@@ -25,8 +24,14 @@
 							class="worksheet-description-wrapper"
 							:classes="{ contenteditable: 'worksheet-description mb-default' }"
 						/>
+
 						<worksheet-editor
+							v-if="worksheet.type == 'grid'"
 							@tool-added="reFetch"
+						/>
+
+						<worksheet-editor-pdf
+							v-else
 						/>
 					</div>
 				</div>
@@ -49,8 +54,6 @@
 		watch: {
 			worksheet: {
 				handler(n, o) {
-
-					console.log('Worksheet', n, o);
 
 					if(!o) return;
 

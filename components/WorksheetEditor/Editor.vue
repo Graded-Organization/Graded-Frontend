@@ -170,8 +170,6 @@
 			},
 			toolAreas: {
 				handler(n, o) {
-					//Vue.set(this.worksheet, 'toolAreas', n);
-					console.log('watch toolAreas', n);
 					this.setToolAreas(n);
 					this.$emit('input', this.worksheet);
 				},

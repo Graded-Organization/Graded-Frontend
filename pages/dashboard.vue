@@ -135,6 +135,7 @@
 		border-radius: @radius-2;
 		flex-direction: column;
 		border: 1px solid @border-1;
+		margin-bottom: @margin-double;
 
 		&:not(.worksheet-add) {
 

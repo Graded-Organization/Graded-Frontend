@@ -1,0 +1,320 @@
+<template>
+	<div class="editor" v-if="worksheet">
+
+		<template v-if="!worksheet.content">
+			<file-uploader
+				@update="uploadAttachment"
+				accept="application/pdf"
+			>
+				<p>To start, please load a PDF file.</p>
+			</file-uploader>
+		</template>
+
+		<template v-else>
+
+			<div class="editor-controls mb-default">
+				<p class="controls-info"><strong>Total pages:</strong> {{ Object.values(worksheet.content.pdf.pages).length }}</p>
+				<p class="controls-buttons">
+					<a href="#" @click="startAgain" class="button button-ghost-primary button-small">Upload new PDF</a>
+					<a href="#" v-if="mode == 'editor'" @click="mode = 'pages'" class="button button-ghost-primary button-small">Select Pages</a>
+					<a href="#" v-if="mode == 'pages'" @click="mode = 'editor'" class="button button-ghost-primary button-small">View Editor</a>
+				</p>
+			</div>
+
+
+			<transition-slide>
+				<div class="message message-fields mb-default" v-if="loadFields == null && !worksheet.options.fields_from_pdf">
+					<span>Hey, it looks like your PDF has form fields, do you want to load them in your worksheet?</span>
+
+					<span class="buttons">
+						<a href="#" @click.prevent="loadPDFFields" class="button button-small button-primary">Yes, please kind sir</a>
+						<a href="#" @click.prevent="loadFields = false" class="button button-small button-danger">No need</a>
+					</span>
+				</div>
+			</transition-slide>
+
+			<template v-if="mode == 'pages'">
+				<p class="text-center mb-default">Please select what pages do you want to use:</p>
+
+				<div class="row">
+					<div class="col col-md-4" v-for="(page, i) in worksheet.content.pdf.pages">
+						<a class="pdf-page" :class="{ 'is-selected' : selectedPages.includes(i) }" href="#" @click.prevent="togglePage(i)">
+							<span class="page-name">Page {{ i }}</span>
+							<img :src="page.image" alt="">
+						</a>
+					</div>
+				</div>
+			</template>
+
+			<div class="pdf-editor" v-if="mode == 'editor'">
+
+				<div class="editor-page" v-for="page in workingPages">
+					<img :src="page.image" alt="">
+
+					<div class="page-content">
+						<div class="page-opacity" :class="{ 'is-active' : !!selectedTool || !!focusedTool }"></div>
+						<worksheet-editor-pdf-field
+							v-for="field in getPageFields(page.object)"
+							:key="field.id"
+							:value="field"
+							:selected="selectedTool == field.id"
+							:focused="focusedTool && focusedTool.id == field.id"
+							@show-tool="showTool"
+							@hide-tool="deselectTool"
+							@focus-tool="focusTool"
+						/>
+					</div>
+				</div>
+			</div>
+		</template>
+
+		<worksheet-editor-drawer
+			:show="showDrawer"
+			@close="closeDrawer"
+		>
+			<worksheet-editor-pdf-field-editor
+				v-if="!!focusedTool"
+				:block="focusedTool"
+				@update="update"
+			/>
+
+		</worksheet-editor-drawer>
+	</div>
+</template>
+
+<script>
+	import Vue from 'vue';
+
+	import { mapGetters, mapActions } from 'vuex';
+
+	export default {
+		name: 'WorkSheetEditorPDF',
+		data: () => ({
+			mode: '',
+			loadFields: null,
+			selectedPages: [],
+			selectedTool: '', // Drawer open, big version visible
+			focusedTool: null, // Drawer open
+			showDrawer: false,
+			updateKey: 0
+		}),
+		mounted() {
+
+			this.selectedPages = this.$shallow(this.worksheet.options.selected_pages) || [];
+			this.mode = this.selectedPages.length ? 'editor' : 'pages';
+
+		},
+		computed: {
+			...mapGetters({
+				worksheet: 'worksheet/worksheet',
+				currentBlock: 'worksheet/currentBlock',
+				currentBlockArea: 'worksheet/currentBlockArea',
+				assignedAreas: 'worksheet/assignedAreas',
+				blocks: 'worksheet/blocks',
+				areas: 'worksheet/areas',
+				areasList: 'worksheet/areasList',
+				rows: 'worksheet/rows',
+				columns: 'worksheet/columns',
+			}),
+			workingPages() {
+
+				return Object.values(this.worksheet.content.pdf.pages).filter(p => this.selectedPages.includes(p.object));
+			}
+		},
+		methods: {
+			...mapActions({
+				updateContent: 'worksheet/updateContent',
+				updateOptions: 'worksheet/updateOptions',
+			}),
+			update(val) {
+				this.updateKey = val;
+			},
+			startAgain() {
+
+				this.updateContent(null);
+			},
+			async loadPDFFields() {
+				const obj = this;
+
+				const res = await obj.$axios.$post(`/worksheets/${ this.worksheet.id }/convert-fields`);
+
+				this.loadFields = true;
+				this.mode = 'editor';
+			},
+			togglePage(page) {
+
+				if(this.selectedPages.includes(page)) {
+
+					this.selectedPages.splice(this.selectedPages.findIndex(p => p == page), 1);
+
+				} else {
+					this.selectedPages.push(page);
+				}
+
+				this.updateOptions(this.$shallow({ ...this.worksheet.options, selected_pages: this.selectedPages }));
+			},
+			selectPages() {
+				this.mode = 'editor';
+			},
+
+			getPageFields(page) {
+
+				return this.worksheet.blocks.filter(b => b.area == page);
+			},
+
+			focusTool(tool) {
+
+				this.focusedTool = this.worksheet.blocks.find(b => b.id == tool);
+				this.showDrawer = true;
+			},
+
+			showTool(tool) {
+
+				this.selectedTool = tool;
+				this.showDrawer = true;
+			},
+
+			deselectTool(tool) {
+
+				this.selectedTool = null;
+			},
+
+			closeDrawer() {
+				this.showDrawer = false;
+				this.focusedTool = null;
+			},
+
+			async uploadAttachment(files) {
+				var obj = this;
+
+				var formData = new FormData();
+				formData.append('file', files[0]);
+
+				const res = await obj.$axios.$post(`/worksheets/${ this.worksheet.id }/upload-pdf`, formData);
+
+				this.updateContent(res.data.worksheet.content);
+				this.mode = 'pages';
+			}
+		}
+	}
+</script>
+
+<style scoped lang="less">
+
+	.editor-controls {
+
+		display: flex;
+		align-items: center;
+
+		.controls-info {
+
+			font-size: 0.8rem;
+		}
+
+		.controls-buttons {
+
+			margin-left: auto;
+		}
+	}
+
+	.message-fields {
+
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.pdf-page {
+
+		display: block;
+		border: 2px solid transparent;
+		border-radius: @radius-2;
+		transition: all 150ms;
+		position: relative;
+
+		.page-name {
+
+			position: absolute;
+			display: block;
+			box-sizing: border-box;
+			bottom: @margin-default;
+			right: @margin-default;
+			z-index: 10;
+			background: @primary;
+			color: white;
+			font-size: 0.8rem;
+			padding: @margin-half @margin-default;
+			border-radius: @radius-2;
+			opacity: 0;
+			transition: opacity 500ms;
+		}
+
+		img {
+
+			transition: opacity 500ms;
+		}
+
+		&:hover {
+
+			background: @background-1;
+
+			img {
+
+				opacity: 0.5;
+			}
+
+			.page-name {
+
+				opacity: 1;
+			}
+		}
+
+		&.is-selected {
+
+			border-color: @primary;
+		}
+	}
+
+	.pdf-editor {
+
+		.editor-page {
+
+			border-radius: @component-border-radius;
+			box-shadow: @-shadow-3;
+
+			img {
+
+				border-radius: @component-border-radius;
+			}
+
+			.page-opacity {
+
+				.overlay-element();
+				z-index: 10;
+				opacity: 0;
+				pointer-events: none;
+				background: fade(black, 50%);
+				transition: opacity 150ms;
+
+				&.is-active {
+
+					pointer-events: all;
+					opacity: 1;
+				}
+			}
+
+			.page-content {
+
+				.overlay-element();
+			}
+		}
+	}
+
+	/deep/ .file-uploader {
+		.file-uploader-dropzone {
+
+			aspect-ratio: auto;
+			height: 500px;
+		}
+	}
+
+</style>

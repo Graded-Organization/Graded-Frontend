@@ -19,6 +19,7 @@ export const mutations = {
 	updateName(state, name) { Vue.set(state.worksheet, 'name', name); },
 	updateDescription(state, description) { Vue.set(state.worksheet, 'description', description); },
 	updateContent(state, content) { Vue.set(state.worksheet, 'content', content); },
+	updateOptions(state, options) { Vue.set(state.worksheet, 'options', options); },
 	setLoading(state, loading) { state.loading = loading; },
 	addBlock(state, block) { state.blocks.push(block); },
 
@@ -46,6 +47,12 @@ export const mutations = {
 		Vue.set(state.blocks, blockIndex, block);
 	},
 
+	updateField(state, block) {
+
+		let blockIndex = state.worksheet.blocks.findIndex(b => b.id == block.id);
+		Vue.set(state.worksheet.blocks, blockIndex, block);
+	},
+
 	// Application
 	setApplication(state, application) { state.application = application; },
 }
@@ -55,6 +62,7 @@ export const actions = {
 	setWorksheetProp({ commit }, payload) { commit('setWorksheetProp', payload); },
 	setWorksheetGradingProp({ commit }, payload) { commit('setWorksheetGradingProp', payload); },
 	updateContent({ commit }, payload) { commit('updateContent', payload); },
+	updateOptions({ commit }, payload) { commit('updateOptions', payload); },
 	setLoading({ commit }, payload) { commit('setLoading', payload); },
 	addBlock({ commit }, payload) { commit('addBlock', payload); },
 
@@ -78,6 +86,7 @@ export const actions = {
 		commit('setWorksheet', worksheet.data);
 	},
 	updateBlock({ commit }, payload) { commit('updateBlock', payload); },
+	updateField({ commit }, payload) { commit('updateField', payload); },
 
 	// Application
 	setApplication({ commit }, payload) { commit('setApplication', payload); },
@@ -129,7 +138,6 @@ export const getters = {
 	// Blocks
 	currentBlock: (state, getters) => getters.blocks.find(b => b.area == state.currentBlockArea),
 	currentBlockArea: state => state.currentBlockArea,
-
 
 	blocks: (state, getters) => {
 
