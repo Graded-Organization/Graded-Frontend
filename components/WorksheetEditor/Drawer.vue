@@ -2,6 +2,7 @@
 	<div
 		class="drawer drawer-editor"
 		:class="[ show ? 'is-visible' : '' ]"
+		@keydown.esc="close"
 	>
 		<div class="component-actions p-half">
 			<a href="#" class="button button-small" @click.prevent="close"><i class="fa fa-fw fa-times" /></a>

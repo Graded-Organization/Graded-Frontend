@@ -15,10 +15,11 @@
 			<strong>Name:</strong>
 			<span>{{ value.name }}</span>
 		</span>
+		<div @mousedown="focusField" class="field-input"></div>
 
-		<textarea @focus="focusField" class="field-input"></textarea>
-
-		<div class="field-air"></div>
+		<div class="field-air">
+			<div class="resize-handle"></div>
+		</div>
 	</div>
 </template>
 
@@ -44,11 +45,10 @@
 			},
 		},
 		computed: {
-
 			fieldStyles() {
 
 				return {
-					bottom: this.value.content.geo?.y + '%',
+					top: this.value.content.geo?.y + '%',
 					left: this.value.content.geo?.x + '%',
 					width: this.value.content.geo?.width + '%',
 					height: this.value.content.geo?.height + '%'
@@ -57,9 +57,23 @@
 		},
 		methods: {
 
-			focusField() {
+			focusField(event) {
 
-				this.$emit('focus-tool', this.value.id);
+				const pageContentWidth = document.querySelector('.page-content').clientWidth;
+				const pageContentHeight = document.querySelector('.page-content').clientHeight;
+
+				let top = (event.target.closest('.field-wrapper').style.top).replace('%', '');
+				let left = (event.target.closest('.field-wrapper').style.left).replace('%', '');
+
+				const ret = {
+					id: this.value.id,
+					x: ((left/100) * pageContentWidth),
+					y: ((top/100) * pageContentHeight)
+				};
+
+				console.log('ret', ret);
+
+				this.$emit('focus-tool', ret);
 			}
 		}
 	};
@@ -67,11 +81,23 @@
 
 <style lang="less" scoped>
 
+	.page-content.resizing .field-wrapper:not(.resizing) {
+
+		&:hover {
+			z-index: 0;
+			.field-name, .field-air { opacity: 0; }
+		}
+	}
+
+	.drag-handle > * {
+
+		pointer-events: none;
+	}
+
 	.field-wrapper {
 
 		position: absolute;
 		box-sizing: border-box;
-		transition: all 150ms;
 
 		.field-name {
 
@@ -120,6 +146,15 @@
 			margin-left: -10px;
 			margin-top: -10px;
 			z-index: 0;
+
+			.resize-handle {
+
+				position: absolute;
+				width: 30px;
+				height: 10px;
+				right: 0;
+				bottom: 0;
+			}
 		}
 
 		.field-input {
@@ -131,12 +166,8 @@
 			z-index: 1;
 		}
 
-		&:hover {
-
-			z-index: 100;
-			.field-name, .field-air { opacity: 1; }
-		}
-
+		&:hover,
+		&.resizing,
 		&.is-focused {
 
 			z-index: 100;

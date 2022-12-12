@@ -23,7 +23,7 @@
 
 
 			<transition-slide>
-				<div class="message message-fields mb-default" v-if="loadFields == null && !worksheet.options.fields_from_pdf">
+				<div class="message message-fields mb-default" v-if="loadFields == null && !fieldsFromPDF">
 					<span>Hey, it looks like your PDF has form fields, do you want to load them in your worksheet?</span>
 
 					<span class="buttons">
@@ -62,6 +62,7 @@
 							@show-tool="showTool"
 							@hide-tool="deselectTool"
 							@focus-tool="focusTool"
+							class="resize-drag"
 						/>
 					</div>
 				</div>
@@ -86,6 +87,7 @@
 	import Vue from 'vue';
 
 	import { mapGetters, mapActions } from 'vuex';
+	import interact from 'interactjs';
 
 	export default {
 		name: 'WorkSheetEditorPDF',
@@ -96,13 +98,160 @@
 			selectedTool: '', // Drawer open, big version visible
 			focusedTool: null, // Drawer open
 			showDrawer: false,
-			updateKey: 0
+			updateKey: 0,
+			position: { x: 0, y: 0 }
 		}),
 		mounted() {
 
-			this.selectedPages = this.$shallow(this.worksheet.options.selected_pages) || [];
+			const obj = this;
+
+			this.selectedPages = this.worksheet.options?.selected_pages ? this.$shallow(this.worksheet.options?.selected_pages) : [];
 			this.mode = this.selectedPages.length ? 'editor' : 'pages';
 
+			const restrictToParent = interact.modifiers.restrict({
+				restriction: 'parent',
+				elementRect: { left: 0, right: 0, top: 0, bottom: 0 },
+			});
+
+			interact('.resize-drag')
+			.resizable({
+				edges: { top: true, left: true, bottom: true, right: true },
+				listeners: {
+					start: function(event) {
+						console.log('start');
+						event.target.classList.add('resizing');
+					},
+					move: function(event) {
+						let { x, y } = event.target.dataset;
+
+						x = (parseFloat(x) || 0) + event.deltaRect.left;
+						y = (parseFloat(y) || 0) + event.deltaRect.top;
+
+						const pageContentWidth = document.querySelector('.page-content').clientWidth;
+						const pageContentHeight = document.querySelector('.page-content').clientHeight;
+
+						const width = event.rect.width * 100 / pageContentWidth;
+						const height = event.rect.height * 100 / pageContentHeight;
+
+						Object.assign(event.target.style, {
+							width: `${ width }%`,
+							height: `${ height }%`
+						});
+
+						Object.assign(event.target.dataset, { x, y });
+					},
+					end: function(event) {
+						console.log('end');
+						event.target.classList.remove('resizing');
+					},
+				}
+			})
+			.draggable({
+				modifiers: [ restrictToParent ],
+				listeners: {
+					start (event) {
+						console.log(event.type, event.target);
+						event.target.classList.add('dragging');
+					},
+					move (event) {
+
+						obj.position.x += event.dx;
+						obj.position.y += event.dy;
+
+						const pageContentWidth = document.querySelector('.page-content').clientWidth;
+						const pageContentHeight = document.querySelector('.page-content').clientHeight;
+
+						const x = obj.position.x * 100 / pageContentWidth;
+						const y = obj.position.y * 100 / pageContentHeight;
+
+						event.target.style.left = `${ x }%`;
+						event.target.style.top = `${ y }%`;
+					},
+					end: function(event) {
+						console.log('end');
+						event.target.classList.remove('dragging');
+					},
+				}
+			})
+			.actionChecker(function (pointer, event, action, interactable, element, interaction) {
+
+
+
+				if (interact.matchesSelector(event.target, '.resize-handle')) {
+
+					// resize from the top and right edges
+					action.name  = 'resize';
+					action.edges = { bottom: true, right: true };
+
+				} else {
+
+					action.name = 'drag';
+				}
+
+				return action;
+			});
+
+			interact('.resize-drag').off('resizable');
+
+			interact('.resizable').resizable({
+				edges: { top: true, left: true, bottom: true, right: true },
+				listeners: {
+					start: function(event) {
+						console.log('start');
+						event.target.classList.add('resizing');
+					},
+					move: function(event) {
+						let { x, y } = event.target.dataset
+
+						x = (parseFloat(x) || 0) + event.deltaRect.left;
+						y = (parseFloat(y) || 0) + event.deltaRect.top;
+
+						const pageContentWidth = document.querySelector('.page-content').clientWidth;
+						const pageContentHeight = document.querySelector('.page-content').clientHeight;
+
+						const width = event.rect.width * 100 / pageContentWidth;
+						const height = event.rect.height * 100 / pageContentHeight;
+
+						Object.assign(event.target.style, {
+							width: `${ width }%`,
+							height: `${ height }%`,
+						});
+
+						Object.assign(event.target.dataset, { x, y });
+					},
+					end: function(event) {
+						console.log('end');
+						event.target.classList.remove('resizing');
+					},
+				}
+			});
+
+
+
+			interact('.draggable').draggable({
+				modifiers: [ restrictToParent ],
+				listeners: {
+					start (event) {
+						console.log(event.type, event.target);
+					},
+					move (event) {
+
+						obj.position.x += event.dx;
+						obj.position.y += event.dy;
+
+						const pageContentWidth = document.querySelector('.page-content').clientWidth;
+						const pageContentHeight = document.querySelector('.page-content').clientHeight;
+
+						const x = obj.position.x * 100 / pageContentWidth;
+						const y = obj.position.y * 100 / pageContentHeight;
+
+						event.target.style.left = `${ x }%`;
+						event.target.style.top = `${ y }%`;
+					}
+				}
+			});
+
+			interact('.draggable').dra
 		},
 		computed: {
 			...mapGetters({
@@ -116,6 +265,9 @@
 				rows: 'worksheet/rows',
 				columns: 'worksheet/columns',
 			}),
+			fieldsFromPDF() {
+				return this.worksheet.options?.fields_from_pdf;
+			},
 			workingPages() {
 
 				return Object.values(this.worksheet.content.pdf.pages).filter(p => this.selectedPages.includes(p.object));
@@ -164,7 +316,10 @@
 
 			focusTool(tool) {
 
-				this.focusedTool = this.worksheet.blocks.find(b => b.id == tool);
+				this.position.x = tool.x;
+				this.position.y = tool.y;
+
+				this.focusedTool = this.worksheet.blocks.find(b => b.id == tool.id);
 				this.showDrawer = true;
 			},
 
@@ -314,6 +469,9 @@
 
 			aspect-ratio: auto;
 			height: 500px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		}
 	}
 
