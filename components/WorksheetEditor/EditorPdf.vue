@@ -13,14 +13,13 @@
 		<template v-else>
 
 			<div class="editor-controls mb-default">
-				<p class="controls-info"><strong>Total pages:</strong> {{ Object.values(worksheet.content.pdf.pages).length }}</p>
+				<p class="controls-info"><strong>Total pages:</strong> {{ Object.values(pages).length }}</p>
 				<p class="controls-buttons">
 					<a href="#" @click="startAgain" class="button button-ghost-primary button-small">Upload new PDF</a>
 					<a href="#" v-if="mode == 'editor'" @click="mode = 'pages'" class="button button-ghost-primary button-small">Select Pages</a>
 					<a href="#" v-if="mode == 'pages'" @click="mode = 'editor'" class="button button-ghost-primary button-small">View Editor</a>
 				</p>
 			</div>
-
 
 			<transition-slide>
 				<div class="message message-fields mb-default" v-if="loadFields == null && !fieldsFromPDF">
@@ -37,7 +36,7 @@
 				<p class="text-center mb-default">Please select what pages do you want to use:</p>
 
 				<div class="row">
-					<div class="col col-md-4" v-for="(page, i) in worksheet.content.pdf.pages">
+					<div class="col col-md-4" v-for="(page, i) in pages">
 						<a class="pdf-page" :class="{ 'is-selected' : selectedPages.includes(i) }" href="#" @click.prevent="togglePage(i)">
 							<span class="page-name">Page {{ i }}</span>
 							<img :src="page.image" alt="">
@@ -175,8 +174,6 @@
 			})
 			.actionChecker(function (pointer, event, action, interactable, element, interaction) {
 
-
-
 				if (interact.matchesSelector(event.target, '.resize-handle')) {
 
 					// resize from the top and right edges
@@ -190,68 +187,6 @@
 
 				return action;
 			});
-
-			interact('.resize-drag').off('resizable');
-
-			interact('.resizable').resizable({
-				edges: { top: true, left: true, bottom: true, right: true },
-				listeners: {
-					start: function(event) {
-						console.log('start');
-						event.target.classList.add('resizing');
-					},
-					move: function(event) {
-						let { x, y } = event.target.dataset
-
-						x = (parseFloat(x) || 0) + event.deltaRect.left;
-						y = (parseFloat(y) || 0) + event.deltaRect.top;
-
-						const pageContentWidth = document.querySelector('.page-content').clientWidth;
-						const pageContentHeight = document.querySelector('.page-content').clientHeight;
-
-						const width = event.rect.width * 100 / pageContentWidth;
-						const height = event.rect.height * 100 / pageContentHeight;
-
-						Object.assign(event.target.style, {
-							width: `${ width }%`,
-							height: `${ height }%`,
-						});
-
-						Object.assign(event.target.dataset, { x, y });
-					},
-					end: function(event) {
-						console.log('end');
-						event.target.classList.remove('resizing');
-					},
-				}
-			});
-
-
-
-			interact('.draggable').draggable({
-				modifiers: [ restrictToParent ],
-				listeners: {
-					start (event) {
-						console.log(event.type, event.target);
-					},
-					move (event) {
-
-						obj.position.x += event.dx;
-						obj.position.y += event.dy;
-
-						const pageContentWidth = document.querySelector('.page-content').clientWidth;
-						const pageContentHeight = document.querySelector('.page-content').clientHeight;
-
-						const x = obj.position.x * 100 / pageContentWidth;
-						const y = obj.position.y * 100 / pageContentHeight;
-
-						event.target.style.left = `${ x }%`;
-						event.target.style.top = `${ y }%`;
-					}
-				}
-			});
-
-			interact('.draggable').dra
 		},
 		computed: {
 			...mapGetters({
@@ -265,12 +200,19 @@
 				rows: 'worksheet/rows',
 				columns: 'worksheet/columns',
 			}),
+			pages() {
+
+				if(!this.worksheet.content?.pdf?.pages) return [];
+
+				return this.worksheet.content?.pdf?.pages || [];
+			},
 			fieldsFromPDF() {
 				return this.worksheet.options?.fields_from_pdf;
 			},
 			workingPages() {
 
-				return Object.values(this.worksheet.content.pdf.pages).filter(p => this.selectedPages.includes(p.object));
+				if(!this.worksheet.content?.pdf?.pages) return [];
+				return Object.values(this.worksheet.content?.pdf?.pages).filter(p => this.selectedPages.includes(p.object));
 			}
 		},
 		methods: {

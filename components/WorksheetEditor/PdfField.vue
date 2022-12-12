@@ -4,7 +4,10 @@
 		:style="fieldStyles"
 		:class="{ 'is-selected': selected, 'is-focused': focused }"
 	>
-		<span class="field-name">
+		<span
+			class="field-name"
+			:class="{ 'is-checkbox': value.type == 'checkbox', 'is-select': value.type == 'select', 'is-radio': value.type == 'radio' }"
+		>
 			<a href="#" @click.prevent="$emit('show-tool', value.id)" v-if="!selected">
 				<i class="fas fa-fw fa-external-link-square-alt" />
 			</a>
@@ -15,9 +18,21 @@
 			<strong>Name:</strong>
 			<span>{{ value.name }}</span>
 		</span>
-		<div @mousedown="focusField" class="field-input"></div>
 
-		<div class="field-air">
+		<div
+			@mousedown="focusField"
+			class="field-input"
+			:class="{ 'is-checkbox': value.type == 'checkbox', 'is-select': value.type == 'select', 'is-radio': value.type == 'radio' }"
+		>
+			<input type="checkbox" v-if="value.type == 'checkbox'">
+			<input type="radio" v-if="value.type == 'radio'">
+
+			<select v-if="value.type == 'select'">
+				<option v-for="choice in value.content.choices">{{ choice }}</option>
+			</select>
+		</div>
+
+		<div class="field-air" :class="{ 'is-checkbox': value.type == 'checkbox', 'is-select': value.type == 'select', 'is-radio': value.type == 'radio' }">
 			<div class="resize-handle"></div>
 		</div>
 	</div>
@@ -102,6 +117,7 @@
 		.field-name {
 
 			display: flex;
+			min-width: 100px;
 			align-items: center;
 			white-space: nowrap;
 			position: absolute;
@@ -131,6 +147,18 @@
 				text-overflow: ellipsis;
 				min-width: 0;
 			}
+
+			&.is-checkbox,
+			&.is-radio {
+
+				z-index: 0;
+				max-width: none;
+				width: 200px;
+				left: 50%;
+				margin-left: -100px;
+				border-radius: @radius-2;
+				border: 1px solid @border-1;
+			}
 		}
 
 		.field-air {
@@ -155,15 +183,57 @@
 				right: 0;
 				bottom: 0;
 			}
+
+			&.is-radio,
+			&.is-checkbox {
+
+				border-radius: 0 0 @radius-2 @radius-2;
+				border-top: 0;
+
+				.resize-handle {
+
+					display: none;
+				}
+			}
 		}
 
 		.field-input {
 
-			background: fade(black, 12.5%);
+			background: #CCC;
 			.overlay-element();
 			resize: none;
 			padding: @margin-half;
 			z-index: 1;
+
+			&.is-radio {
+
+				border-radius: @radius-round;
+			}
+
+			&.is-radio,
+			&.is-checkbox {
+
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 0;
+
+				input {
+
+					pointer-events: none;
+				}
+			}
+
+			&.is-select {
+
+				padding: 0;
+
+				select {
+
+					.overlay-element();
+					background: transparent;
+				}
+			}
 		}
 
 		&:hover,

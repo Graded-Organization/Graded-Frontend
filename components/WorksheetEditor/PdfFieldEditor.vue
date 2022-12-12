@@ -8,8 +8,6 @@
 				<input type="text" v-model="field.name" class="input-block form-control">
 			</form-group>
 
-			<pre>{{ field.name }}</pre>
-
 		</worksheet-editor-drawer-block>
 
 		<portal-target name="tool-area-editor"></portal-target>
