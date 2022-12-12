@@ -13,7 +13,7 @@
 								</span>
 								Create a new Worksheet
 							</a>
-							<a @click.prevent="newFolder" class="new-folder">Create a new Folder</a>
+							<a @click.prevent="newFolder" class="new-workbook">Create a new Workbook</a>
 						</div>
 					</div>
 
@@ -40,23 +40,59 @@
 		</div>
 
 		<graded-modal
-			v-model="newFolderModal"
-			name="new-folder"
+			v-model="newWorkbookModal"
+			name="new-workbook"
 			:show-close="false"
 		>
-			<div class="new-folder">
+			<div class="new-workbook">
 				<div class="the-content">
-					<h2>New folder</h2>
-					<p>Folders help you organize your worksheets.</p>
+					<h2>New Workbook</h2>
+					<p>Workbooks help you organize your worksheets.</p>
 				</div>
 
-				<form-group label="Folder Name" required>
-					<input type="text" class="input-block form-control form-control-medium" placeholder="My super duper new folder">
+				<form-group label="Workbook Name" required>
+					<input type="text" class="input-block form-control form-control-medium" placeholder="My super duper new workbook">
 				</form-group>
 
 				<p class="text-right">
-					<a href="#" @click.prevent="close" class="button button-ghost-gray">Cancel</a>
+					<a href="#" @click.prevent="closeNewWorkbook" class="button button-ghost-gray">Cancel</a>
 					<a href="#" class="button button-primary">Create</a>
+				</p>
+			</div>
+		</graded-modal>
+
+		<graded-modal
+			v-model="newWorksheetModal"
+			name="new-worksheet"
+			:show-close="false"
+		>
+			<div class="new-workbook">
+				<div class="the-content">
+					<h2>New sheet</h2>
+					<p>Select the type of sheet that suits best for your project.</p>
+				</div>
+
+				<div class="row flexcol">
+					<div class="col">
+						<div class="new-card" @click="type = 'grid'" :class="{ 'is-selected': type == 'grid' }">
+							<h2>Grid Based Sheet</h2>
+							<img src="@/assets/images/template/grid-based.png" alt="Grid-based">
+							<p>This sheet gives you an editor to create areas inside in a grid-based view.</p>
+						</div>
+
+					</div>
+					<div class="col">
+						<div class="new-card" @click="type = 'pdf'" :class="{ 'is-selected': type == 'pdf' }">
+							<h2>PDF Sheet</h2>
+							<img src="@/assets/images/template/pdf-based.png" alt="PDF based">
+							<p>Upload your own PDF and create form fields on top of it.</p>
+						</div>
+					</div>
+				</div>
+
+				<p class="text-right">
+					<a href="#" @click.prevent="closeNewWorksheet" class="button button-ghost-gray">Cancel</a>
+					<a href="#" @click.prevent="createWorksheet" :disabled="!type" :class="{ 'disabled': !type }" class="button button-primary">Create</a>
 				</p>
 			</div>
 		</graded-modal>
@@ -87,12 +123,14 @@
 		layout: 'platform',
 		mounted() {},
 		data: () => ({
+			type: '',
 			worksheets: [],
-			newFolderModal: false,
+			newWorksheetModal: false,
+			newWorkbookModal: false,
 			deleteModal: false
 		}),
 		methods: {
-			newFolder() { this.$vfm.show('new-folder'); },
+			newFolder() { this.$vfm.show('new-workbook'); },
 			showDeleteWorksheet(id) { this.$vfm.show('delete-worksheet', { id: id }); },
 			async deleteWorkSheet(id) {
 
@@ -101,11 +139,14 @@
 				this.deleteModal = false;
 				this.worksheets = worksheets.data;
 			},
-			async newWorksheet() {
+			newWorksheet() { this.newWorksheetModal = true; },
+			async createWorksheet() {
 
-				const worksheet = await this.$axios.$post('worksheets', { id_user: this.$auth.user.id, name: 'Untitled Worksheet' });
+				const worksheet = await this.$axios.$post('worksheets', { id_user: this.$auth.user.id, type: this.type, name: 'Untitled Worksheet' });
 				this.$router.push({ path: `/worksheets/${ worksheet.data.id }` });
-			}
+			},
+			closeNewWorkbook() { this.newWorkbookModal = false; },
+			closeNewWorksheet() { this.newWorksheet = false; }
 		},
 		async fetch() {
 
@@ -216,12 +257,48 @@
 		}
 	}
 
-	.new-folder {
-
+	.new-workbook {
 
 		.the-content {
 
 			margin-bottom: @margin-double;
+		}
+
+		.new-card {
+
+			border: 2px solid @border-1;
+			border-radius: @radius-2;
+			width: 250px;
+			padding: @margin-double;
+			margin-bottom: @margin-double;
+			filter: grayscale(100%);
+
+			h2 {
+
+				color: @primary;
+				text-align: center;
+				font-weight: bold;
+				text-align: center;
+			}
+
+			img {
+
+				width: 64px*2;
+				image-rendering: pixelated;
+				display: block;
+				margin: @margin-default auto;
+			}
+
+			p {
+
+				font-size: 0.8rem;
+			}
+
+			&.is-selected {
+
+				filter: none;
+				border: 2px solid @primary;
+			}
 		}
 	}
 

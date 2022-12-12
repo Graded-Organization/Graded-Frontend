@@ -184,7 +184,7 @@
 		@media @sm-n-above {
 
 			padding-top: 0;
-			height: 70vh;
+			min-height: 70vh;
 		}
 
 		.splash-wrapper {
@@ -196,6 +196,7 @@
 			@media @sm-n-above {
 
 				flex-direction: row;
+				margin-bottom: @margin-double;
 			}
 		}
 

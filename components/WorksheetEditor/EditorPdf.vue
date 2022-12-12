@@ -6,7 +6,10 @@
 				@update="uploadAttachment"
 				accept="application/pdf"
 			>
-				<p>To start, please load a PDF file.</p>
+				<div class="uploader-start">
+					<img src="@/assets/images/template/worksheep-pdf.png" alt="">
+					<p>To start, please load a PDF file.</p>
+				</div>
 			</file-uploader>
 		</template>
 
@@ -297,6 +300,20 @@
 </script>
 
 <style scoped lang="less">
+
+	.uploader-start {
+
+		text-align: center;
+
+		img {
+
+			width: 60px*2;
+			image-rendering: pixelated;
+			display: block;
+			margin: 0 auto;
+			margin-bottom: @margin-double;
+		}
+	}
 
 	.editor-controls {
 
