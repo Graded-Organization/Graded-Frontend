@@ -19,6 +19,12 @@ Vue.use(Notifications);
 
 Vue.use(require('vue-moment'));
 
+import VueLoading from 'vuejs-loading-plugin';
+
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
+Vue.use(Loading);
+
 /* Other Stuff */
 /* ---------------------------------------------------------------------------------------------- */
 

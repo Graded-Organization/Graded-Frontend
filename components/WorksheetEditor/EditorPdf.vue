@@ -5,6 +5,7 @@
 			<file-uploader
 				@update="uploadAttachment"
 				accept="application/pdf"
+				:loading="uploadingAttachment"
 			>
 				<div class="uploader-start">
 					<img src="@/assets/images/template/worksheep-pdf.png" alt="">
@@ -13,7 +14,7 @@
 			</file-uploader>
 		</template>
 
-		<template v-else>
+		<div class="editor-wrapper" ref="editorWrapper" v-else>
 
 			<div class="editor-controls mb-default">
 				<p class="controls-info"><strong>Total pages:</strong> {{ Object.values(pages).length }}</p>
@@ -69,7 +70,7 @@
 					</div>
 				</div>
 			</div>
-		</template>
+		</div>
 
 		<worksheet-editor-drawer
 			:show="showDrawer"
@@ -101,7 +102,8 @@
 			focusedTool: null, // Drawer open
 			showDrawer: false,
 			updateKey: 0,
-			position: { x: 0, y: 0 }
+			position: { x: 0, y: 0 },
+			uploadingAttachment: false
 		}),
 		mounted() {
 
@@ -233,7 +235,11 @@
 			async loadPDFFields() {
 				const obj = this;
 
+				this.$loading.show({ container: this.$refs.editorWrapper });
+
 				const res = await obj.$axios.$post(`/worksheets/${ this.worksheet.id }/convert-fields`);
+
+				this.$loading.hide();
 
 				this.loadFields = true;
 				this.mode = 'editor';
@@ -287,10 +293,14 @@
 			async uploadAttachment(files) {
 				var obj = this;
 
+				this.uploadingAttachment = true;
+
 				var formData = new FormData();
 				formData.append('file', files[0]);
 
 				const res = await obj.$axios.$post(`/worksheets/${ this.worksheet.id }/upload-pdf`, formData);
+
+				this.uploadingAttachment = false;
 
 				this.updateContent(res.data.worksheet.content);
 				this.mode = 'pages';

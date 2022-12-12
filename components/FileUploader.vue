@@ -1,6 +1,7 @@
 <template>
 	<label
 		:for="id"
+		ref="loadingContainer"
 		:class="[
 			'file-uploader',
 			{
@@ -70,7 +71,10 @@
 				type: Array,
 				default: () => []
 			},
-
+			loading: {
+				type: Boolean,
+				default: false
+			},
 			classes: {
 				type: Object,
 				default: () => ({})
@@ -87,8 +91,20 @@
 			localFiles() {
 				this.droppable = false;
 			},
+			loading(loading) {
+				if(loading) {
+					this.$loading.show({
+						// Optional parameters
+						container: this.$refs.loadingContainer,
+					});
+				} else {
+					this.$loading.hide();
+				}
+			}
 		},
-		created() { this.id = this.$attrs.id || 'file-uploader-' + this.$randomString(4); },
+		created() {
+			this.id = this.$attrs.id || 'file-uploader-' + this.$randomString(4);
+		},
 		methods: {
 			onChange(event) {
 
@@ -127,7 +143,8 @@
 
 		.file-uploader-overlay {
 
-			background: fade(white, 12.5%);
+			background: fade(white, 50%);
+			border: 2px solid @primary;
 		}
 
 		.file-uploader-input {

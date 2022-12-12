@@ -272,6 +272,7 @@
 			padding: @margin-double;
 			margin-bottom: @margin-double;
 			filter: grayscale(100%);
+			cursor: pointer;
 
 			h2 {
 
