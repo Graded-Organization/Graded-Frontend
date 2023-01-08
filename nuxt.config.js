@@ -2,9 +2,6 @@ import { resolve } from 'path';
 
 export default {
 	// Target: https://go.nuxtjs.dev/config-target
-	ssr: false,
-
-	// Target: https://go.nuxtjs.dev/config-target
 	target: 'server',
 
 	// Loading
