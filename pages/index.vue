@@ -16,9 +16,9 @@
 				<div class="inner">
 
 					<div class="splash-wrapper">
-						<div class="col">
+						<div class="col col-6">
 							<div class="copy">
-								<h1>Worksheets that work.</h1>
+								<h1>Worksheets<br>that work.</h1>
 								<h2>Make them your own and engage tons of users.</h2>
 
 								<p>
@@ -27,7 +27,7 @@
 								</p>
 							</div>
 						</div>
-						<div class="col col-anim">
+						<div class="col col-6 col-anim">
 							<graded-splash-anim />
 						</div>
 					</div>
@@ -190,8 +190,10 @@
 		.splash-wrapper {
 
 			display: flex;
+			justify-content: space-between;
 			align-items: center;
 			flex-direction: column;
+			min-width: 100%;
 
 			@media @sm-n-above {
 
@@ -232,6 +234,7 @@
 				font-size: 1.5rem;
 				margin-bottom: @margin-double;
 				color: #AAA;
+				padding: 0 @margin-double;
 			}
 
 			.button {
@@ -250,8 +253,14 @@
 					padding-top: 20px;
 					padding-bottom: 20px;
 					font-size: 1.2rem;
+					margin-right: @margin-double;
 				}
 			}
+		}
+
+		.col-anim {
+
+			pointer-events: none;
 		}
 	}
 
@@ -265,6 +274,7 @@
 			text-align: center;
 			font-weight: 900;
 			font-size: 2rem;
+			line-height: 1;
 			margin-bottom: @margin-double;
 		}
 

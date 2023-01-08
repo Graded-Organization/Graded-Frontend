@@ -142,11 +142,13 @@
 			newWorksheet() { this.newWorksheetModal = true; },
 			async createWorksheet() {
 
-				const worksheet = await this.$axios.$post('worksheets', { id_user: this.$auth.user.id, type: this.type, name: 'Untitled Worksheet' });
-				this.$router.push({ path: `/worksheets/${ worksheet.data.id }` });
+				if(this.type) {
+					const worksheet = await this.$axios.$post('worksheets', { id_user: this.$auth.user.id, type: this.type, name: 'Untitled Worksheet' });
+					this.$router.push({ path: `/worksheets/${ worksheet.data.id }` });
+				}
 			},
 			closeNewWorkbook() { this.newWorkbookModal = false; },
-			closeNewWorksheet() { this.newWorksheet = false; }
+			closeNewWorksheet() { this.newWorksheetModal = false; }
 		},
 		async fetch() {
 
@@ -182,7 +184,7 @@
 
 			.card-wrapper {
 
-				background: @green-3 url('~/assets/images/template/topology.png') center center no-repeat;
+				background: @green-3 url('~/assets/images/template/texture-transparency-x1000.png') center center repeat;
 				margin: @margin-half;
 				border-radius: @radius-1;
 				padding: @margin-default;
@@ -229,7 +231,8 @@
 				text-align: center;
 				border-radius: @radius-1;
 				cursor: pointer;
-				background: @gray-1 url('~/assets/images/template/topology.png') center center no-repeat;
+				background: white url('~/assets/images/template/texture-transparency-x1000.png') repeat;
+				background-blend-mode: multiply;
 				transition: background 500ms;
 
 				&:hover {
@@ -273,6 +276,7 @@
 			margin-bottom: @margin-double;
 			filter: grayscale(100%);
 			cursor: pointer;
+			transition: all 250ms;
 
 			h2 {
 

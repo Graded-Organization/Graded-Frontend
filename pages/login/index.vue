@@ -198,5 +198,11 @@
 	.already {
 
 		.container-style;
+
+		a {
+
+			color: @primary;
+			text-decoration: none;
+		}
 	}
 </style>

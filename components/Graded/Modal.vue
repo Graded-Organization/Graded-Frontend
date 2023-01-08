@@ -5,6 +5,7 @@
 		classes="modal-container"
 		content-class="modal-content"
 		v-on="$listeners"
+		transition="graded-modal"
 		:class="{ 'show-close': showClose }"
 	>
 		<div v-if="title" class="modal-title">
@@ -38,6 +39,8 @@
 				default: true
 			}
 		},
+		data: () => ({
+		}),
 		methods: {
 		}
 	}

@@ -77,7 +77,7 @@
 	import { mapGetters, mapActions } from 'vuex';
 
 	export default {
-		name: 'WorkSheetEditor',
+		name: 'WorkSheet',
 		props: {
 			value: {
 				type: Object,

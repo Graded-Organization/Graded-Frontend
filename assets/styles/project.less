@@ -19,7 +19,7 @@ body {
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
-	font-family: 'Inter', sans-serif;
+	font-family: @base-font;
 
 	color: var(--body-color);
 	background: var(--body-background);
@@ -50,6 +50,19 @@ a:not([class]) {
 
 .fade-enter-active, .fade-leave-active { transition: opacity .25s }
 .fade-enter, .fade-leave-to { opacity: 0 }
+
+.graded-modal-enter-active,
+.graded-modal-leave-active {
+
+	transition: all 250ms;
+}
+
+.graded-modal-enter,
+.graded-modal-leave-to {
+
+	opacity: 0;
+	transform: translateY(-40px) scale(1.2);
+}
 
 /* Vue Table */
 /* ---------------------------------------------------------------------------------------------- */
@@ -229,4 +242,12 @@ a:not([class]) {
 			}
 		}
 	}
+}
+
+
+.the-content h2 {
+
+	font-family: @title-font;
+	font-weight: 800;
+	line-height: 1;
 }

@@ -4,7 +4,6 @@
 			<nuxt-link to="/dashboard" class="site-logo">
 				<graded-logo :size="2" />
 			</nuxt-link>
-
 			<div class="worksheet-title">
 				<div>
 					<h2 class="worksheet-name-wrapper">{{ worksheetName }}</h2>
@@ -15,7 +14,8 @@
 
 		<div class="worksheet-wrapper">
 			<div class="inner">
-				<worksheet />
+				<worksheet v-if="worksheet.type == 'grid'" />
+				<worksheet-pdf v-else />
 			</div>
 		</div>
 	</div>

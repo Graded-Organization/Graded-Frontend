@@ -32,7 +32,6 @@
 		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
-		font-family: 'Inter', sans-serif;
 
 		color: var(--body-color);
 		background: var(--body-background);

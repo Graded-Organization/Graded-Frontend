@@ -113,6 +113,17 @@
 				.form-copy {
 
 					margin-bottom: @margin-default;
+
+					h2 {
+
+						font-weight: 900;
+						line-height: 1;
+						margin-bottom: 0;
+					}
+
+					p {
+						margin-top: 0;
+					}
 				}
 
 				.form-fields {

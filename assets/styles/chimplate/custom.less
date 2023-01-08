@@ -1,17 +1,20 @@
-::-webkit-scrollbar {
+@media @sm-n-above {
 
-	width: 8px;
-	height: 8px;
-	padding: 1px;
-}
+	::-webkit-scrollbar {
 
-::-webkit-scrollbar-corner { background: rgba(0, 0, 0, 0); }
-::-webkit-scrollbar-track { background: var(--background-1); }
+		width: 8px;
+		height: 8px;
+		padding: 1px;
+	}
 
-::-webkit-scrollbar-thumb {
+	::-webkit-scrollbar-corner { background: rgba(0, 0, 0, 0); }
+	::-webkit-scrollbar-track { background: var(--background-1); }
 
-	background: var(--background-3);
-	border: 1px var(--background-3);
+	::-webkit-scrollbar-thumb {
+
+		background: var(--background-3);
+		border: 1px var(--background-3);
+	}
 }
 
 input:-webkit-autofill,

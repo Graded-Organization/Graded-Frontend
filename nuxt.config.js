@@ -31,8 +31,6 @@ export default {
 		link: [
 			{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
 			{ rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css' },
-			//{ rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css' },
-			//{ rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/line-awesome/1.3.0/line-awesome/css/line-awesome.min.css' },
 			{ rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css' },
 			{ rel: 'stylesheet', href: '/styles/font-awesome/all.css' }
 		]
@@ -57,12 +55,11 @@ export default {
 	// Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
 	buildModules: [
 		// https://go.nuxtjs.dev/tailwindcss
-		//'@nuxtjs/tailwindcss',
-		//'nuxt-webpack-optimisations',
 		'@nuxtjs/google-fonts',
 		'@nuxtjs/svg',
-		//'@nuxtjs/composition-api/module',
 		'@nuxtjs/style-resources',
+		//'nuxt-webpack-optimisations',
+		//'@nuxtjs/composition-api/module',
 		//'nuxt-purgecss',
 	],
 
@@ -94,6 +91,8 @@ export default {
 	googleFonts: {
 		families: {
 			Inter: [300, 400, 500, 700, 900],
+			Oxanium: [300, 400, 500, 700, 900],
+			'Titillium+Web': [300, 400, 600, 700, 900],
 			'Patrick Hand': [400]
 		},
 	},
@@ -130,7 +129,7 @@ export default {
 				responseType: 'code',
 				endpoints: {
 					token: (process.env.API_URL || 'http://graded.test/back') + '/users/google',
-					userInfo: (process.env.API_URL || 'http://graded.test/back') + '/users/me'
+					userInfo: (process.env.API_URL || 'http://graded.test/back') + '/users/me?fetch_metas=1'
 				},
 				user: {
 					property: 'data'
@@ -151,6 +150,7 @@ export default {
 	},
 
 	alias: {
+		'@styles': resolve(__dirname, './assets/styles'),
 		'@chimplate': resolve(__dirname, './assets/styles/chimplate'),
 	},
 

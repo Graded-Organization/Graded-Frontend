@@ -1,52 +1,7 @@
 <template>
-	<div class="editor" v-if="worksheet">
-		<template v-if="!Object.values(worksheet.content).length">
-			<file-uploader
-				@update="uploadAttachment"
-				accept="application/pdf"
-				:loading="uploadingAttachment"
-			>
-				<div class="uploader-start">
-					<img src="@/assets/images/template/worksheep-pdf.png" alt="">
-					<p>To start, please load a PDF file.</p>
-				</div>
-			</file-uploader>
-		</template>
+	<div class="editor mb-double" v-if="worksheet">
 
-		<div class="editor-wrapper" ref="editorWrapper" v-else>
-
-			<div class="editor-controls mb-default">
-				<p class="controls-info"><strong>Total pages:</strong> {{ Object.values(pages).length }}</p>
-				<p class="controls-buttons">
-					<a href="#" @click="startAgain" class="button button-ghost-primary button-small">Upload new PDF</a>
-					<a href="#" v-if="mode == 'editor'" @click="mode = 'pages'" class="button button-ghost-primary button-small">Select Pages</a>
-					<a href="#" v-if="mode == 'pages'" @click="mode = 'editor'" class="button button-ghost-primary button-small">View Editor</a>
-				</p>
-			</div>
-
-			<transition-slide>
-				<div class="message message-fields mb-default" v-if="loadFields == null && !fieldsFromPDF">
-					<span>Hey, it looks like your PDF has form fields, do you want to load them in your worksheet?</span>
-
-					<span class="buttons">
-						<a href="#" @click.prevent="loadPDFFields" class="button button-small button-primary">Yes, please kind sir</a>
-						<a href="#" @click.prevent="loadFields = false" class="button button-small button-danger">No need</a>
-					</span>
-				</div>
-			</transition-slide>
-
-			<template v-if="mode == 'pages'">
-				<p class="text-center mb-default">Please select what pages do you want to use:</p>
-
-				<div class="row">
-					<div class="col col-md-4" v-for="(page, i) in pages">
-						<a class="pdf-page" :class="{ 'is-selected' : selectedPages.includes(i) }" href="#" @click.prevent="togglePage(i)">
-							<span class="page-name">Page {{ i }}</span>
-							<img :src="page.image" alt="">
-						</a>
-					</div>
-				</div>
-			</template>
+		<div class="editor-wrapper" ref="editorWrapper">
 
 			<div class="pdf-editor" v-if="mode == 'editor'">
 
@@ -55,7 +10,7 @@
 
 					<div class="page-content">
 						<div class="page-opacity" :class="{ 'is-active' : !!selectedTool || !!focusedTool }"></div>
-						<worksheet-editor-pdf-field
+						<worksheet-pdf-field
 							v-for="field in getPageFields(page.object)"
 							:key="field.id"
 							:value="field"
@@ -70,18 +25,6 @@
 				</div>
 			</div>
 		</div>
-
-		<worksheet-editor-drawer
-			:show="showDrawer"
-			@close="closeDrawer"
-		>
-			<worksheet-editor-pdf-field-editor
-				v-if="!!focusedTool"
-				:block="focusedTool"
-				@update="update"
-			/>
-
-		</worksheet-editor-drawer>
 	</div>
 </template>
 
@@ -92,7 +35,7 @@
 	import interact from 'interactjs';
 
 	export default {
-		name: 'WorkSheetEditorPDF',
+		name: 'WorkSheetPDF',
 		data: () => ({
 			mode: '',
 			loadFields: null,

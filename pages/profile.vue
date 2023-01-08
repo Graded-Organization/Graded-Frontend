@@ -162,7 +162,7 @@
 					return;
 				}
 
-				await this.$axios.$put('/users/me', this.profile);
+				await this.$axios.$put('/users/me?fetch_metas=1', this.profile);
 
 				this.messages.update.type = "success";
 				this.messages.update.text = "Alrighty then! Your information has been updated.";
