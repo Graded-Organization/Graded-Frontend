@@ -133,24 +133,7 @@
 		}),
 		mounted() {
 
-			if(this.$auth.loggedIn) {
-
-				this.socket = this.$nuxtSocket({});
-
-				this.socket.emit('connected', this.$auth.user);
-				this.checkConnected();
-
-				this.socket.on('connectedUsers', (msg, cb) => {
-
-					this.connectedUsers = msg;
-					this.checkConnected();
-				});
-
-				this.socket.on('focusedFields', (msg, cb) => {
-
-					this.focusedFields = msg;
-				});
-			}
+			this.sockets();
 		},
 		computed: {
 			assignedAreas() { return this.worksheet.content.assignedAreas; },
@@ -216,6 +199,28 @@
 			},
 		},
 		methods: {
+			sockets() {
+
+				if(this.$auth.loggedIn) {
+
+					this.socket = this.$nuxtSocket({});
+
+					this.socket.emit('connected', this.$auth.user);
+					this.checkConnected();
+
+					this.socket.on('connectedUsers', (msg, cb) => {
+
+						this.connectedUsers = msg;
+						this.checkConnected();
+					});
+
+					this.socket.on('focusedFields', (msg, cb) => {
+
+						this.focusedFields = msg;
+					});
+				}
+			},
+
 			checkConnected() {
 				this.socket.emit('checkConnected');
 			},
@@ -264,22 +269,12 @@
 				};
 
 				const join = await this.$axios.$post(`/applications/${ this.$route.params.id }/join`, user);
-				this.$auth.setUserToken(join.jwt);
+				await this.$auth.setUserToken(join.jwt);
+				await this.$auth.fetchUser();
 
 				this.isLoading = false;
 
-				this.$router.push(
-					{
-						path: this.$route.path,
-						force: true,
-						query: {},
-					},
-					() => {
-
-						console.log('this.$auth.loggedIn', this.$auth.loggedIn);
-						this.$router.app.refresh();
-					}
-				);
+				this.sockets();
 			}
 		},
 		async fetch() {
@@ -293,10 +288,7 @@
 
 		beforeRouteLeave(to, from, next) {
 
-			if(this.$auth.loggedIn) {
-				this.socket.emit('disconnected', this.$auth.user);
-			}
-
+			if(this.$auth.loggedIn) this.socket.emit('disconnected', this.$auth.user);
 			next();
 		}
 	}
