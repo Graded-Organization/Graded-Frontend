@@ -16,7 +16,7 @@
 
 			<div class="inner">
 				<div class="m-double">
-					<h3>Hello {{ user_firstname }} {{ user_lastname }}.</h3>
+					<h3>Hello {{ userFirstname }} {{ userLastname }}.</h3>
 					<h2>Join <strong>{{ worksheet.name }}</strong></h2>
 
 					<div class="form-group">
@@ -28,7 +28,7 @@
 					<p>
 						<button
 							:disabled="!agreeJoin"
-							:class="{ disabled: !agreeJoin }"
+							:class="{ disabled: !agreeJoin, 'is-loading': isLoading }"
 							class="button button-primary"
 							@click="joinApplication"
 						>Join {{ worksheet.name }}</button>
@@ -128,15 +128,14 @@
 			socket: {},
 			connectedUsers: [],
 			focusedFields: [],
-			agreeJoin: true
+			agreeJoin: true,
+			isLoading: false
 		}),
 		mounted() {
 
 			if(this.$auth.loggedIn) {
 
-				this.socket = this.$nuxtSocket({
-					// options
-				});
+				this.socket = this.$nuxtSocket({});
 
 				this.socket.emit('connected', this.$auth.user);
 				this.checkConnected();
@@ -159,10 +158,10 @@
 			worksheetName() {return this.worksheet.name || 'Untitled Worksheet'; },
 			worksheetDescription() { return this.worksheet.description },
 
-			user_id() { return this.$route.query?.user_id; },
-			user_firstname() { return this.$route.query?.user_firstname; },
-			user_lastname() { return this.$route.query?.user_lastname; },
-			user_email() { return this.$route.query?.user_email; },
+			userId() { return this.$route.query?.userId; },
+			userFirstname() { return this.$route.query?.user_firstname; },
+			userLastname() { return this.$route.query?.user_lastname; },
+			userEmail() { return this.$route.query?.user_email; },
 			areas() {
 
 				let cells = [];
@@ -255,7 +254,32 @@
 
 			async joinApplication() {
 
-				console.log('JOIN');
+				this.isLoading = true;
+
+				const user = {
+					firstname: this.userFirstname,
+					lastname: this.userLastname,
+					username: this.userEmail,
+					metas: { avatar_link: `${ this.$config.apiUrl }/users/${ this.userId }/avatar` }
+				};
+
+				const join = await this.$axios.$post(`/applications/${ this.$route.params.id }/join`, user);
+				this.$auth.setUserToken(join.jwt);
+
+				this.isLoading = false;
+
+				this.$router.push(
+					{
+						path: this.$route.path,
+						force: true,
+						query: {},
+					},
+					() => {
+
+						console.log('this.$auth.loggedIn', this.$auth.loggedIn);
+						this.$router.app.refresh();
+					}
+				);
 			}
 		},
 		async fetch() {
@@ -268,9 +292,10 @@
 		},
 
 		beforeRouteLeave(to, from, next) {
-			console.log('beforeRouteLeave', this.$route);
 
-			this.socket.emit('disconnected', this.$auth.user);
+			if(this.$auth.loggedIn) {
+				this.socket.emit('disconnected', this.$auth.user);
+			}
 
 			next();
 		}
@@ -313,6 +338,7 @@
 
 		width: 100%;
 		display: flex;
+		justify-content: center;
 	}
 
 	.application-header {
