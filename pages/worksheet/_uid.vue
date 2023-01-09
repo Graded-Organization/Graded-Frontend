@@ -25,7 +25,8 @@
 			<div class="inner">
 
 				<div class="my-default">
-					<worksheet />
+					<worksheet v-if="worksheet.type == 'grid'" />
+					<worksheet-pdf v-else />
 				</div>
 			</div>
 		</div>

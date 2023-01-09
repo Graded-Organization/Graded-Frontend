@@ -2,20 +2,55 @@
 	<div
 		class="field-wrapper"
 		:style="fieldStyles"
-		:class="{ 'is-selected': selected, 'is-focused': focused }"
+		:class="{ 'is-selected': selected || isFocused, 'is-focused': isFocused }"
 	>
+		<span
+			class="field-name"
+			:style="isFocused ? `background-color: ${ $stringToColour(isFocused.userName) }; border-color: ${ $stringToColour(isFocused.userName) }` : ''"
+			:class="{ 'is-checkbox': value.type == 'checkbox', 'is-select': value.type == 'select', 'is-radio': value.type == 'radio' }"
+		>
+			<span v-if="isFocused">{{ isFocused.userName }} is editing <strong>{{ value.name }}</strong></span>
+			<span v-else>{{ value.name }}</span>
+		</span>
+
 		<div
-			@mousedown="focusField"
 			class="field-input"
 			:class="{ 'is-checkbox': value.type == 'checkbox', 'is-select': value.type == 'select', 'is-radio': value.type == 'radio' }"
 		>
 			<input type="checkbox" v-if="value.type == 'checkbox'">
 			<input type="radio" v-if="value.type == 'radio'">
+			<input type="text"
+				@focus="focusField"
+				:disabled="isFocused"
+				v-if="value.type == 'long-text-input'">
 
 			<select v-if="value.type == 'select'">
 				<option v-for="choice in value.content.choices">{{ choice }}</option>
 			</select>
 		</div>
+
+		<div
+			:style="isFocused ? `background-color: ${ $stringToColour(isFocused.userName) }; border-color: ${ $stringToColour(isFocused.userName) }` : ''"
+			class="field-air"
+			:class="{ 'is-checkbox': value.type == 'checkbox', 'is-select': value.type == 'select', 'is-radio': value.type == 'radio' }"
+		/>
+
+		<button
+			v-if="!isFocused"
+			class="field-close"
+			@click="blurField"
+		>
+			<i class="fal fa-fw fa-times" />
+		</button>
+
+
+		<img
+			v-if="isFocused"
+			:src="`${ $config.apiUrl }/users/${ isFocused.userId }/avatar?size=200`"
+			class="focus-avatar avatar"
+			:style="isFocused ? `background-color: ${ $stringToColour(isFocused.userName) }; border-color: ${ $stringToColour(isFocused.userName) }` : ''"
+		>
+
 	</div>
 </template>
 
@@ -39,6 +74,10 @@
 				type: Boolean,
 				default: false
 			},
+			isFocused: {
+				type: [Object, Boolean],
+				default: false
+			}
 		},
 		computed: {
 			fieldStyles() {
@@ -55,21 +94,16 @@
 
 			focusField(event) {
 
-				const pageContentWidth = document.querySelector('.page-content').clientWidth;
-				const pageContentHeight = document.querySelector('.page-content').clientHeight;
+				if(!this.isFocused) {
+					this.$emit('focus-tool', this.value);
+				}
 
-				let top = (event.target.closest('.field-wrapper').style.top).replace('%', '');
-				let left = (event.target.closest('.field-wrapper').style.left).replace('%', '');
+			},
 
-				const ret = {
-					id: this.value.id,
-					x: ((left/100) * pageContentWidth),
-					y: ((top/100) * pageContentHeight)
-				};
+			blurField(event) {
 
-				console.log('ret', ret);
-
-				this.$emit('focus-tool', ret);
+				console.log('BLUR');
+				this.$emit('blur-tool', this.value);
 			}
 		}
 	};
@@ -98,13 +132,12 @@
 		.field-name {
 
 			display: flex;
-			min-width: 100px;
 			align-items: center;
 			white-space: nowrap;
 			position: absolute;
 			line-height: 22px;
 			height: 22px;
-			top: -31px;
+			top: -26px;
 			left: 0;
 			font-size: 0.8rem;
 			line-height: 1;
@@ -149,11 +182,11 @@
 			border-radius: @radius-2;
 			box-shadow: @-shadow-3;
 			.overlay-element();
-			width: calc(~"100% + 20px");
-			height: calc(~"100% + 20px");
+			width: calc(~"100% + 10px");
+			height: calc(~"100% + 10px");
 			background: white;
-			margin-left: -10px;
-			margin-top: -10px;
+			margin-left: -5px;
+			margin-top: -5px;
 			z-index: 0;
 
 			.resize-handle {
@@ -176,6 +209,29 @@
 					display: none;
 				}
 			}
+		}
+
+		.field-close {
+
+			position: absolute;
+			background: @primary !important;
+			width: 25px;
+			height: 25px;
+			right: -22px;
+			top: -22px;
+			color: white;
+			border-radius: @radius-round;
+			display: none;
+		}
+
+		.focus-avatar {
+
+			width: 40px;
+			z-index: 1000;
+			position: absolute;
+			left: -35px;
+			top: -38px;
+			box-shadow: @shadow-3;
 		}
 
 		.field-input {
@@ -215,14 +271,40 @@
 					background: transparent;
 				}
 			}
+
+			input[type="text"] {
+
+				.overlay-element();
+				background: transparent;
+			}
 		}
 
-		&:hover,
-		&.resizing,
-		&.is-focused {
+		&:hover {
 
 			z-index: 100;
 			.field-name, .field-air { opacity: 1; }
+		}
+
+
+		&.is-focused {
+
+			z-index: 100;
+			.field-name, .field-air {
+
+				opacity: 1;
+				background-color: @danger;
+				border-color: @danger;
+			}
+
+			.avatar {
+
+				border: 2px solid @danger;
+			}
+
+			.field-input {
+
+				background: fade(white, 25%);
+			}
 		}
 
 		&.is-selected {
@@ -230,22 +312,11 @@
 			z-index: 100;
 
 			.field-name, .field-air { opacity: 1; }
-			width: 80% !important;
-			min-height: 100px !important;
-			left: 10% !important;
 
-			.field-input {
+			.field-close {
 
-				border-radius: @radius-2;
-			}
-
-			.field-name {
-
-				padding-right: @margin-double;
-				font-size: 1rem;
-				height: 30px;
-				line-height: 25px;
-				top: -39px;
+				display: block;
+				z-index: 1000;
 			}
 		}
 	}

@@ -1,6 +1,15 @@
 import { resolve } from 'path';
 
 export default {
+	// Target: https://go.nuxtjs.dev/config-target
+	ssr: false,
+
+	// Target: https://go.nuxtjs.dev/config-target
+	target: 'server',
+
+	// Loading
+	loading: false,
+
 	// Global page headers: https://go.nuxtjs.dev/config-head
 	head: {
 		title: 'Graded!',
@@ -63,11 +72,30 @@ export default {
 	// Modules: https://go.nuxtjs.dev/config-modules
 	modules: [
 		// https://go.nuxtjs.dev/axios
+		'nuxt-socket-io',
 		'nuxt-clipboard',
 		'@nuxtjs/axios',
 		'@nuxtjs/auth-next',
 		'@nuxtjs/i18n',
 	],
+
+	io: {
+		sockets: [
+			{
+				name: 'application',
+				url: 'http://localhost:1337',
+				default: true
+			}
+		],
+		server: {
+			cors: {
+				credentials: true,
+				origin: [
+					'http://localhost:1337'
+				]
+			}
+		}
+	},
 
 	i18n: {
 		locales: [

@@ -238,7 +238,7 @@
 
 				const res = await obj.$axios.$post(`/worksheets/${ this.worksheet.id }/convert-fields`);
 
-				this.$loading.hide({ container: this.$refs.editorWrapper });
+				//this.$loading.hide({ container: this.$refs.editorWrapper });
 
 				this.loadFields = true;
 				this.mode = 'editor';

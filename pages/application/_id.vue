@@ -16,8 +16,17 @@
 			<div class="header-actions">
 
 				<div class="student-info">
-					<h3>{{ application.user_name }}</h3>
-					<p>{{ application.user_email }}</p>
+					<div class="connected-user" v-for="user in connectedUsers">
+						<div class="avatar-wrapper">
+							<img
+								class="avatar"
+								width="40"
+								:src="`${ $config.apiUrl }/users/${ user.id }/avatar?size=200`"
+								v-tooltip.bottom="user.nicename"
+								:style="`border-color: ${ $stringToColour(user.nicename) }`"
+							>
+						</div>
+					</div>
 				</div>
 
 				<template v-if="application.status != 'Completed'">
@@ -41,7 +50,10 @@
 					<h2>{{ application.grade }}</h2>
 				</div>
 
-				<worksheet v-model="answers" />
+				<worksheet v-if="worksheet.type == 'grid'" v-model="answers" />
+				<worksheet-pdf
+					:focused-fields="focusedFields"
+				v-else />
 
 				<graded-modal
 					v-model="sureModal"
@@ -74,8 +86,31 @@
 		mixins: [ WorksheetMixin ],
 		data: () => ({
 			answers: {},
-			sureModal: false
+			sureModal: false,
+			socket: {},
+			connectedUsers: [],
+			focusedFields: []
 		}),
+		mounted() {
+
+			this.socket = this.$nuxtSocket({
+				// options
+			});
+
+			this.socket.emit('connected', this.$auth.user);
+			this.checkConnected();
+
+			this.socket.on('connectedUsers', (msg, cb) => {
+
+				this.connectedUsers = msg;
+				this.checkConnected();
+			});
+
+			this.socket.on('focusedFields', (msg, cb) => {
+
+				this.focusedFields = msg;
+			});
+		},
 		computed: {
 			assignedAreas() { return this.worksheet.content.assignedAreas; },
 			toolAreas() { return this.worksheet.content.toolAreas; },
@@ -135,6 +170,10 @@
 			},
 		},
 		methods: {
+			checkConnected() {
+				this.socket.emit('checkConnected');
+			},
+
 			getToolAreaStyle(area) {
 
 				if(!area) return {};
@@ -174,6 +213,14 @@
 
 			await this.fetchWorksheet(this.application.id_worksheet);
 			Vue.set(this, 'answers', this.$shallow(this.application.answers));
+		},
+
+		beforeRouteLeave(to, from, next) {
+			console.log('beforeRouteLeave', this.$route);
+
+			this.socket.emit('disconnected', this.$auth.user);
+
+			next();
 		}
 	}
 </script>
@@ -242,6 +289,30 @@
 
 				padding-right: @margin-default;
 				text-align: right;
+
+				display: flex;
+
+				.avatar-wrapper {
+
+					&:before {
+
+						content: '';
+						width: 12px;
+						height: 12px;
+						background: @success;
+						border: 2px solid white;
+						position: absolute;
+						top: 0;
+						right: 0;
+						border-radius: @radius-round;
+					}
+				}
+
+				.avatar {
+
+					border: 3px solid transparent;
+					margin-left: @margin-half;
+				}
 
 				h3 {
 

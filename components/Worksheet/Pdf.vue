@@ -2,7 +2,6 @@
 	<div class="editor mb-double" v-if="worksheet">
 
 		<div class="editor-wrapper" ref="editorWrapper">
-
 			<div class="pdf-editor" v-if="mode == 'editor'">
 
 				<div class="editor-page" v-for="page in workingPages">
@@ -14,11 +13,10 @@
 							v-for="field in getPageFields(page.object)"
 							:key="field.id"
 							:value="field"
+							:is-focused="checkFocus(field.id)"
 							:selected="selectedTool == field.id"
-							:focused="focusedTool && focusedTool.id == field.id"
-							@show-tool="showTool"
-							@hide-tool="deselectTool"
 							@focus-tool="focusTool"
+							@blur-tool="blurTool"
 							class="resize-drag"
 						/>
 					</div>
@@ -36,6 +34,12 @@
 
 	export default {
 		name: 'WorkSheetPDF',
+		props: {
+			focusedFields: {
+				type: Array,
+				default: () => ([])
+			}
+		},
 		data: () => ({
 			mode: '',
 			loadFields: null,
@@ -53,87 +57,6 @@
 
 			this.selectedPages = this.worksheet.options?.selected_pages ? this.$shallow(this.worksheet.options?.selected_pages) : [];
 			this.mode = this.selectedPages.length ? 'editor' : 'pages';
-
-			const restrictToParent = interact.modifiers.restrict({
-				restriction: 'parent',
-				elementRect: { left: 0, right: 0, top: 0, bottom: 0 },
-			});
-
-			interact('.resize-drag')
-			.resizable({
-				edges: { top: true, left: true, bottom: true, right: true },
-				listeners: {
-					start: function(event) {
-						console.log('start');
-						event.target.classList.add('resizing');
-					},
-					move: function(event) {
-						let { x, y } = event.target.dataset;
-
-						x = (parseFloat(x) || 0) + event.deltaRect.left;
-						y = (parseFloat(y) || 0) + event.deltaRect.top;
-
-						const pageContentWidth = document.querySelector('.page-content').clientWidth;
-						const pageContentHeight = document.querySelector('.page-content').clientHeight;
-
-						const width = event.rect.width * 100 / pageContentWidth;
-						const height = event.rect.height * 100 / pageContentHeight;
-
-						Object.assign(event.target.style, {
-							width: `${ width }%`,
-							height: `${ height }%`
-						});
-
-						Object.assign(event.target.dataset, { x, y });
-					},
-					end: function(event) {
-						console.log('end');
-						event.target.classList.remove('resizing');
-					},
-				}
-			})
-			.draggable({
-				modifiers: [ restrictToParent ],
-				listeners: {
-					start (event) {
-						console.log(event.type, event.target);
-						event.target.classList.add('dragging');
-					},
-					move (event) {
-
-						obj.position.x += event.dx;
-						obj.position.y += event.dy;
-
-						const pageContentWidth = document.querySelector('.page-content').clientWidth;
-						const pageContentHeight = document.querySelector('.page-content').clientHeight;
-
-						const x = obj.position.x * 100 / pageContentWidth;
-						const y = obj.position.y * 100 / pageContentHeight;
-
-						event.target.style.left = `${ x }%`;
-						event.target.style.top = `${ y }%`;
-					},
-					end: function(event) {
-						console.log('end');
-						event.target.classList.remove('dragging');
-					},
-				}
-			})
-			.actionChecker(function (pointer, event, action, interactable, element, interaction) {
-
-				if (interact.matchesSelector(event.target, '.resize-handle')) {
-
-					// resize from the top and right edges
-					action.name  = 'resize';
-					action.edges = { bottom: true, right: true };
-
-				} else {
-
-					action.name = 'drag';
-				}
-
-				return action;
-			});
 		},
 		computed: {
 			...mapGetters({
@@ -171,9 +94,19 @@
 				this.updateKey = val;
 			},
 			startAgain() {
-
 				this.updateContent(null);
 			},
+			checkFocus(id) {
+
+				const index = this.focusedFields.findIndex(f => f.fieldId == id && f.userId != this.$auth.user.id);
+
+				if(index > -1) {
+					return this.focusedFields[index];
+				}
+
+				return false;
+			},
+
 			async loadPDFFields() {
 				const obj = this;
 
@@ -209,44 +142,30 @@
 
 			focusTool(tool) {
 
-				this.position.x = tool.x;
-				this.position.y = tool.y;
-
 				this.focusedTool = this.worksheet.blocks.find(b => b.id == tool.id);
-				this.showDrawer = true;
+
+				this.showTool(tool.id);
+
+				this.$parent.socket.emit('focusTool', {
+					userId: this.$auth.user.id,
+					userName: this.$auth.user.nicename,
+					fieldId: tool.id
+				});
 			},
 
-			showTool(tool) {
+			blurTool(tool) {
 
-				this.selectedTool = tool;
-				this.showDrawer = true;
-			},
-
-			deselectTool(tool) {
-
-				this.selectedTool = null;
-			},
-
-			closeDrawer() {
-				this.showDrawer = false;
 				this.focusedTool = null;
+				this.deselectTool();
+
+				this.$parent.socket.emit('blurTool', {
+					userId: this.$auth.user.id,
+					fieldId: tool.id
+				});
 			},
 
-			async uploadAttachment(files) {
-				var obj = this;
-
-				this.uploadingAttachment = true;
-
-				var formData = new FormData();
-				formData.append('file', files[0]);
-
-				const res = await obj.$axios.$post(`/worksheets/${ this.worksheet.id }/upload-pdf`, formData);
-
-				this.uploadingAttachment = false;
-
-				this.updateContent(res.data.worksheet.content);
-				this.mode = 'pages';
-			}
+			showTool(tool) { this.selectedTool = tool; },
+			deselectTool() { this.selectedTool = null; },
 		}
 	}
 </script>
