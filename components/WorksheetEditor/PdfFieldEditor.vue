@@ -8,6 +8,22 @@
 				<input type="text" v-model="field.name" class="input-block form-control">
 			</form-group>
 
+			<form-group label="Field Type">
+				<select v-model="field.type" class="input-block form-control">
+					<option value="">Select a field type</option>
+					<option value="short-text-input">Single line text</option>
+					<option value="long-text-input">Multi-lined text</option>
+					<option value="date-input">Date</option>
+					<option value="number-input">Number</option>
+					<option value="currency-input">Currency</option>
+					<option value="multiple-choice-question">List of options</option>
+				</select>
+			</form-group>
+
+			<form-group v-if="field.type == 'currency-input'" label="Predefined Currency">
+				<currency-input v-model="field.content.predefined_currency" />
+			</form-group>
+
 		</worksheet-editor-drawer-block>
 
 		<portal-target name="tool-area-editor"></portal-target>

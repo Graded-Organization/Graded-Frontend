@@ -19,10 +19,20 @@
 		>
 			<input type="checkbox" v-if="value.type == 'checkbox'">
 			<input type="radio" v-if="value.type == 'radio'">
-			<input type="text"
+
+			<input
+				class="field-control"
+				:type="inputType(value.type)"
+				v-if="value.type == 'short-text-input' || value.type == 'date-input' || value.type == 'number-input'"
 				@focus="focusField"
 				:disabled="isFocused"
-				v-if="value.type == 'long-text-input'">
+			>
+
+			<textarea
+				class="field-control"
+				@focus="focusField"
+				:disabled="isFocused"
+				v-if="value.type == 'long-text-input'"></textarea>
 
 			<select v-if="value.type == 'select'">
 				<option v-for="choice in value.content.choices">{{ choice }}</option>
@@ -91,6 +101,13 @@
 			},
 		},
 		methods: {
+
+			inputType(type) {
+
+				if(type == 'date-input') return 'date';
+				if(type == 'number-input') return 'number';
+				else return 'text';
+			},
 
 			focusField(event) {
 
@@ -272,7 +289,7 @@
 				}
 			}
 
-			input[type="text"] {
+			.field-control {
 
 				.overlay-element();
 				background: transparent;

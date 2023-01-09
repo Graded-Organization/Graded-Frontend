@@ -25,6 +25,10 @@ import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
 Vue.use(Loading);
 
+import Multiselect from 'vue-multiselect';
+Vue.component('multiselect', Multiselect);
+import 'vue-multiselect/dist/vue-multiselect.min.css';
+
 /* Other Stuff */
 /* ---------------------------------------------------------------------------------------------- */
 
