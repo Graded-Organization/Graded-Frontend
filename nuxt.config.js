@@ -83,7 +83,7 @@ export default {
 		sockets: [
 			{
 				name: 'application',
-				url: 'http://localhost:1337',
+				url: process.env.RTS_URL || 'http://localhost:1337',
 				default: true
 			}
 		],
@@ -91,7 +91,7 @@ export default {
 			cors: {
 				credentials: true,
 				origin: [
-					'http://localhost:1337'
+					process.env.RTS_URL || 'http://localhost:1337'
 				]
 			}
 		}
