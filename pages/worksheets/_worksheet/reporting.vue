@@ -24,6 +24,7 @@
 							</div>
 							<div slot="view" slot-scope="props">
 								<a href="#" @click.prevent="showApplication(props.row)" class="button button-small button-ghost-primary button-pill">View</a>
+								<a v-tooltip.bottom="`Copy UID`" href="#" @click.prevent="copy(`${ props.row.uid }`)" class="button button-small"><i class="far fa-copy" /></a>
 							</div>
 						</graded-data-table>
 					</div>
@@ -71,10 +72,6 @@
 					field: 'user_name',
 				},
 				{
-					label: 'UID',
-					field: 'uid',
-				},
-				{
 					field: 'applicantsNumber',
 					label: 'Applicants'
 				},
@@ -100,7 +97,7 @@
 				{
 					field: 'view',
 					label: 'View',
-					width: '100px',
+					width: '150px',
 					tdClass: 'text-center'
 				}
 			],
@@ -120,6 +117,21 @@
 				}
 
 				return applicantsString;
+			},
+
+			async copy(text) {
+				try {
+					await this.$copyText(text);
+
+					this.$notify({
+						group: 'graded',
+						title: 'Copied!',
+						text: 'UID copied to clipboard, sweet!'
+					});
+
+				} catch (e) {
+					console.error(e);
+				}
 			},
 
 			showApplication(app) {
