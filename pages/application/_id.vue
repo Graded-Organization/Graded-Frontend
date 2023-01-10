@@ -206,7 +206,7 @@
 
 					this.socket = this.$nuxtSocket({});
 
-					this.socket.emit('connected', this.$auth.user);
+					this.socket.emit('connected', { ...this.$auth.user, application: this.$route.params.id });
 					this.checkConnected();
 
 					this.socket.on('connectedUsers', (msg, cb) => {

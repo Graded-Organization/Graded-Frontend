@@ -150,6 +150,7 @@
 				this.$parent.socket.emit('focusTool', {
 					userId: this.$auth.user.id,
 					userName: this.$auth.user.nicename,
+					application: this.$route.params.id,
 					fieldId: tool.id
 				});
 			},
@@ -161,6 +162,7 @@
 
 				this.$parent.socket.emit('blurTool', {
 					userId: this.$auth.user.id,
+					application: this.$route.params.id,
 					fieldId: tool.id
 				});
 			},
@@ -171,6 +173,8 @@
 			broadcastNewAnswer(answer) {
 
 				console.log('broadcastNewAnswer', answer);
+
+				answer.application = this.$route.params.id;
 				this.$parent.socket.emit('newAnswer', answer);
 			}
 		}

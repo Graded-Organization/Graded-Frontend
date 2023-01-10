@@ -241,7 +241,7 @@
 
 					this.socket = this.$nuxtSocket({});
 
-					this.socket.emit('connected', this.$auth.user);
+					this.socket.emit('connected', { ...this.$auth.user, application: this.$route.params.id });
 					this.checkConnected();
 
 					this.socket.on('connectedUsers', (msg, cb) => {
@@ -261,7 +261,7 @@
 					});
 
 					this.socket.on('disconnect', function() {
-						this.socket.emit('disconnect', this.$auth.user);
+						this.socket.emit('disconnected', { ...this.$auth.user, application: this.$route.params.id });
 					});
 				}
 			},
@@ -352,7 +352,7 @@
 
 		beforeRouteLeave(to, from, next) {
 
-			if(this.$auth.loggedIn) this.socket.emit('disconnected', this.$auth.user);
+			if(this.$auth.loggedIn) this.socket.emit('disconnected', { ...this.$auth.user, application: this.$route.params.id });
 			next();
 		}
 	}
