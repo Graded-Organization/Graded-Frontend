@@ -4,7 +4,7 @@
 		<div class="editor-wrapper" ref="editorWrapper">
 			<div class="pdf-editor" v-if="mode == 'editor'">
 
-				<div class="editor-page" v-for="page in workingPages.reverse()">
+				<div class="editor-page" v-for="page in workingPages">
 					<img :src="page.image" alt="">
 
 					<div class="page-content">
@@ -83,7 +83,7 @@
 			workingPages() {
 
 				if(!this.worksheet.content?.pdf?.pages) return [];
-				return Object.values(this.worksheet.content?.pdf?.pages).filter(p => this.selectedPages.includes(p.object));
+				return Object.values(this.worksheet.content?.pdf?.pages).filter(p => this.selectedPages.includes(p.object)).reverse();
 			}
 		},
 		methods: {

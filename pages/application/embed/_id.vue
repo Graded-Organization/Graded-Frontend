@@ -15,10 +15,39 @@
 
 			<div class="header-actions">
 
-				<div class="student-info" v-if="showUserInfo">
-					<h3>{{ application.user_name }}</h3>
-					<p>{{ application.user_email }}</p>
-				</div>
+				<template v-if="showUserInfo">
+
+					<div class="student-info" v-if="connectedUsers.length">
+						<div class="connected-user" v-for="user in connectedUsers">
+							<div class="avatar-wrapper">
+								<img
+									class="avatar"
+									width="40"
+									:src="`${ $config.apiUrl }/users/${ user.id }/avatar?size=200`"
+									v-tooltip.bottom="user.nicename"
+									:style="`border-color: ${ $stringToColour(user.nicename) }`"
+								>
+							</div>
+						</div>
+					</div>
+
+					<div v-else class="student-info">
+						<div class="connected-user">
+							<div class="avatar-wrapper">
+								<img
+									class="avatar"
+									width="40"
+									:src="`${ $config.apiUrl }/users/${ $auth.user.id }/avatar?size=200`"
+									v-tooltip.bottom="'You'"
+									:style="`border-color: ${ $stringToColour($auth.user.nicename) }`"
+								>
+							</div>
+						</div>
+
+						<!-- <h3>{{ application.user_name }}</h3>
+						<p>{{ application.user_email }}</p> -->
+					</div>
+				</template>
 
 				<template v-if="application.status != 'Completed' && showActions">
 					<a href="#" @click.prevent="sureModal = true" class="button button-primary">Submit</a>
@@ -41,7 +70,10 @@
 					<h2>{{ application.grade }}</h2>
 				</div>
 
-				<worksheet v-model="answers" />
+				<worksheet v-if="worksheet.type == 'grid'" v-model="answers" />
+				<worksheet-pdf
+					:focused-fields="focusedFields"
+				v-else />
 
 				<div class="no-header-submit" v-if="application.status != 'Completed' && !showHeader && showActions">
 					<a href="#" @click.prevent="sureModal = true" class="button button-primary">Submit</a>
@@ -78,8 +110,16 @@
 		mixins: [ WorksheetMixin ],
 		data: () => ({
 			answers: {},
-			sureModal: false
+			sureModal: false,
+			connectedUsers: [],
+			focusedFields: [],
+			agreeJoin: true,
+			isLoading: false
 		}),
+		mounted() {
+
+			this.sockets();
+		},
 		computed: {
 			// Query Params
 			showHeader() { return this.$route.query?.header != parseInt(0); },
@@ -146,6 +186,37 @@
 			},
 		},
 		methods: {
+			sockets() {
+
+				if(this.$auth.loggedIn) {
+
+					this.socket = this.$nuxtSocket({});
+
+					this.socket.emit('connected', this.$auth.user);
+					this.checkConnected();
+
+					this.socket.on('connectedUsers', (msg, cb) => {
+
+						this.connectedUsers = msg;
+						this.checkConnected();
+					});
+
+					this.socket.on('focusedFields', (msg, cb) => {
+
+						this.focusedFields = msg;
+					});
+
+					this.socket.on('newAnswer', (msg, cb) => {
+
+						this.addAnswer(msg);
+					});
+				}
+			},
+
+			checkConnected() {
+				this.socket.emit('checkConnected');
+			},
+
 			getToolAreaStyle(area) {
 
 				if(!area) return {};
@@ -176,6 +247,26 @@
 				this.setApplication(applicationRefetch.data);
 
 				this.sureModal = false;
+			},
+
+			async joinApplication() {
+
+				this.isLoading = true;
+
+				const user = {
+					firstname: this.userFirstname,
+					lastname: this.userLastname,
+					username: this.userEmail,
+					metas: { avatar_link: `${ this.$config.apiUrl }/users/${ this.userId }/avatar` }
+				};
+
+				const join = await this.$axios.$post(`/applications/${ this.$route.params.id }/join`, user);
+				await this.$auth.setUserToken(join.jwt);
+				await this.$auth.fetchUser();
+
+				this.isLoading = false;
+
+				this.sockets();
 			}
 		},
 		async fetch() {
@@ -184,7 +275,16 @@
 			this.setApplication(application.data);
 
 			await this.fetchWorksheet(this.application.id_worksheet);
-			Vue.set(this, 'answers', this.$shallow(this.application.answers));
+
+			if(this.application.type == 'grid') {
+
+				Vue.set(this, 'answers', this.$shallow(this.application.answers));
+
+			} else {
+
+				const answers = await this.$axios.$get(`/applications/${ this.$route.params.id }/answers`);
+				this.setAnswers(answers.data);
+			}
 		}
 	}
 </script>
@@ -254,6 +354,30 @@
 
 				padding-right: @margin-default;
 				text-align: right;
+
+				display: flex;
+
+				.avatar-wrapper {
+
+					&:before {
+
+						content: '';
+						width: 12px;
+						height: 12px;
+						background: @success;
+						border: 2px solid white;
+						position: absolute;
+						top: 0;
+						right: 0;
+						border-radius: @radius-round;
+					}
+				}
+
+				.avatar {
+
+					border: 3px solid transparent;
+					margin-left: @margin-half;
+				}
 
 				h3 {
 
