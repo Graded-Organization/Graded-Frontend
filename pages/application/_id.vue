@@ -145,6 +145,7 @@
 			userFirstname() { return this.$route.query?.user_firstname; },
 			userLastname() { return this.$route.query?.user_lastname; },
 			userEmail() { return this.$route.query?.user_email; },
+
 			areas() {
 
 				let cells = [];

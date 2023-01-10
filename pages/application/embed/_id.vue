@@ -1,102 +1,141 @@
 <template>
 	<div class="application-wrapper" v-if="worksheet && application">
 
-		<header class="application-header" v-if="showHeader">
-			<nuxt-link to="/dashboard" class="site-logo">
-				<graded-logo :size="2" v-if="showBranding" />
-			</nuxt-link>
+		<div class="join" v-if="!$auth.loggedIn">
+			<header class="application-header" v-if="showHeader">
+				<nuxt-link to="/dashboard" class="site-logo">
+					<graded-logo :size="2" v-if="showBranding" />
+				</nuxt-link>
 
-			<div class="worksheet-title" v-if="showSheetInfo">
-				<div>
-					<h2 class="worksheet-name-wrapper">{{ worksheetName }}</h2>
-					<p v-if="worksheetDescription" class="worksheet-description-wrapper">{{ worksheetDescription }}</p>
+				<div class="worksheet-title">
+					<div>
+						<h2 class="worksheet-name-wrapper">{{ worksheetName }}</h2>
+						<p v-if="worksheetDescription" class="worksheet-description-wrapper">{{ worksheetDescription }}</p>
+					</div>
 				</div>
-			</div>
+			</header>
 
-			<div class="header-actions">
-
-				<template v-if="showUserInfo">
-
-					<div class="student-info" v-if="connectedUsers.length">
-						<div class="connected-user" v-for="user in connectedUsers">
-							<div class="avatar-wrapper">
-								<img
-									class="avatar"
-									width="40"
-									:src="`${ $config.apiUrl }/users/${ user.id }/avatar?size=200`"
-									v-tooltip.bottom="user.nicename"
-									:style="`border-color: ${ $stringToColour(user.nicename) }`"
-								>
-							</div>
-						</div>
-					</div>
-
-					<div v-else class="student-info">
-						<div class="connected-user">
-							<div class="avatar-wrapper">
-								<img
-									class="avatar"
-									width="40"
-									:src="`${ $config.apiUrl }/users/${ $auth.user.id }/avatar?size=200`"
-									v-tooltip.bottom="'You'"
-									:style="`border-color: ${ $stringToColour($auth.user.nicename) }`"
-								>
-							</div>
-						</div>
-
-						<!-- <h3>{{ application.user_name }}</h3>
-						<p>{{ application.user_email }}</p> -->
-					</div>
-				</template>
-
-				<template v-if="application.status != 'Completed' && showActions">
-					<a href="#" @click.prevent="sureModal = true" class="button button-primary">Submit</a>
-				</template>
-			</div>
-		</header>
-
-		<div class="application-body" :class="{ 'is-completed': application.status == 'Completed', 'has-header': showHeader }">
 			<div class="inner">
+				<div class="m-double">
+					<h3>Hello {{ userFirstname }} {{ userLastname }}.</h3>
+					<h2>Join <strong>{{ worksheet.name }}</strong></h2>
 
-				<div class="application-submitted" v-if="application.status == 'Completed'">
-					<div class="date">
-						<!-- 2022-11-17 17:51:42 -->
-						<p>Submited by <strong>{{ application.user_name }}</strong> on {{ application.modified | moment("dddd, MMMM Do YYYY") }}</p>
-					</div>
-				</div>
-
-				<div class="grade" v-if="application.status == 'Completed'">
-					<img src="~/assets/images/template/grade.svg" alt="">
-					<h2>{{ application.grade }}</h2>
-				</div>
-
-				<worksheet v-if="worksheet.type == 'grid'" v-model="answers" />
-				<worksheet-pdf
-					:focused-fields="focusedFields"
-				v-else />
-
-				<div class="no-header-submit" v-if="application.status != 'Completed' && !showHeader && showActions">
-					<a href="#" @click.prevent="sureModal = true" class="button button-primary">Submit</a>
-				</div>
-
-				<graded-modal
-					v-model="sureModal"
-					name="submit-application"
-					title="Are you sure you want to submit your answers?"
-					:show-close="false"
-				>
-					<template v-slot="{ params, close }">
-						<div class="submit-application">
-
-							<p class="text-right">
-								<a href="#" @click.prevent="close" class="button button-ghost-gray">Nevermind</a>
-								<a href="#" @click.prevent="submitApplication" class="button button-primary">Yes, submit</a>
-							</p>
+					<div class="form-group">
+						<div class="form-check">
+							<input id="join_agree" class="form-check-input" v-model="agreeJoin" type="checkbox">
+							<label for="join_agree">I agree with sharing my company information with Growth Institute</label>
 						</div>
-					</template>
-				</graded-modal>
+					</div>
+					<p>
+						<button
+							:disabled="!agreeJoin"
+							:class="{ disabled: !agreeJoin, 'is-loading': isLoading }"
+							class="button button-primary"
+							@click="joinApplication"
+						>Join {{ worksheet.name }}</button>
+					</p>
+				</div>
 			</div>
 		</div>
+
+		<template v-else>
+			<header class="application-header" v-if="showHeader">
+				<nuxt-link to="/dashboard" class="site-logo">
+					<graded-logo :size="2" v-if="showBranding" />
+				</nuxt-link>
+
+				<div class="worksheet-title" v-if="showSheetInfo">
+					<div>
+						<h2 class="worksheet-name-wrapper">{{ worksheetName }}</h2>
+						<p v-if="worksheetDescription" class="worksheet-description-wrapper">{{ worksheetDescription }}</p>
+					</div>
+				</div>
+
+				<div class="header-actions">
+
+					<template v-if="showUserInfo">
+
+						<div class="student-info" v-if="connectedUsers.length">
+							<div class="connected-user" v-for="user in connectedUsers">
+								<div class="avatar-wrapper">
+									<img
+										class="avatar"
+										width="40"
+										:src="user.id == $auth.user.id ? userAvatar : `${ $config.apiUrl }/users/${ user.id }/avatar?size=200`"
+										v-tooltip.bottom="user.id == $auth.user.id ? 'You' : user.nicename"
+										:style="`border-color: ${ $stringToColour(user.nicename) }`"
+									>
+								</div>
+							</div>
+						</div>
+
+						<div v-else class="student-info">
+							<div class="connected-user">
+								<div class="avatar-wrapper">
+									<img
+										class="avatar"
+										width="40"
+										:src="userAvatar"
+										v-tooltip.bottom="'You'"
+										:style="`border-color: ${ $stringToColour($auth.user.nicename) }`"
+									>
+								</div>
+							</div>
+
+							<!-- <h3>{{ application.user_name }}</h3>
+							<p>{{ application.user_email }}</p> -->
+						</div>
+					</template>
+
+					<template v-if="application.status != 'Completed' && showActions">
+						<a href="#" @click.prevent="sureModal = true" class="button button-primary">Submit</a>
+					</template>
+				</div>
+			</header>
+
+			<div class="application-body" :class="{ 'is-completed': application.status == 'Completed', 'has-header': showHeader }">
+				<div class="inner">
+
+					<div class="application-submitted" v-if="application.status == 'Completed'">
+						<div class="date">
+							<!-- 2022-11-17 17:51:42 -->
+							<p>Submited by <strong>{{ application.user_name }}</strong> on {{ application.modified | moment("dddd, MMMM Do YYYY") }}</p>
+						</div>
+					</div>
+
+					<div class="grade" v-if="application.status == 'Completed'">
+						<img src="~/assets/images/template/grade.svg" alt="">
+						<h2>{{ application.grade }}</h2>
+					</div>
+
+					<worksheet v-if="worksheet.type == 'grid'" v-model="answers" />
+					<worksheet-pdf
+						:focused-fields="focusedFields"
+					v-else />
+
+					<div class="no-header-submit" v-if="application.status != 'Completed' && !showHeader && showActions">
+						<a href="#" @click.prevent="sureModal = true" class="button button-primary">Submit</a>
+					</div>
+
+					<graded-modal
+						v-model="sureModal"
+						name="submit-application"
+						title="Are you sure you want to submit your answers?"
+						:show-close="false"
+					>
+						<template v-slot="{ params, close }">
+							<div class="submit-application">
+
+								<p class="text-right">
+									<a href="#" @click.prevent="close" class="button button-ghost-gray">Nevermind</a>
+									<a href="#" @click.prevent="submitApplication" class="button button-primary">Yes, submit</a>
+								</p>
+							</div>
+						</template>
+					</graded-modal>
+				</div>
+			</div>
+		</template>
 	</div>
 </template>
 
@@ -132,6 +171,13 @@
 			toolAreas() { return this.worksheet.content.toolAreas; },
 			worksheetName() {return this.worksheet.name || 'Untitled Worksheet'; },
 			worksheetDescription() { return this.worksheet.description },
+
+			userId() { return this.$route.query?.user_id; },
+			userFirstname() { return this.$route.query?.user_firstname; },
+			userLastname() { return this.$route.query?.user_lastname; },
+			userEmail() { return this.$route.query?.user_email; },
+			userAvatar() { return this.$route.query?.user_avatar || `${ this.$config.apiUrl }/users/${ this.$auth.user.id }/avatar?size=200`; },
+
 			areas() {
 
 				let cells = [];
@@ -260,7 +306,7 @@
 					metas: { avatar_link: `${ this.$config.apiUrl }/users/${ this.userId }/avatar` }
 				};
 
-				const join = await this.$axios.$post(`/applications/${ this.$route.params.id }/join`, user);
+				const join = await this.$axios.$post(`/applications/embed/${ this.$route.params.id }/join`, user);
 				await this.$auth.setUserToken(join.jwt);
 				await this.$auth.fetchUser();
 
@@ -291,9 +337,41 @@
 
 <style scoped lang="less">
 
+	.join {
+
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		flex: 1;
+
+		.inner {
+
+			text-align: center;
+
+			h2 {
+
+				font-size: 2rem;
+			}
+
+			h3 {
+
+				font-size: 1.5rem;
+			}
+
+			.form-check {
+
+				display: inline-block;
+			}
+		}
+	}
+
+
 	.application-wrapper {
 
 		width: 100%;
+		display: flex;
+		justify-content: center;
 	}
 
 	.application-header {
