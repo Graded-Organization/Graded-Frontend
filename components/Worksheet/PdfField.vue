@@ -341,6 +341,7 @@
 				background: transparent;
 				padding: @margin-third;
 				resize: none;
+				font-size: 0.8rem;
 			}
 		}
 

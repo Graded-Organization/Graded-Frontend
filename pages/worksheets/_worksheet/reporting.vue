@@ -16,7 +16,7 @@
 
 						<graded-data-table
 							:columns="columns"
-							:url="`/worksheets/${ $route.params.worksheet }/applications?pdo[applicants]=getApplicants&query_fields=id,id_worsheet,grade,status,user_name,created,applicants`"
+							:url="`/worksheets/${ $route.params.worksheet }/applications?pdo[applicants]=getApplicants&query_fields=id,uid,id_worsheet,grade,status,user_name,created,applicants`"
 							:max-height="`calc(100vh - 225px)`"
 						>
 							<div slot="applicantsNumber" slot-scope="props">
@@ -69,6 +69,10 @@
 				{
 					label: 'Name',
 					field: 'user_name',
+				},
+				{
+					label: 'UID',
+					field: 'uid',
 				},
 				{
 					field: 'applicantsNumber',
