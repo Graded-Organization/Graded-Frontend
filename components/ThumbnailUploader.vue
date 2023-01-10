@@ -2,6 +2,7 @@
 	<file-uploader
 		@update="uploadAttachment"
 		accept="image/*"
+		ref="fileUploader"
 	>
 		<span class="uploader-image" v-if="image">
 			<transition-fade>
@@ -30,6 +31,8 @@
 				default: ''
 			},
 		},
+		mounted() {
+		},
 		computed: {
 			image: {
 				get() {
@@ -51,14 +54,14 @@
 				var formData = new FormData();
 				formData.append('file', files[0]);
 
-				//$('.vts-file-dropzone').loading();
+				let loader = this.$loading.show({ container: this.$refs.fileUploader.$refs.loadingContainer });
 
 				const res = await obj.$axios.$post('/users/me/avatar', formData);
 
 				this.cache++;
 				obj.$emit('uploaded', res.data);
 
-				//$('.vts-file-dropzone').loading('done');
+				loader.hide();
 			}
 		}
 	}

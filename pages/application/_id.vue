@@ -218,6 +218,11 @@
 
 						this.focusedFields = msg;
 					});
+
+					this.socket.on('newAnswer', (msg, cb) => {
+
+						this.addAnswer(msg);
+					});
 				}
 			},
 
@@ -283,7 +288,16 @@
 			this.setApplication(application.data);
 
 			await this.fetchWorksheet(this.application.id_worksheet);
-			Vue.set(this, 'answers', this.$shallow(this.application.answers));
+
+			if(this.application.type == 'grid') {
+
+				Vue.set(this, 'answers', this.$shallow(this.application.answers));
+
+			} else {
+
+				const answers = await this.$axios.$get(`/applications/${ this.$route.params.id }/answers`);
+				this.setAnswers(answers.data);
+			}
 		},
 
 		beforeRouteLeave(to, from, next) {

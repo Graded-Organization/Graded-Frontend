@@ -7,7 +7,8 @@ export const state = () => ({
 	currentBlockArea: '',
 	toolAreas: {},
 	blocks: null,
-	application: null
+	application: null,
+	answers: []
 });
 
 export const mutations = {
@@ -55,6 +56,8 @@ export const mutations = {
 
 	// Application
 	setApplication(state, application) { state.application = application; },
+	setAnswers(state, answers) { Vue.set(state, 'answers', answers); },
+	addAnswer(state, answer) { state.answers.push(answer); }
 }
 
 export const actions = {
@@ -90,6 +93,8 @@ export const actions = {
 
 	// Application
 	setApplication({ commit }, payload) { commit('setApplication', payload); },
+	setAnswers({ commit }, payload) { commit('setAnswers', payload); },
+	addAnswer({ commit }, payload) { commit('addAnswer', payload); },
 }
 
 export const getters = {
@@ -155,4 +160,5 @@ export const getters = {
 
 	// Applications
 	application: state => state.application,
+	answers: state => state.answers
 }

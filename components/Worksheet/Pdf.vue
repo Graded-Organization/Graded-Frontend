@@ -17,6 +17,7 @@
 							:selected="selectedTool == field.id"
 							@focus-tool="focusTool"
 							@blur-tool="blurTool"
+							@new-answer="broadcastNewAnswer"
 							class="resize-drag"
 						/>
 					</div>
@@ -166,6 +167,12 @@
 
 			showTool(tool) { this.selectedTool = tool; },
 			deselectTool() { this.selectedTool = null; },
+
+			broadcastNewAnswer(answer) {
+
+				console.log('broadcastNewAnswer', answer);
+				this.$parent.socket.emit('newAnswer', answer);
+			}
 		}
 	}
 </script>

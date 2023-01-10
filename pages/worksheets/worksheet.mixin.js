@@ -10,6 +10,7 @@ export default {
 			loading: 'worksheet/loading',
 			blocks: 'worksheet/blocks',
 			application: 'worksheet/application',
+			blockAnswers: 'worksheet/answers'
 		})
 	},
 	methods: {
@@ -19,6 +20,8 @@ export default {
 			updateContent: 'worksheet/updateContent',
 			setLoading: 'worksheet/setLoading',
 			setApplication: 'worksheet/setApplication',
+			setAnswers: 'worksheet/setAnswers',
+			addAnswer: 'worksheet/addAnswer'
 		}),
 		async save() {
 

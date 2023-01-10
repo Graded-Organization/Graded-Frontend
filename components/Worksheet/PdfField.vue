@@ -23,16 +23,19 @@
 			<input
 				class="field-control"
 				:type="inputType(value.type)"
+				v-model="latestAnswer"
 				v-if="value.type == 'short-text-input' || value.type == 'date-input' || value.type == 'number-input'"
 				@focus="focusField"
 				:disabled="isFocused"
 			>
 
 			<textarea
+				v-if="value.type == 'long-text-input'"
 				class="field-control"
 				@focus="focusField"
 				:disabled="isFocused"
-				v-if="value.type == 'long-text-input'"></textarea>
+				v-model="latestAnswer"
+			/>
 
 			<select v-if="value.type == 'select'">
 				<option v-for="choice in value.content.choices">{{ choice }}</option>
@@ -89,7 +92,11 @@
 				default: false
 			}
 		},
+		data: () => ({
+			answer: ''
+		}),
 		computed: {
+			...mapGetters({ answers: 'worksheet/answers' }),
 			fieldStyles() {
 
 				return {
@@ -99,8 +106,26 @@
 					height: this.value.content.geo?.height + '%'
 				};
 			},
+			latestAnswer: {
+				get() {
+					const latestAnswers = this.answers.filter(a => a.id_block == this.value.id);
+
+					if(latestAnswers.length) {
+						const latestAnswer = latestAnswers.reduce(function(prev, current) {
+							return (prev.id > current.id) ? prev : current
+						});
+						if(latestAnswer) return latestAnswer.content.userAnswer;
+					}
+
+					return '';
+				},
+				set(answer) {
+					this.answer = answer;
+				}
+			}
 		},
 		methods: {
+			...mapActions({ addAnswer: 'worksheet/addAnswer' }),
 
 			inputType(type) {
 
@@ -117,11 +142,32 @@
 
 			},
 
-			blurField(event) {
+			async blurField(event) {
 
-				console.log('BLUR');
+				await this.saveAnswer();
 				this.$emit('blur-tool', this.value);
+			},
+
+			async saveAnswer() {
+
+				const content =  {
+					userAnswer: this.answer,
+					originalQuestion: this.value
+				};
+
+				const answer = {
+					id_block: this.value.id,
+					content: content
+				};
+
+				const applicationAnswer = await this.$axios.$post(`/applications/${this.$route.params.id}/answer`, answer);
+
+				this.addAnswer(applicationAnswer.data);
+				this.$emit('new-answer', applicationAnswer.data);
 			}
+		},
+		async fetch() {
+
 		}
 	};
 </script>
@@ -293,6 +339,8 @@
 
 				.overlay-element();
 				background: transparent;
+				padding: @margin-third;
+				resize: none;
 			}
 		}
 
