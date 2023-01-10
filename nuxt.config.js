@@ -160,7 +160,7 @@ export default {
 				},
 			},
 		},
-		watchLoggedIn: false,
+		//watchLoggedIn: false,
 		redirect: {
 			login: '/login',
 			logout: '/',

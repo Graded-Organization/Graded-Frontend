@@ -259,6 +259,10 @@
 
 						this.addAnswer(msg);
 					});
+
+					this.socket.on('disconnect', function() {
+						this.socket.emit('disconnect', this.$auth.user);
+					});
 				}
 			},
 
@@ -344,6 +348,12 @@
 				const answers = await this.$axios.$get(`/applications/${ this.$route.params.id }/answers`);
 				this.setAnswers(answers.data);
 			}
+		},
+
+		beforeRouteLeave(to, from, next) {
+
+			if(this.$auth.loggedIn) this.socket.emit('disconnected', this.$auth.user);
+			next();
 		}
 	}
 </script>
