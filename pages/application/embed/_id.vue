@@ -2,40 +2,42 @@
 	<div class="application-wrapper" v-if="worksheet && application">
 
 		<div class="join" v-if="!$auth.loggedIn">
-			<header class="application-header" v-if="showHeader">
-				<nuxt-link to="/dashboard" class="site-logo">
-					<graded-logo :size="2" v-if="showBranding" />
-				</nuxt-link>
+			<template v-if="joinCheck != null && !joinCheck">
+				<header class="application-header" v-if="showHeader">
+					<nuxt-link to="/dashboard" class="site-logo">
+						<graded-logo :size="2" v-if="showBranding" />
+					</nuxt-link>
 
-				<div class="worksheet-title">
-					<div>
-						<h2 class="worksheet-name-wrapper">{{ worksheetName }}</h2>
-						<p v-if="worksheetDescription" class="worksheet-description-wrapper">{{ worksheetDescription }}</p>
-					</div>
-				</div>
-			</header>
-
-			<div class="inner">
-				<div class="m-double">
-					<h3>Hello {{ userFirstname }} {{ userLastname }}.</h3>
-					<h2>Join <strong>{{ worksheet.name }}</strong></h2>
-
-					<div class="form-group">
-						<div class="form-check">
-							<input id="join_agree" class="form-check-input" v-model="agreeJoin" type="checkbox">
-							<label for="join_agree">I agree with sharing my company information with Growth Institute</label>
+					<div class="worksheet-title">
+						<div>
+							<h2 class="worksheet-name-wrapper">{{ worksheetName }}</h2>
+							<p v-if="worksheetDescription" class="worksheet-description-wrapper">{{ worksheetDescription }}</p>
 						</div>
 					</div>
-					<p>
-						<button
-							:disabled="!agreeJoin"
-							:class="{ disabled: !agreeJoin, 'is-loading': isLoading }"
-							class="button button-primary"
-							@click="joinApplication"
-						>Join {{ worksheet.name }}</button>
-					</p>
+				</header>
+
+				<div class="inner">
+					<div class="m-double">
+						<h3>Hello {{ userFirstname }} {{ userLastname }}.</h3>
+						<h2>Join <strong>{{ worksheet.name }}</strong></h2>
+
+						<div class="form-group">
+							<div class="form-check">
+								<input id="join_agree" class="form-check-input" v-model="agreeJoin" type="checkbox">
+								<label for="join_agree">I agree with sharing my company information with Growth Institute</label>
+							</div>
+						</div>
+						<p>
+							<button
+								:disabled="!agreeJoin"
+								:class="{ disabled: !agreeJoin, 'is-loading': isLoading }"
+								class="button button-primary"
+								@click="joinApplication"
+							>Join {{ worksheet.name }}</button>
+						</p>
+					</div>
 				</div>
-			</div>
+			</template>
 		</div>
 
 		<template v-else>
@@ -153,7 +155,8 @@
 			connectedUsers: [],
 			focusedFields: [],
 			agreeJoin: true,
-			isLoading: false
+			isLoading: false,
+			joinCheck: null
 		}),
 		mounted() {
 
@@ -321,6 +324,16 @@
 			this.setApplication(application.data);
 
 			await this.fetchWorksheet(this.application.id_worksheet);
+
+			// Check if user exists
+			if(!this.$auth.loggedIn && this.userEmail) {
+				const checkUser = await this.$axios.$post(`/applications/${ this.$route.params.id }/check-user`, { email: this.userEmail });
+				this.joinCheck = checkUser.data;
+
+				if(checkUser.data) {
+					this.joinApplication();
+				}
+			}
 
 			if(this.application.type == 'grid') {
 
