@@ -16,9 +16,12 @@
 
 						<graded-data-table
 							:columns="columns"
-							:url="`/worksheets/${ $route.params.worksheet }/applications`"
+							:url="`/worksheets/${ $route.params.worksheet }/applications?pdo[applicants]=getApplicants&query_fields=id,id_worsheet,grade,status,user_name,created,applicants`"
 							:max-height="`calc(100vh - 225px)`"
 						>
+							<div slot="applicantsNumber" slot-scope="props">
+								<p v-tooltip.left="{ content: `${ formatApplicants(props.row.applicants) }`, html: true }">{{ props.row.applicants.length }}</p>
+							</div>
 							<div slot="view" slot-scope="props">
 								<a href="#" @click.prevent="showApplication(props.row)" class="button button-small button-ghost-primary button-pill">View</a>
 							</div>
@@ -68,6 +71,10 @@
 					field: 'user_name',
 				},
 				{
+					field: 'applicantsNumber',
+					label: 'Applicants'
+				},
+				{
 					field: 'status',
 					label: 'Activity',
 				},
@@ -98,6 +105,19 @@
 			...mapActions({
 				setApplication: 'worksheet/setApplication',
 			}),
+			formatApplicants(applicants) {
+
+				if(!applicants.length) false;
+
+				let applicantsString = '';
+
+				for(const a in applicants) {
+					applicantsString += applicants[a].nicename + '<br>';
+				}
+
+				return applicantsString;
+			},
+
 			showApplication(app) {
 
 				this.showModal = true;
