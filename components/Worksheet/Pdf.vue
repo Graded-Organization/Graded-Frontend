@@ -4,7 +4,7 @@
 		<div class="editor-wrapper" ref="editorWrapper">
 			<div class="pdf-editor" v-if="mode == 'editor'">
 
-				<div class="editor-page" v-for="page in workingPages">
+				<div class="editor-page" v-for="page in workingPages.reverse()">
 					<img :src="page.image" alt="">
 
 					<div class="page-content">
