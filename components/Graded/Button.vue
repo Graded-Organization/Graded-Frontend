@@ -17,6 +17,6 @@
 			listeners() {
 				return this.$listeners;
 			},
-		}
-	}
+		},
+	};
 </script>

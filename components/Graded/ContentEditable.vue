@@ -24,7 +24,7 @@
 		props: {
 			value: {
 				type: String,
-				required: true
+				required: true,
 			},
 			tag: {
 				type: String,
@@ -32,15 +32,15 @@
 			},
 			defaultText: {
 				type: String,
-				default: 'No value'
+				default: 'No value',
 			},
 			noNL: {
 				type: Boolean,
-				default: true
+				default: true,
 			},
 			noHTML: {
 				type: Boolean,
-				default: true
+				default: true,
 			},
 			classes: {
 				type: Object,
@@ -62,7 +62,7 @@
 			enterPressed() { },
 			placeCaretAtEnd(el) {
 				el.focus();
-				if (typeof window.getSelection != 'undefined' && typeof document.createRange != 'undefined') {
+				if(typeof window.getSelection != 'undefined' && typeof document.createRange != 'undefined') {
 
 					var range = document.createRange();
 					range.selectNodeContents(el);
@@ -71,7 +71,7 @@
 					sel.removeAllRanges();
 					sel.addRange(range);
 
-				} else if (typeof document.body.createTextRange != 'undefined') {
+				} else if(typeof document.body.createTextRange != 'undefined') {
 
 					var textRange = document.body.createTextRange();
 					textRange.moveToElementText(el);
@@ -96,8 +96,8 @@
 				this.isEditable = false;
 				this.$emit('input', this.content);
 			},
-		}
-	}
+		},
+	};
 </script>
 
 <style lang="less" scoped>
@@ -112,6 +112,5 @@
 		content: attr(placeholder);
 		color: @body-color-muted;
 	}
-
 
 </style>
