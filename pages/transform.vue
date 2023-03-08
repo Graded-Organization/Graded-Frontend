@@ -17,8 +17,8 @@
 					<div class="mx-default">
 
 						<div class="splash-wrapper">
-							<div class="row">
-								<div class="col col-12 col-sm-6">
+							<div class="row middle">
+								<div class="col col-12 col-sm-5">
 									<div class="copy">
 										<h1>Create and share<br>your branded<br>interactive toolkit in<br>minutes</h1>
 										<h2>Transform empowers coaches, consultants, and course creators to provide the best learning experience for their clients.</h2>
@@ -28,7 +28,8 @@
 										</p>
 									</div>
 								</div>
-								<div class="col col-12 col-sm-6 col-anim">
+								<div class="col col-12 col-sm-7 col-anim">
+									<img src="~/assets/images/template/toolkit.svg" alt="">
 								</div>
 							</div>
 						</div>
@@ -84,18 +85,20 @@
 
 			<div class="block block-build">
 				<div class="inner">
-					<div class="block-wrapper">
-						<div class="row">
-							<div class="col col-12 col-sm-6"></div>
-							<div class="col col-12 col-sm-6">
-								<div class="copy">
-									<h3>Powerful Analytics</h3>
-									<h2>Analyze student<br>responses</h2>
-									<p class="mb-default">Make data-driven decisions and gain insights into effectiveness of your tools.</p>
+					<div class="mx-default">
+						<div class="block-wrapper">
+							<div class="row">
+								<div class="col col-12 col-sm-6"></div>
+								<div class="col col-12 col-sm-6">
+									<div class="copy">
+										<h3>Powerful Analytics</h3>
+										<h2>Analyze student<br>responses</h2>
+										<p class="mb-default">Make data-driven decisions and gain insights into effectiveness of your tools.</p>
 
-									<p>
-										<a href="#" class="button button-primary">Learn more</a>
-									</p>
+										<p>
+											<a href="#" class="button button-primary">Learn more</a>
+										</p>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -105,21 +108,23 @@
 
 			<div class="block block-build">
 				<div class="inner">
-					<div class="block-wrapper">
-						<div class="row">
-							<div class="col col-12 col-sm-6">
-								<div class="copy">
-									<h3>Lead Capture</h3>
-									<h2>Collect marketing<br>leads</h2>
-									<p class="mb-default">Move away from downloadable e-books or PDFs, and collect all responses from your lead magnets.</p>
-									<p class="mb-default">Not only generate a lead, but understand how qualified they are based on their use of your lead magnet.</p>
+					<div class="mx-default">
+						<div class="block-wrapper">
+							<div class="row">
+								<div class="col col-12 col-sm-6">
+									<div class="copy">
+										<h3>Lead Capture</h3>
+										<h2>Collect marketing<br>leads</h2>
+										<p class="mb-default">Move away from downloadable e-books or PDFs, and collect all responses from your lead magnets.</p>
+										<p class="mb-default">Not only generate a lead, but understand how qualified they are based on their use of your lead magnet.</p>
 
-									<p>
-										<a href="#" class="button button-primary">Learn more</a>
-									</p>
+										<p>
+											<a href="#" class="button button-primary">Learn more</a>
+										</p>
+									</div>
 								</div>
+								<div class="col col-12 col-sm-6"></div>
 							</div>
-							<div class="col col-12 col-sm-6"></div>
 						</div>
 					</div>
 				</div>
@@ -127,36 +132,38 @@
 
 			<div class="block block-how">
 				<div class="inner">
-					<div class="block-wrapper">
-						<div class="row bottom">
-							<div class="col col-12 col-sm-6">
-								<div class="copy">
-									<h2>Here's how<br>TransForm works</h2>
-									<p class="mb-default">Get started for free! Build your interactive toolkit in minutes.</p>
+					<div class="mx-default">
+						<div class="block-wrapper">
+							<div class="row bottom">
+								<div class="col col-12 col-sm-6">
+									<div class="copy">
+										<h2>Here's how<br>TransForm works</h2>
+										<p class="mb-default">Get started for free! Build your interactive toolkit in minutes.</p>
 
-									<p>
-										<a href="#" class="button button-primary">Talk to an expert</a>
-									</p>
+										<p>
+											<a href="#" class="button button-primary">Talk to an expert</a>
+										</p>
+									</div>
 								</div>
-							</div>
-							<div class="col col-12 col-sm-6">
-								<div class="copy">
+								<div class="col col-12 col-sm-6">
+									<div class="copy">
 
-									<div class="step">
-										<h3><small>Step 1</small> <span>Create</span></h3>
-										<p>You can make an interactive tool by digitizing your PDF or creating it using our builder from scratch. Add your content, and make it branded with your logo & colors.</p>
+										<div class="step">
+											<h3><small>Step 1</small> <span>Create</span></h3>
+											<p>You can make an interactive tool by digitizing your PDF or creating it using our builder from scratch. Add your content, and make it branded with your logo & colors.</p>
+										</div>
+
+										<div class="step">
+											<h3><small>Step 2</small> <span>Share</span></h3>
+											<p>Share your tool with your clients and students so they can start interacting with it. You can do it via a link or embedding it into other platforms.</p>
+										</div>
+
+										<div class="step">
+											<h3><small>Step 3</small> <span>Analyze</span></h3>
+											<p>Track activity for each tool. Analyze how your clients and students interact.</p>
+										</div>
+
 									</div>
-
-									<div class="step">
-										<h3><small>Step 2</small> <span>Share</span></h3>
-										<p>Share your tool with your clients and students so they can start interacting with it. You can do it via a link or embedding it into other platforms.</p>
-									</div>
-
-									<div class="step">
-										<h3><small>Step 3</small> <span>Analyze</span></h3>
-										<p>Track activity for each tool. Analyze how your clients and students interact.</p>
-									</div>
-
 								</div>
 							</div>
 						</div>
