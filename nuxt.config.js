@@ -12,34 +12,34 @@ export default {
 
 	// Global page headers: https://go.nuxtjs.dev/config-head
 	head: {
-		title: 'Graded!',
+		title: 'Transform',
 		htmlAttrs: {
-			lang: 'en'
+			lang: 'en',
 		},
 		meta: [
 			{ charset: 'utf-8' },
 			{ name: 'viewport', content: 'width=device-width, initial-scale=1' },
 			{ hid: 'description', name: 'description', content: '' },
-			{ name: 'format-detection', content: 'telephone=no' }
+			{ name: 'format-detection', content: 'telephone=no' },
 		],
 		script: [
 			{ src: '/scripts/font-awesome/all.js', 'data-observe-mutations': true, 'data-auto-replace-svg': 'nest' },
 			{ type: 'text/javascript', src: 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js' },
 			{ type: 'text/javascript', src: 'https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js' },
-			{ type: 'text/javascript', src: 'https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js' }
+			{ type: 'text/javascript', src: 'https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js' },
 		],
 		link: [
 			{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
 			{ rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css' },
 			{ rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css' },
-			{ rel: 'stylesheet', href: '/styles/font-awesome/all.css' }
-		]
+			{ rel: 'stylesheet', href: '/styles/font-awesome/all.css' },
+		],
 	},
 
 	// Global CSS: https://go.nuxtjs.dev/config-css
 	css: [
 		'@/assets/styles/chimplate/chimplate.less',
-		'~assets/styles/project.less'
+		'~assets/styles/project.less',
 	],
 
 	// Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -66,7 +66,7 @@ export default {
 	styleResources: {
 		less: [
 			'~assets/styles/chimplate/chimplate-resources.less',
-		]
+		],
 	},
 
 	// Modules: https://go.nuxtjs.dev/config-modules
@@ -84,17 +84,17 @@ export default {
 			{
 				name: 'application',
 				url: process.env.RTS_URL || 'http://localhost:1337',
-				default: true
-			}
+				default: true,
+			},
 		],
 		server: {
 			cors: {
 				credentials: true,
 				origin: [
-					process.env.RTS_URL || 'http://localhost:1337'
-				]
-			}
-		}
+					process.env.RTS_URL || 'http://localhost:1337',
+				],
+			},
+		},
 	},
 
 	i18n: {
@@ -104,7 +104,7 @@ export default {
 		],
 		langDir: '~/locale/',
 		defaultLocale: 'en',
-		vueI18n: { fallbackLocale: 'en' }
+		vueI18n: { fallbackLocale: 'en' },
 	},
 
 	googleFonts: {
@@ -112,17 +112,17 @@ export default {
 			Inter: [300, 400, 500, 700, 900],
 			Oxanium: [300, 400, 500, 700, 900],
 			'Titillium+Web': [300, 400, 600, 700, 900],
-			'Patrick Hand': [400]
+			'Patrick Hand': [400],
 		},
 	},
 
 	publicRuntimeConfig: {
 		apiUrl: process.env.API_URL || 'http://graded.test/back',
-		baseUrl: process.env.BASE_URL || 'http://localhost:3000'
+		baseUrl: process.env.BASE_URL || 'http://localhost:3000',
 	},
 
 	axios: {
-		baseUrl: process.env.API_URL || 'http://graded.test/back'
+		baseUrl: process.env.API_URL || 'http://graded.test/back',
 	},
 
 	auth: {
@@ -131,16 +131,16 @@ export default {
 				token: {
 					property: 'jwt',
 					required: true,
-					type: 'Bearer'
+					type: 'Bearer',
 				},
 				user: {
-					property: 'data'
+					property: 'data',
 				},
 				endpoints: {
 					login: { url: 'users/login', method: 'post', propertyName: 'jwt' },
 					user: { url: 'users/me?fetch_metas=1', method: 'get', propertyName: 'data' },
-					logout: false
-				}
+					logout: false,
+				},
 			},
 			google: {
 				clientId: '300354635680-nob5v9vuvk0lae0n5gvr7mir523elcm3.apps.googleusercontent.com',
@@ -148,15 +148,15 @@ export default {
 				responseType: 'code',
 				endpoints: {
 					token: (process.env.API_URL || 'http://graded.test/back') + '/users/google',
-					userInfo: (process.env.API_URL || 'http://graded.test/back') + '/users/me?fetch_metas=1'
+					userInfo: (process.env.API_URL || 'http://graded.test/back') + '/users/me?fetch_metas=1',
 				},
 				user: {
-					property: 'data'
+					property: 'data',
 				},
 				token: {
 					property: 'jwt',
 					required: true,
-					type: 'Bearer'
+					type: 'Bearer',
 				},
 			},
 		},
@@ -165,8 +165,8 @@ export default {
 			login: '/login',
 			logout: '/',
 			callback: '/login',
-			home: '/dashboard'
-		}
+			home: '/dashboard',
+		},
 	},
 
 	alias: {
@@ -179,9 +179,9 @@ export default {
 		loaders: {
 			less: {
 				lessOptions: {
-					math: 'always'
-				}
-			}
+					math: 'always',
+				},
+			},
 		},
 	},
-}
+};
