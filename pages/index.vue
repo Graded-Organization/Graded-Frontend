@@ -6,7 +6,7 @@
 			</nuxt-link>
 
 			<div class="header-actions">
-				<nuxt-link class="button button-primary" to="dashboard">Access your account here</nuxt-link>
+				<nuxt-link class="button button-login button-primary button-pill" to="dashboard">Login</nuxt-link>
 			</div>
 		</header>
 
@@ -14,58 +14,178 @@
 
 			<div class="block block-splash">
 				<div class="inner">
+					<div class="mx-default">
 
-					<div class="splash-wrapper">
-						<div class="col col-6">
-							<div class="copy">
-								<h1>Worksheets<br>that work.</h1>
-								<h2>Make them your own and engage tons of users.</h2>
+						<div class="splash-wrapper">
+							<div class="row middle">
+								<div class="col col-12 col-sm-5">
+									<div class="copy">
+										<h1>Create and share<br>your branded<br>interactive toolkit in<br>minutes</h1>
+										<h2>Transform empowers coaches, consultants, and course creators to provide the best learning experience for their clients.</h2>
 
-								<p>
-									<a href="#" class="button button-primary">Register</a>
-									<a href="#" class="button button-ghost-primary">Learn more</a>
-								</p>
+										<p>
+											<a href="#" class="button button-primary">Talk to an expert</a>
+										</p>
+									</div>
+								</div>
+								<div class="col col-12 col-sm-7 col-anim">
+									<img src="~/assets/images/template/toolkit.svg" alt="">
+								</div>
 							</div>
-						</div>
-						<div class="col col-6 col-anim">
-							<graded-splash-anim />
 						</div>
 					</div>
 				</div>
 			</div>
 
-			<div class="block block-ai">
+			<div class="block block-share">
 				<div class="inner">
-					<div class="m-default">
-						<h2>Unlock the Power of AI with Worksheet Management — Made Easy!</h2>
+					<div class="mx-default">
+						<div class="block-wrapper">
+							<div class="row">
+								<div class="col col-12 col-sm-6"></div>
+								<div class="col col-12 col-sm-6">
+									<div class="copy">
+										<h2>Share consulting<br>tools with clients</h2>
+										<p class="mb-default">Multiple users can edit in real-time. Put the whole team in sync mode.</p>
 
-						<div class="row flexcol">
-							<div class="col col-12 col-sm-6">
-								<div class="the-content">
-									<p>With our unique grading system, you will be able to create open-ended questions that the computer will be able to grade.</p>
-									<p>Our system will allow you to create questions that can be answered in multiple ways, and the computer will be able to accurately grade them based on the criteria you specify. You will also be able to customize the feedback for each answer to ensure the best understanding of the material.</p>
-								</div>
-
-							</div>
-							<div class="col col-12 col-sm-6">
-								<div class="animation">
-									<img src="@/assets/images/template/graded-bot.png" alt="Graded Bot" class="graded-bot">
-									<img src="@/assets/images/template/machine.gif" alt="Graded Bot" class="machine">
-
-									<div class="exams-wrapper">
-										<div class="exams"></div>
+										<p>
+											<a href="#" class="button button-primary">Talk to an expert</a>
+										</p>
 									</div>
-									<div class="exams-graded-wrapper">
-										<div class="exams"></div>
-									</div>
-
-									<div class="belt"></div>
-
-									<div class="gradient-left"></div>
-									<div class="gradient-right"></div>
 								</div>
 							</div>
 						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="block block-build">
+				<div class="inner">
+					<div class="mx-default">
+						<div class="block-wrapper">
+							<div class="row">
+								<div class="col col-12 col-sm-6">
+									<div class="copy">
+										<h3>Build & Share</h3>
+										<h2>Build and share in<br>less than 5 minutes</h2>
+										<p class="mb-default">Upload your existing PDF, or build your tool from scratch!</p>
+										<p class="mb-default">You can use ready-made templates or choose images and videos to make it more fun.</p>
+
+										<p>
+											<a href="#" class="button button-primary">Learn more</a>
+										</p>
+									</div>
+								</div>
+								<div class="col col-12 col-sm-6"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="block block-build">
+				<div class="inner">
+					<div class="mx-default">
+						<div class="block-wrapper">
+							<div class="row">
+								<div class="col col-12 col-sm-6"></div>
+								<div class="col col-12 col-sm-6">
+									<div class="copy">
+										<h3>Powerful Analytics</h3>
+										<h2>Analyze student<br>responses</h2>
+										<p class="mb-default">Make data-driven decisions and gain insights into effectiveness of your tools.</p>
+
+										<p>
+											<a href="#" class="button button-primary">Learn more</a>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="block block-build">
+				<div class="inner">
+					<div class="mx-default">
+						<div class="block-wrapper">
+							<div class="row">
+								<div class="col col-12 col-sm-6">
+									<div class="copy">
+										<h3>Lead Capture</h3>
+										<h2>Collect marketing<br>leads</h2>
+										<p class="mb-default">Move away from downloadable e-books or PDFs, and collect all responses from your lead magnets.</p>
+										<p class="mb-default">Not only generate a lead, but understand how qualified they are based on their use of your lead magnet.</p>
+
+										<p>
+											<a href="#" class="button button-primary">Learn more</a>
+										</p>
+									</div>
+								</div>
+								<div class="col col-12 col-sm-6"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="block block-how">
+				<div class="inner">
+					<div class="mx-default">
+						<div class="block-wrapper">
+							<div class="row bottom">
+								<div class="col col-12 col-sm-6">
+									<div class="copy">
+										<h2>Here's how<br>TransForm works</h2>
+										<p class="mb-default">Get started for free! Build your interactive toolkit in minutes.</p>
+
+										<p>
+											<a href="#" class="button button-primary">Talk to an expert</a>
+										</p>
+									</div>
+								</div>
+								<div class="col col-12 col-sm-6">
+									<div class="copy">
+
+										<div class="step">
+											<h3><small>Step 1</small> <span>Create</span></h3>
+											<p>You can make an interactive tool by digitizing your PDF or creating it using our builder from scratch. Add your content, and make it branded with your logo & colors.</p>
+										</div>
+
+										<div class="step">
+											<h3><small>Step 2</small> <span>Share</span></h3>
+											<p>Share your tool with your clients and students so they can start interacting with it. You can do it via a link or embedding it into other platforms.</p>
+										</div>
+
+										<div class="step">
+											<h3><small>Step 3</small> <span>Analyze</span></h3>
+											<p>Track activity for each tool. Analyze how your clients and students interact.</p>
+										</div>
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!--<div class="block block-others">
+				<div class="inner">
+					<h2>See how others are using TransForm</h2>
+				</div>
+			</div>-->
+
+			<div class="block block-started">
+				<div class="inner">
+					<div class="copy text-center">
+						<h2>Get Started</h2>
+						<p>Get started for free! Build your interactive toolkit in minutes.</p>
+
+						<p>
+							<a href="#" class="button button-primary">Talk to an expert</a>
+						</p>
 					</div>
 				</div>
 			</div>
@@ -83,7 +203,7 @@
 </template>
 
 <script>
-	import Logo from "~/assets/images/template/logo-mono.svg?inline";
+	import Logo from '~/assets/images/template/logo-transform.svg?inline';
 
 	export default {
 		name: 'IndexPage',
@@ -93,12 +213,17 @@
 		methods: {
 			async logout() {
 				await this.$auth.logout();
-			}
-		}
-	}
+			},
+		},
+	};
 </script>
 
 <style lang="less" scoped>
+
+	.block {
+
+		margin-bottom: 10vh;
+	}
 
 	.site-wrapper {
 
@@ -110,6 +235,7 @@
 
 			flex: 1;
 			padding-top: 57px;
+			padding-bottom: 100px;
 		}
 	}
 
@@ -120,11 +246,17 @@
 		top: 0;
 		left: 0;
 		height: 57px;
-		border-bottom: 1px solid @border-1;
 		display: flex;
 		align-items: stretch;
-		background: white;
 		z-index: 100;
+		background: white;
+		border-bottom: 1px solid @border-1;
+
+		@media @sm-n-above {
+
+			background: transparent;
+			border-bottom: 0;
+		}
 
 		.site-logo {
 
@@ -134,7 +266,12 @@
 
 			svg {
 
-				width: 70px;
+				width: 100px;
+
+				@media @sm-n-above {
+
+					width: 180px;
+				}
 
 				rect,
 				polygon,
@@ -151,6 +288,12 @@
 			margin-left: auto;
 			align-items: center;
 			padding-right: @margin-default;
+
+			.button-login {
+
+				padding-left: 3rem;
+				padding-right: 3rem;
+			}
 		}
 	}
 
@@ -225,7 +368,7 @@
 
 				@media @sm-n-above {
 
-					font-size: 5rem;
+					font-size: 3.2rem;
 				}
 			}
 
@@ -234,7 +377,6 @@
 				font-size: 1.5rem;
 				margin-bottom: @margin-double;
 				color: #AAA;
-				padding: 0 @margin-double;
 			}
 
 			.button {
@@ -264,133 +406,341 @@
 		}
 	}
 
-	.block-ai {
+	.block-share {
 
-		background: @background-1;
-		padding: @margin-quad*2 0;
+		.copy {
 
-		h2 {
-
+			display: flex;
+			justify-content: center;
+			flex-direction: column;
 			text-align: center;
-			font-weight: 900;
-			font-size: 2rem;
-			line-height: 1;
 			margin-bottom: @margin-double;
-		}
 
-		.the-content {
+			@media @sm-n-above {
+
+				margin-bottom: 0;
+				text-align: left;
+			}
+
+			h2 {
+
+				font-weight: 900;
+				font-size: 2.5rem;
+				line-height: 1;
+				margin-bottom: @margin-default;
+				text-align: right;
+
+				@media @sm-n-above {
+
+					font-size: 3.2rem;
+				}
+			}
 
 			p {
 
-				line-height: 1.5;
-				font-size: 1.2rem;
+				font-size: 1.5rem;
+				margin-bottom: @margin-double;
+				color: #AAA;
+				text-align: right;
+			}
+
+			.button {
+
+				border-radius: @radius-round;
+				padding: 10px 30px;
+				font-size: 1rem;
+
+				@media @sm-n-above {
+
+					padding: 20px 60px;
+					font-size: 1.2rem;
+				}
 			}
 		}
 
-		.animation {
+		.block-wrapper {
 
-			height: 200px;
-			width: 100%;
+			background: white;
+			border-radius: @radius-4;
+			padding: @margin-quad;
+			box-shadow: 1.2px 0px 2.2px rgba(0, 0, 0, 0.02),
+			2.9px 0.1px 5.3px rgba(0, 0, 0, 0.028),
+			5.4px 0.1px 10px rgba(0, 0, 0, 0.035),
+			9.6px 0.2px 17.9px rgba(0, 0, 0, 0.042),
+			18px 0.4px 33.4px rgba(0, 0, 0, 0.05),
+			43px 1px 80px rgba(0, 0, 0, 0.07);
+		}
+	}
 
-			img { image-rendering: pixelated; }
+	.block-build {
 
-			.graded-bot {
+		margin-bottom: 10vh;
 
-				width: 66*2px;
-				animation: float 6s ease-in-out infinite;
-				position: absolute;
-				right: 20px;
-				bottom: 0;
-				z-index: 10;
+		.copy {
+
+			display: flex;
+			justify-content: center;
+			flex-direction: column;
+			text-align: center;
+			margin-bottom: @margin-double;
+
+			@media @sm-n-above {
+
+				margin-bottom: 0;
+				text-align: left;
 			}
 
-			.machine {
+			h3 {
 
-				width: 43*2px;
-				position: absolute;
-				left: 45%;
-				bottom: -4px;
-				z-index: 2;
+				text-transform: uppercase;
+				letter-spacing: 0.5rem;
+				color: #AAA;
 			}
 
-			.belt {
+			h2 {
 
-				image-rendering: pixelated;
-				background: url('@/assets/images/template/belt.png') center center repeat-x;
-				background-size: auto 100%;
-				width: 100%;
-				height: 50px;
-				position: absolute;
-				bottom: 0;
-				z-index: 1;
-			}
+				font-weight: 900;
+				font-size: 2.5rem;
+				line-height: 1;
+				margin-bottom: @margin-default;
 
-			.exams-wrapper {
+				@media @sm-n-above {
 
-				height: 17px*2;
-				position: absolute;
-				bottom: 70px;
-				width: 50%;
-				z-index: 1;
-				overflow: hidden;
-
-				.exams {
-
-					image-rendering: pixelated;
-					background: url('@/assets/images/template/exam.png') center center repeat-x;
-					background-size: auto 100%;
-					width: 2600px;
-					margin-left: -2600/2px;
-					height: 17px*2;
-					animation: exams 6s linear infinite;
+					font-size: 3.2rem;
 				}
 			}
 
-			.exams-graded-wrapper {
+			p {
 
-				height: 17px*2;
-				position: absolute;
-				bottom: 70px;
-				right: 0;
-				width: 50%;
-				z-index: 1;
-				overflow: hidden;
+				font-size: 1.5rem;
+				margin-bottom: @margin-double;
+				color: #AAA;
+			}
 
-				.exams {
+			.button {
 
-					image-rendering: pixelated;
-					background: url('@/assets/images/template/exam-graded.png') center center repeat-x;
-					background-size: auto 100%;
-					width: 2600px;
-					margin-left: -2600/2px;
-					height: 17px*2;
-					animation: exams 6s linear infinite;
+				border-radius: @radius-round;
+				padding: 10px 30px;
+				font-size: 1rem;
+
+				@media @sm-n-above {
+
+					padding: 20px 60px;
+					font-size: 1.2rem;
+				}
+			}
+		}
+	}
+
+	.block-how {
+
+		margin-bottom: 10vh;
+
+		.copy {
+
+			display: flex;
+			justify-content: center;
+			flex-direction: column;
+			text-align: center;
+			margin-bottom: @margin-double;
+
+			@media @sm-n-above {
+
+				margin-bottom: 0;
+				text-align: left;
+			}
+
+			h2 {
+
+				font-weight: 900;
+				font-size: 2.5rem;
+				line-height: 1;
+				margin-bottom: @margin-default;
+
+				@media @sm-n-above {
+
+					font-size: 3.2rem;
 				}
 			}
 
-			.gradient-left {
+			p {
 
-				width: 100px;
-				height: 100%;
-				position: absolute;
-				left: 0;
-				top: 0;
-				background: rgb(241,243,245);
-				background: linear-gradient(90deg, rgba(241,243,245,1) 0%, rgba(241,243,245,0.48783263305322133) 35%, rgba(241,243,245,0) 100%);
-				z-index: 10;
+				font-size: 1.5rem;
+				margin-bottom: @margin-double;
+				color: #AAA;
 			}
 
-			.gradient-right {
+			.button {
 
-				width: 100px;
-				height: 100%;
-				position: absolute;
-				right: 0;
-				top: 0;
-				background: rgb(241,243,245);
-				background: linear-gradient(270deg, rgba(241,243,245,1) 0%, rgba(241,243,245,0.48783263305322133) 35%, rgba(241,243,245,0) 100%);
-				z-index: 2;
+				border-radius: @radius-round;
+				padding: 10px 30px;
+				font-size: 1rem;
+
+				@media @sm-n-above {
+
+					padding: 20px 60px;
+					font-size: 1.2rem;
+				}
 			}
+
+			.step {
+
+				border-bottom: 1px solid @border-1;
+				margin-bottom: @margin-double;
+
+				h3 {
+
+					font-weight: 900;
+					font-size: 1.5rem;
+					line-height: 1;
+					margin-bottom: @margin-default;
+
+					small {
+						display: block;
+						font-size: 0.8rem;
+						letter-spacing: 0.5rem;
+						font-weight: normal;
+						text-transform: uppercase;
+					}
+
+					@media @sm-n-above {
+
+						font-size: 2.5rem;
+					}
+				}
+
+				p {
+
+					font-size: 1.2rem;
+				}
+			}
+		}
+
+		.block-wrapper {
+
+			background: white;
+			border-radius: @radius-4;
+			padding: @margin-quad;
+			box-shadow: 1.2px 0px 2.2px rgba(0, 0, 0, 0.02),
+			2.9px 0.1px 5.3px rgba(0, 0, 0, 0.028),
+			5.4px 0.1px 10px rgba(0, 0, 0, 0.035),
+			9.6px 0.2px 17.9px rgba(0, 0, 0, 0.042),
+			18px 0.4px 33.4px rgba(0, 0, 0, 0.05),
+			43px 1px 80px rgba(0, 0, 0, 0.07);
+		}
+	}
+
+	.block-others {
+
+		h2 {
+
+			font-weight: 900;
+			font-size: 2.5rem;
+			line-height: 1;
+			margin-bottom: @margin-default;
+
+			@media @sm-n-above {
+
+				font-size: 3.2rem;
+			}
+		}
+	}
+
+	.block-started {
+
+		margin-bottom: 10vh;
+
+		.copy {
+
+			display: flex;
+			justify-content: center;
+			flex-direction: column;
+			text-align: center;
+			margin-bottom: @margin-double;
+
+			@media @sm-n-above {
+
+				margin-bottom: 0;
+				text-align: center;
+			}
+
+			h2 {
+
+				font-weight: 900;
+				font-size: 2.5rem;
+				line-height: 1;
+				margin-bottom: @margin-default;
+
+				@media @sm-n-above {
+
+					font-size: 3.2rem;
+				}
+			}
+
+			p {
+
+				font-size: 1.5rem;
+				margin-bottom: @margin-double;
+				color: #AAA;
+			}
+
+			.button {
+
+				border-radius: @radius-round;
+				padding: 10px 30px;
+				font-size: 1rem;
+
+				@media @sm-n-above {
+
+					padding: 20px 60px;
+					font-size: 1.2rem;
+				}
+			}
+
+			.step {
+
+				border-bottom: 1px solid @border-1;
+				margin-bottom: @margin-double;
+
+				h3 {
+
+					font-weight: 900;
+					font-size: 1.5rem;
+					line-height: 1;
+					margin-bottom: @margin-default;
+
+					small {
+						display: block;
+						font-size: 0.8rem;
+						letter-spacing: 0.5rem;
+						font-weight: normal;
+						text-transform: uppercase;
+					}
+
+					@media @sm-n-above {
+
+						font-size: 2.5rem;
+					}
+				}
+
+				p {
+
+					font-size: 1.2rem;
+				}
+			}
+		}
+
+		.block-wrapper {
+
+			background: white;
+			border-radius: @radius-4;
+			padding: @margin-quad;
+			box-shadow: 1.2px 0px 2.2px rgba(0, 0, 0, 0.02),
+			2.9px 0.1px 5.3px rgba(0, 0, 0, 0.028),
+			5.4px 0.1px 10px rgba(0, 0, 0, 0.035),
+			9.6px 0.2px 17.9px rgba(0, 0, 0, 0.042),
+			18px 0.4px 33.4px rgba(0, 0, 0, 0.05),
+			43px 1px 80px rgba(0, 0, 0, 0.07);
 		}
 	}
 
