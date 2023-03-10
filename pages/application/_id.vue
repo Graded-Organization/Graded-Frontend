@@ -53,27 +53,16 @@
 								</div>
 							</div>
 
-							<form-group label="Email" :class="{ 'has-error': $v.user.email.$error }">
+							<form-group label="Email" :class="{ 'has-error': $v.user.username.$error }">
 								<input
 									type="email"
-									v-model.trim="$v.user.email.$model"
+									v-model.trim="$v.user.username.$model"
 									class="input-block form-control"
 								>
 							</form-group>
-
-							<!--							<p class="text-right">
-															<a href="#" @click.prevent="authenticate" class="button button-primary">Access</a>
-														</p>-->
 						</div>
-
 					</template>
 
-					<!--					<div class="form-group">
-											<div class="form-check">
-												<input id="join_agree" class="form-check-input" v-model="agreeJoin" type="checkbox">
-												<label for="join_agree">I agree with sharing my company information with Growth Institute</label>
-											</div>
-										</div>-->
 					<p>
 						<button
 							:disabled="!agreeJoin"
@@ -184,6 +173,7 @@
 		layout: 'preview',
 		mixins: [WorksheetMixin],
 		data: () => ({
+			authenticateHasError: false,
 			answers: {},
 			sureModal: false,
 			socket: {},
@@ -194,14 +184,14 @@
 			user: {
 				firstname: '',
 				lastname: '',
-				email: '',
+				username: '',
 			},
 		}),
 		validations: {
 			user: {
 				firstname: { required },
 				lastname: { required },
-				email: { required, email },
+				username: { required, email },
 			},
 		},
 		mounted() {
@@ -352,7 +342,7 @@
 					id_worksheet: this.worksheet.id,
 					status: 'Pending',
 					user_name: `${ this.user.firstname } ${ this.user.lastname }`,
-					user_email: this.user.email,
+					user_email: this.user.username,
 					answers: {},
 				};
 
@@ -365,14 +355,20 @@
 
 				await this.authenticate();
 
+				let user;
+
 				this.isLoading = true;
 
-				const user = {
-					firstname: this.userFirstname,
-					lastname: this.userLastname,
-					username: this.userEmail,
-					metas: { avatar_link: `${ this.$config.apiUrl }/users/${ this.userId }/avatar` },
-				};
+				if(this.userEmail) {
+					user = {
+						firstname: this.userFirstname,
+						lastname: this.userLastname,
+						username: this.userEmail,
+						metas: { avatar_link: `${ this.$config.apiUrl }/users/${ this.userId }/avatar` },
+					};
+				} else {
+					user = this.user;
+				}
 
 				const join = await this.$axios.$post(`/applications/${ this.$route.params.id }/join`, user);
 				await this.$auth.setUserToken(join.jwt);
