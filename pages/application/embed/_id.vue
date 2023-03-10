@@ -84,8 +84,8 @@
 								</div>
 							</div>
 
-							<!-- <h3>{{ application.user_name }}</h3>
-							<p>{{ application.user_email }}</p> -->
+							<!-- <h3>{{ _uid.user_name }}</h3>
+							<p>{{ _uid.user_email }}</p> -->
 						</div>
 					</template>
 

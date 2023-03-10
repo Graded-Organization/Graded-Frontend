@@ -9,29 +9,79 @@
 				<div class="worksheet-title">
 					<div>
 						<h2 class="worksheet-name-wrapper">{{ worksheetName }}</h2>
-						<p v-if="worksheetDescription" class="worksheet-description-wrapper">{{ worksheetDescription }}</p>
+						<p
+							v-if="worksheetDescription"
+							class="worksheet-description-wrapper"
+						>{{ worksheetDescription }}</p>
 					</div>
 				</div>
 			</header>
 
 			<div class="inner">
-				<div class="m-double">
-					<h3>Hello {{ userFirstname }} {{ userLastname }}.</h3>
-					<h2>Join <strong>{{ worksheet.name }}</strong></h2>
+				<div class="m-double hello">
+					<h3 v-if="userFirstname || userLastname">Hello {{ userFirstname }} {{ userLastname }}.</h3>
 
-					<div class="form-group">
-						<div class="form-check">
-							<input id="join_agree" class="form-check-input" v-model="agreeJoin" type="checkbox">
-							<label for="join_agree">I agree with sharing my company information with Growth Institute</label>
+					<h2>Join <strong>{{ worksheet.name }}</strong><small>created by
+						<strong>{{ application.user_name }}</strong></small></h2>
+
+					<template v-if="!(userFirstname || userLastname)">
+						<h3>Please register to join this worksheet</h3>
+
+						<div
+							class="submit-application"
+							:class="{ 'animate__animated animate__shakeX': authenticateHasError }"
+						>
+							<div class="row">
+								<div class="col col-6">
+									<form-group label="First name" :class="{ 'has-error': $v.user.firstname.$error }">
+										<input
+											type="text"
+											v-model.trim="$v.user.firstname.$model"
+											class="input-block form-control"
+										>
+									</form-group>
+								</div>
+
+								<div class="col col-6">
+									<form-group label="Last name" :class="{ 'has-error': $v.user.lastname.$error }">
+										<input
+											type="text"
+											v-model.trim="$v.user.lastname.$model"
+											class="input-block form-control"
+										>
+									</form-group>
+								</div>
+							</div>
+
+							<form-group label="Email" :class="{ 'has-error': $v.user.email.$error }">
+								<input
+									type="email"
+									v-model.trim="$v.user.email.$model"
+									class="input-block form-control"
+								>
+							</form-group>
+
+							<!--							<p class="text-right">
+															<a href="#" @click.prevent="authenticate" class="button button-primary">Access</a>
+														</p>-->
 						</div>
-					</div>
+
+					</template>
+
+					<!--					<div class="form-group">
+											<div class="form-check">
+												<input id="join_agree" class="form-check-input" v-model="agreeJoin" type="checkbox">
+												<label for="join_agree">I agree with sharing my company information with Growth Institute</label>
+											</div>
+										</div>-->
 					<p>
 						<button
 							:disabled="!agreeJoin"
 							:class="{ disabled: !agreeJoin, 'is-loading': isLoading }"
 							class="button button-primary"
 							@click="joinApplication"
-						>Join {{ worksheet.name }}</button>
+						>Join {{ worksheet.name }}
+						</button>
 					</p>
 				</div>
 			</div>
@@ -46,7 +96,10 @@
 				<div class="worksheet-title">
 					<div>
 						<h2 class="worksheet-name-wrapper">{{ worksheetName }}</h2>
-						<p v-if="worksheetDescription" class="worksheet-description-wrapper">{{ worksheetDescription }}</p>
+						<p
+							v-if="worksheetDescription"
+							class="worksheet-description-wrapper"
+						>{{ worksheetDescription }}</p>
 					</div>
 				</div>
 
@@ -66,31 +119,34 @@
 						</div>
 					</div>
 
-					<template v-if="application.status != 'Completed'">
+					<template v-if="application.status !== 'Completed'">
 						<a href="#" @click.prevent="sureModal = true" class="button button-primary">Submit</a>
 					</template>
 				</div>
 			</header>
 
-			<div class="application-body" :class="{ 'is-completed': application.status == 'Completed' }">
+			<div class="application-body" :class="{ 'is-completed': application.status === 'Completed' }">
 				<div class="inner">
 
-					<div class="application-submitted" v-if="application.status == 'Completed'">
+					<div class="application-submitted" v-if="application.status === 'Completed'">
 						<div class="date">
 							<!-- 2022-11-17 17:51:42 -->
-							<p>Submited by <strong>{{ application.user_name }}</strong> on {{ application.modified | moment("dddd, MMMM Do YYYY") }}</p>
+							<p>Submited by
+								<strong>{{ application.user_name }}</strong> on {{ application.modified | moment('dddd, MMMM Do YYYY') }}
+							</p>
 						</div>
 					</div>
 
-					<div class="grade" v-if="application.status == 'Completed'">
+					<div class="grade" v-if="application.status === 'Completed'">
 						<img src="~/assets/images/template/grade.svg" alt="">
 						<h2>{{ application.grade }}</h2>
 					</div>
 
-					<worksheet v-if="worksheet.type == 'grid'" v-model="answers" />
+					<worksheet v-if="worksheet.type === 'grid'" v-model="answers" />
 					<worksheet-pdf
 						:focused-fields="focusedFields"
-					v-else />
+						v-else
+					/>
 
 					<graded-modal
 						v-model="sureModal"
@@ -103,7 +159,11 @@
 
 								<p class="text-right">
 									<a href="#" @click.prevent="close" class="button button-ghost-gray">Nevermind</a>
-									<a href="#" @click.prevent="submitApplication" class="button button-primary">Yes, submit</a>
+									<a
+										href="#"
+										@click.prevent="submitApplication"
+										class="button button-primary"
+									>Yes, submit</a>
 								</p>
 							</div>
 						</template>
@@ -117,11 +177,12 @@
 <script>
 	import WorksheetMixin from '../worksheets/worksheet.mixin.js';
 	import Vue from 'vue';
+	import { required, email } from 'vuelidate/lib/validators';
 
 	export default {
 		name: 'WorkSheetApplication',
 		layout: 'preview',
-		mixins: [ WorksheetMixin ],
+		mixins: [WorksheetMixin],
 		data: () => ({
 			answers: {},
 			sureModal: false,
@@ -129,8 +190,20 @@
 			connectedUsers: [],
 			focusedFields: [],
 			agreeJoin: true,
-			isLoading: false
+			isLoading: false,
+			user: {
+				firstname: '',
+				lastname: '',
+				email: '',
+			},
 		}),
+		validations: {
+			user: {
+				firstname: { required },
+				lastname: { required },
+				email: { required, email },
+			},
+		},
 		mounted() {
 
 			this.sockets();
@@ -139,7 +212,7 @@
 			assignedAreas() { return this.worksheet.content.assignedAreas; },
 			toolAreas() { return this.worksheet.content.toolAreas; },
 			worksheetName() {return this.worksheet.name || 'Untitled Worksheet'; },
-			worksheetDescription() { return this.worksheet.description },
+			worksheetDescription() { return this.worksheet.description; },
 
 			userId() { return this.$route.query?.userId; },
 			userFirstname() { return this.$route.query?.user_firstname; },
@@ -174,7 +247,7 @@
 
 				let css = '';
 				for(const r in this.areas) {
-					css = `${css} "${ this.areas[r].join(' ').trim() }"`;
+					css = `${ css } "${ this.areas[r].join(' ').trim() }"`;
 				}
 
 				return css.trim();
@@ -195,8 +268,8 @@
 				return {
 					'grid-template-areas': this.cssAreas,
 					'grid-template-columns': cols.join(' '),
-					'grid-template-rows': rows.join(' ')
-				}
+					'grid-template-rows': rows.join(' '),
+				};
 			},
 		},
 		methods: {
@@ -239,7 +312,7 @@
 
 				if(typeof this.toolAreas[area] !== 'undefined') {
 
-					styles = {...styles, ...(this.toolAreas[area]?.styles || {})};
+					styles = { ...styles, ...(this.toolAreas[area]?.styles || {}) };
 				}
 
 				return styles;
@@ -247,12 +320,12 @@
 
 			async submitApplication() {
 
-				var application = {
+				const application = {
 					id_worksheet: this.worksheet.id,
 					status: 'Completed',
 					user_name: this.application.user_name,
 					user_email: this.application.user_email,
-					answers: this.answers
+					answers: this.answers,
 				};
 
 				const applicationSubmit = await this.$axios.$put(`/applications/${ this.$route.params.id }`, application);
@@ -263,7 +336,34 @@
 				this.sureModal = false;
 			},
 
+			async authenticate() {
+
+				this.$v.$touch();
+				if(this.$v.$invalid) {
+					this.authenticateHasError = true;
+					setTimeout(function() {
+						this.authenticateHasError = false;
+
+					}.bind(this), 1000);
+					return;
+				}
+
+				const application = {
+					id_worksheet: this.worksheet.id,
+					status: 'Pending',
+					user_name: `${ this.user.firstname } ${ this.user.lastname }`,
+					user_email: this.user.email,
+					answers: {},
+				};
+
+				const authenticate = await this.$axios.$post(`/applications/`, application);
+
+				await this.$router.push({ path: `/application/${ authenticate.data.uid }` });
+			},
+
 			async joinApplication() {
+
+				await this.authenticate();
 
 				this.isLoading = true;
 
@@ -271,7 +371,7 @@
 					firstname: this.userFirstname,
 					lastname: this.userLastname,
 					username: this.userEmail,
-					metas: { avatar_link: `${ this.$config.apiUrl }/users/${ this.userId }/avatar` }
+					metas: { avatar_link: `${ this.$config.apiUrl }/users/${ this.userId }/avatar` },
 				};
 
 				const join = await this.$axios.$post(`/applications/${ this.$route.params.id }/join`, user);
@@ -281,7 +381,7 @@
 				this.isLoading = false;
 
 				this.sockets();
-			}
+			},
 		},
 		async fetch() {
 
@@ -290,7 +390,7 @@
 
 			await this.fetchWorksheet(this.application.id_worksheet);
 
-			if(this.application.type == 'grid') {
+			if(this.application.type === 'grid') {
 
 				Vue.set(this, 'answers', this.$shallow(this.application.answers));
 
@@ -305,8 +405,8 @@
 
 			if(this.$auth.loggedIn) this.socket.emit('disconnected', this.$auth.user);
 			next();
-		}
-	}
+		},
+	};
 </script>
 
 <style scoped lang="less">
@@ -326,6 +426,13 @@
 			h2 {
 
 				font-size: 2rem;
+				margin-bottom: @margin-default;
+
+				small {
+
+					display: block;
+					font-size: 1.2rem;
+				}
 			}
 
 			h3 {
@@ -339,7 +446,6 @@
 			}
 		}
 	}
-
 
 	.application-wrapper {
 
@@ -526,6 +632,14 @@
 			justify-content: center;
 			transform: rotate(-15deg);
 		}
+	}
+
+	.submit-application {
+
+		margin: 0 auto;
+		text-align: left;
+		max-width: 500px;
+		margin-bottom: @margin-double;
 	}
 
 </style>

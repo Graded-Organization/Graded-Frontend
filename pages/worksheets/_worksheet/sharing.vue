@@ -41,7 +41,7 @@
 							<div slot="view" slot-scope="props">
 								<a
 									href="#"
-									@click.prevent="copy(`${ props.row.uid }`)"
+									@click.prevent="copy(`${ $config.baseUrl }/application/${ props.row.uid }`)"
 									class="button button-small button-ghost-primary button-pill"
 								>Copy application link</a>
 							</div>
@@ -463,7 +463,7 @@
 					this.$notify({
 						group: 'graded',
 						title: 'Copied!',
-						text: 'Text copied to clipboard, sweet!',
+						text: 'Link copied to clipboard, sweet!',
 					});
 
 				} catch(e) {
@@ -491,13 +491,13 @@
 				this.$notify({
 					group: 'graded',
 					type: res.result,
-					title: res.result == 'success' ? 'Alright!' : 'Oh no!',
+					title: res.result === 'success' ? 'Alright!' : 'Oh no!',
 					text: res.message,
 				});
 
-				this.$refs.invitationsTable.refresh();
+				await this.$refs.invitationsTable.refresh();
 
-				if(res.result == 'success') {
+				if(res.result === 'success') {
 
 					this.invitee = {
 						firstname: '',
