@@ -8,14 +8,14 @@ export const state = () => ({
 	toolAreas: {},
 	blocks: null,
 	application: null,
-	answers: []
+	answers: [],
 });
 
 export const mutations = {
 	setWorksheet(state, worksheet) {
 
 		Vue.set(state, 'worksheet', worksheet);
-		Vue .set(state, 'blocks', this.$shallow(worksheet.blocks));
+		Vue.set(state, 'blocks', this.$shallow(worksheet.blocks));
 	},
 	updateName(state, name) { Vue.set(state.worksheet, 'name', name); },
 	updateDescription(state, description) { Vue.set(state.worksheet, 'description', description); },
@@ -32,8 +32,10 @@ export const mutations = {
 
 	// Areas
 	setAssignedAreas(state, assignedAreas) { Vue.set(state.worksheet.content, 'assignedAreas', assignedAreas); },
-	deleteArea(state, area) { if(state.worksheet?.content?.assignedAreas) Vue.delete(state.worksheet.content.assignedAreas, area); },
-	setAssignedArea(state, area) { if(state.worksheet?.content?.assignedAreas) Vue.set(state.worksheet.content.assignedAreas, area.name, area.value); },
+	deleteArea(state,
+		area) { if(state.worksheet?.content?.assignedAreas) Vue.delete(state.worksheet.content.assignedAreas, area); },
+	setAssignedArea(state,
+		area) { if(state.worksheet?.content?.assignedAreas) Vue.set(state.worksheet.content.assignedAreas, area.name, area.value); },
 
 	// Blocks
 	setCurrentBlock(state, block) { Vue.set(state, 'currentBlock', block); },
@@ -57,8 +59,8 @@ export const mutations = {
 	// Application
 	setApplication(state, application) { state.application = application; },
 	setAnswers(state, answers) { Vue.set(state, 'answers', answers); },
-	addAnswer(state, answer) { state.answers.push(answer); }
-}
+	addAnswer(state, answer) { state.answers.push(answer); },
+};
 
 export const actions = {
 	setWorksheet({ commit }, payload) { commit('setWorksheet', payload); },
@@ -95,7 +97,7 @@ export const actions = {
 	setApplication({ commit }, payload) { commit('setApplication', payload); },
 	setAnswers({ commit }, payload) { commit('setAnswers', payload); },
 	addAnswer({ commit }, payload) { commit('addAnswer', payload); },
-}
+};
 
 export const getters = {
 	worksheet: state => state.worksheet,
@@ -109,11 +111,11 @@ export const getters = {
 
 		let cells = [];
 
-		for(var i = 0; i < getters.rows; i++) {
+		for(let i = 0; i < getters.rows; i++) {
 
 			cells[i] = [];
 
-			for(var j = 0; j < getters.columns; j++) {
+			for(let j = 0; j < getters.columns; j++) {
 
 				let areaName = `area${ j }-${ i }`;
 
@@ -134,7 +136,8 @@ export const getters = {
 
 	areasList: state => {
 
-		if(state.worksheet?.content?.assignedAreas) return Object.values(state.worksheet.content.assignedAreas).filter((v, i, a) => a.indexOf(v) === i);
+		if(state.worksheet?.content?.assignedAreas) return Object.values(state.worksheet.content.assignedAreas)
+			.filter((v, i, a) => a.indexOf(v) === i);
 		return [];
 	},
 
@@ -148,10 +151,17 @@ export const getters = {
 
 		let styledTools = $nuxt.$shallow(state.blocks);
 
-		for(const a in styledTools) {
+		if(state.worksheet.type === 'grid') {
 
-			if(typeof getters.toolAreas[styledTools[a].area] !== 'undefined') {
-				Vue.set(styledTools[a], 'styles', getters.toolAreas[styledTools[a].area].styles);
+			for(const a in styledTools) {
+
+				if(
+					typeof styledTools[a] !== 'undefined' &&
+					typeof getters.toolAreas[styledTools[a]?.area] !== 'undefined' &&
+					typeof getters.toolAreas[styledTools[a]?.area]?.styles !== 'undefined'
+				) {
+					Vue.set(styledTools[a], 'styles', getters.toolAreas[styledTools[a]?.area]?.styles);
+				}
 			}
 		}
 
@@ -160,5 +170,5 @@ export const getters = {
 
 	// Applications
 	application: state => state.application,
-	answers: state => state.answers
-}
+	answers: state => state.answers,
+};

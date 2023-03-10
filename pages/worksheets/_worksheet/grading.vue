@@ -1,5 +1,5 @@
 <template>
-	<div class="section-dashboard-grading" v-if="grading">
+	<div class="section-dashboard-grading" v-if="grading && worksheet.type == 'grid'">
 		<div class="inner boxfix-vert">
 			<div class="m-double">
 				<div class="grading-wrapper">

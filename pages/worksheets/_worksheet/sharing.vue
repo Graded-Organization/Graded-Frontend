@@ -27,6 +27,29 @@
 
 					<!-- -->
 
+					<h2 class="sharing-title">Share by application link</h2>
+
+					<div class="sharing-block">
+						<graded-data-table
+							:columns="columnsApplicants"
+							:url="`/worksheets/${ $route.params.worksheet }/applications?pdo[applicants]=getApplicants&query_fields=id,uid,id_worsheet,grade,status,user_name,created,applicants`"
+							:max-height="`calc(100vh - 225px)`"
+						>
+							<div slot="applicantsNumber" slot-scope="props">
+								<p v-tooltip.left="{ content: `${ formatApplicants(props.row.applicants) }`, html: true }">{{ props.row.applicants.length }}</p>
+							</div>
+							<div slot="view" slot-scope="props">
+								<a
+									href="#"
+									@click.prevent="copy(`${ props.row.uid }`)"
+									class="button button-small button-ghost-primary button-pill"
+								>Copy application link</a>
+							</div>
+						</graded-data-table>
+					</div>
+
+					<!-- -->
+
 					<h2 class="sharing-title">Email invite</h2>
 
 					<div class="sharing-block">
@@ -39,7 +62,11 @@
 						<div class="mt-default" v-if="sharing.email">
 							<div class="row">
 								<div class="col col-4">
-									<form-group label="Email" required :class="{ 'has-error': $v.invitee.email.$error }">
+									<form-group
+										label="Email"
+										required
+										:class="{ 'has-error': $v.invitee.email.$error }"
+									>
 										<input
 											type="email"
 											:disabled="sharingLoading"
@@ -91,7 +118,12 @@
 							</form-group>
 
 							<p class="text-right mb-double">
-								<button @click="sendInvite" class="button button-primary" :disabled="sharingLoading">Send invite</button>
+								<button
+									@click="sendInvite"
+									class="button button-primary"
+									:disabled="sharingLoading"
+								>Send invite
+								</button>
 							</p>
 						</div>
 					</div>
@@ -287,22 +319,22 @@
 	import { required, email } from 'vuelidate/lib/validators';
 
 	const defaultSharing = {
-		public: true
+		public: true,
 	};
 
 	export default {
 		name: 'WorkSheetPageSharing',
 		middleware: 'auth',
-		mixins: [ WorksheetMixin ],
+		mixins: [WorksheetMixin],
 		watch: {
 			sharing: {
 				handler(n, o) {
 
-					this.setWorksheetProp({name: 'sharing', value: this.$shallow(n) });
+					this.setWorksheetProp({ name: 'sharing', value: this.$shallow(n) });
 					this.save();
 				},
-				deep: true
-			}
+				deep: true,
+			},
 		},
 		data: () => ({
 			showModal: false,
@@ -312,7 +344,7 @@
 				firstname: '',
 				lastname: '',
 				email: '',
-				message: ''
+				message: '',
 			},
 			embed: {
 				showHeader: true,
@@ -321,6 +353,42 @@
 				showUserInfo: true,
 				showActions: true,
 			},
+			formatApplicants(applicants) {
+
+				if(!applicants.length) false;
+
+				let applicantsString = '';
+
+				for(const a in applicants) {
+					applicantsString += applicants[a].nicename + '<br>';
+				}
+
+				return applicantsString;
+			},
+			columnsApplicants: [
+				{
+					label: 'ID',
+					field: 'id',
+				},
+				{
+					label: 'Name',
+					field: 'user_name',
+				},
+				{
+					field: 'applicantsNumber',
+					label: 'Applicants',
+				},
+				{
+					field: 'status',
+					label: 'Activity',
+				},
+				{
+					field: 'view',
+					label: 'View',
+					width: '150px',
+					tdClass: 'text-center',
+				},
+			],
 			columns: [
 				{
 					label: 'User',
@@ -340,16 +408,16 @@
 				{
 					field: 'permissions',
 					label: 'Permissions',
-					tdClass: 'text-center'
-				}
+					tdClass: 'text-center',
+				},
 			],
 		}),
 		validations: {
 			invitee: {
 				firstname: { required },
 				lastname: { required },
-				email: { required, email }
-			}
+				email: { required, email },
+			},
 		},
 		computed: {
 
@@ -365,17 +433,19 @@
 
 				let result = Object.values(params).length ? '?' + new URLSearchParams(params).toString() : '';
 
-
-				return '<iframe class="graded-embed" src="' + `${ this.$config.baseUrl }/worksheet/embed/${ this.worksheet.uid }${result}` + '" backgroundColor="gray" frameborder="0" onmousewheel="" width="100%" height="533" style="background: transparent; border: 1px solid #ccc;"></iframe>';
-			}
+				return '<iframe class="graded-embed" src="' + `${ this.$config.baseUrl }/worksheet/embed/${ this.worksheet.uid }${ result }` + '" backgroundColor="gray" frameborder="0" onmousewheel="" width="100%" height="533" style="background: transparent; border: 1px solid #ccc;"></iframe>';
+			},
 		},
 		mounted() {
 
 			if(!this.worksheet?.content?.sharing) {
-				this.setWorksheetProp({name: 'sharing', value: defaultSharing});
+				this.setWorksheetProp({ name: 'sharing', value: defaultSharing });
 			}
 
-			this.setWorksheetProp({name: 'sharing', value: {...defaultSharing, ...this.worksheet?.content?.sharing}});
+			this.setWorksheetProp({
+				name: 'sharing',
+				value: { ...defaultSharing, ...this.worksheet?.content?.sharing },
+			});
 
 			Vue.set(this, 'sharing', this.$shallow(this.worksheet.content.sharing));
 		},
@@ -393,10 +463,10 @@
 					this.$notify({
 						group: 'graded',
 						title: 'Copied!',
-						text: 'Text copied to clipboard, sweet!'
+						text: 'Text copied to clipboard, sweet!',
 					});
 
-				} catch (e) {
+				} catch(e) {
 					console.error(e);
 				}
 			},
@@ -405,7 +475,7 @@
 				const obj = this;
 
 				obj.$v.invitee.$touch();
-				if (obj.$v.invitee.$invalid) {
+				if(obj.$v.invitee.$invalid) {
 
 					return;
 				}
@@ -422,7 +492,7 @@
 					group: 'graded',
 					type: res.result,
 					title: res.result == 'success' ? 'Alright!' : 'Oh no!',
-					text: res.message
+					text: res.message,
 				});
 
 				this.$refs.invitationsTable.refresh();
@@ -433,12 +503,12 @@
 						firstname: '',
 						lastname: '',
 						email: '',
-						message: ''
-					}
+						message: '',
+					};
 				}
-			}
-		}
-	}
+			},
+		},
+	};
 </script>
 
 <style scoped lang="less">
@@ -539,6 +609,5 @@
 			}
 		}
 	}
-
 
 </style>

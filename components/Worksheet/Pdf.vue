@@ -2,15 +2,14 @@
 	<div class="editor mb-double" v-if="worksheet">
 
 		<div class="editor-wrapper" ref="editorWrapper">
-			<div class="pdf-editor" v-if="mode == 'editor'">
-
+			<div class="pdf-editor">
 				<div class="editor-page" v-for="page in workingPages">
 					<img :src="page.image" alt="">
 
 					<div class="page-content">
 						<div class="page-opacity" :class="{ 'is-active' : !!selectedTool || !!focusedTool }"></div>
 						<worksheet-pdf-field
-							v-for="field in getPageFields(page.object)"
+							v-for="field in getPageFields(page.id)"
 							:key="field.id"
 							:value="field"
 							:is-focused="checkFocus(field.id)"
@@ -38,8 +37,8 @@
 		props: {
 			focusedFields: {
 				type: Array,
-				default: () => ([])
-			}
+				default: () => ([]),
+			},
 		},
 		data: () => ({
 			mode: '',
@@ -50,7 +49,7 @@
 			showDrawer: false,
 			updateKey: 0,
 			position: { x: 0, y: 0 },
-			uploadingAttachment: false
+			uploadingAttachment: false,
 		}),
 		mounted() {
 
@@ -83,8 +82,9 @@
 			workingPages() {
 
 				if(!this.worksheet.content?.pdf?.pages) return [];
-				return Object.values(this.worksheet.content?.pdf?.pages).filter(p => this.selectedPages.includes(p.object)).reverse();
-			}
+				return Object.values(this.worksheet.content?.pdf?.pages)
+					.filter(p => this.selectedPages.includes(p.id)).reverse();
+			},
 		},
 		methods: {
 			...mapActions({
@@ -147,12 +147,14 @@
 
 				this.showTool(tool.id);
 
-				this.$parent.socket.emit('focusTool', {
-					userId: this.$auth.user.id,
-					userName: this.$auth.user.nicename,
-					application: this.$route.params.id,
-					fieldId: tool.id
-				});
+				if(typeof this.$parent.socket !== 'undefined') {
+					this.$parent.socket.emit('focusTool', {
+						userId: this.$auth.user.id,
+						userName: this.$auth.user.nicename,
+						application: this.$route.params.id,
+						fieldId: tool.id,
+					});
+				}
 			},
 
 			blurTool(tool) {
@@ -160,11 +162,13 @@
 				this.focusedTool = null;
 				this.deselectTool();
 
-				this.$parent.socket.emit('blurTool', {
-					userId: this.$auth.user.id,
-					application: this.$route.params.id,
-					fieldId: tool.id
-				});
+				if(typeof this.$parent.socket !== 'undefined') {
+					this.$parent.socket.emit('blurTool', {
+						userId: this.$auth.user.id,
+						application: this.$route.params.id,
+						fieldId: tool.id,
+					});
+				}
 			},
 
 			showTool(tool) { this.selectedTool = tool; },
@@ -175,10 +179,13 @@
 				console.log('broadcastNewAnswer', answer);
 
 				answer.application = this.$route.params.id;
-				this.$parent.socket.emit('newAnswer', answer);
-			}
-		}
-	}
+
+				if(typeof this.$parent.socket !== 'undefined') {
+					this.$parent.socket.emit('newAnswer', answer);
+				}
+			},
+		},
+	};
 </script>
 
 <style scoped lang="less">

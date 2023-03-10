@@ -118,7 +118,6 @@
 
 				return applicantsString;
 			},
-
 			async copy(text) {
 				try {
 					await this.$copyText(text);
