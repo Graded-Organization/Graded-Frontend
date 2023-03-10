@@ -19,8 +19,18 @@
 				<p class="controls-info"><strong>Total pages:</strong> {{ Object.values(pages).length }}</p>
 				<p class="controls-buttons">
 					<a href="#" @click="startAgain" class="button button-ghost-primary button-small">Upload new PDF</a>
-					<a href="#" v-if="mode == 'editor'" @click="mode = 'pages'" class="button button-ghost-primary button-small">Select Pages</a>
-					<a href="#" v-if="mode == 'pages'" @click="mode = 'editor'" class="button button-ghost-primary button-small">View Editor</a>
+					<a
+						href="#"
+						v-if="mode === 'editor'"
+						@click="mode = 'pages'"
+						class="button button-ghost-primary button-small"
+					>Select Pages</a>
+					<a
+						href="#"
+						v-if="mode === 'pages'"
+						@click="mode = 'editor'"
+						class="button button-ghost-primary button-small"
+					>View Editor</a>
 				</p>
 			</div>
 
@@ -29,26 +39,38 @@
 					<span>Hey, it looks like your PDF has form fields, do you want to load them in your worksheet?</span>
 
 					<span class="buttons">
-						<a href="#" @click.prevent="loadPDFFields" class="button button-small button-primary">Yes, please kind sir</a>
-						<a href="#" @click.prevent="loadFields = false" class="button button-small button-danger">No need</a>
+						<a
+							href="#"
+							@click.prevent="loadPDFFields"
+							class="button button-small button-primary"
+						>Yes, please kind sir</a>
+						<a
+							href="#"
+							@click.prevent="loadFields = false"
+							class="button button-small button-danger"
+						>No need</a>
 					</span>
 				</div>
 			</transition-slide>
 
-			<template v-if="mode == 'pages'">
+			<template v-if="mode === 'pages'">
 				<p class="text-center mb-default">Please select what pages do you want to use:</p>
-
 				<div class="row">
 					<div class="col col-md-4" v-for="(page, i) in pages">
-						<a class="pdf-page" :class="{ 'is-selected' : selectedPages.includes(i) }" href="#" @click.prevent="togglePage(i)">
-							<span class="page-name">Page {{ i }}</span>
+						<a
+							class="pdf-page"
+							:class="{ 'is-selected' : selectedPages.includes(page.id) }"
+							href="#"
+							@click.prevent="togglePage(page.id)"
+						>
+							<span class="page-name">Page {{ i + 1 }}</span>
 							<img :src="page.image" alt="">
 						</a>
 					</div>
 				</div>
 			</template>
 
-			<div class="pdf-editor" v-if="mode == 'editor'">
+			<div class="pdf-editor" v-if="mode === 'editor'">
 
 				<div class="editor-page" v-for="page in workingPages">
 					<img :src="page.image" alt="">
@@ -56,7 +78,7 @@
 					<div class="page-content">
 						<div class="page-opacity" :class="{ 'is-active' : !!selectedTool || !!focusedTool }"></div>
 						<worksheet-editor-pdf-field
-							v-for="field in getPageFields(page.object)"
+							v-for="field in getPageFields(page.id)"
 							:key="field.id"
 							:value="field"
 							:selected="selectedTool == field.id"
@@ -102,7 +124,7 @@
 			showDrawer: false,
 			updateKey: 0,
 			position: { x: 0, y: 0 },
-			uploadingAttachment: false
+			uploadingAttachment: false,
 		}),
 		mounted() {
 
@@ -117,80 +139,80 @@
 			});
 
 			interact('.resize-drag')
-			.resizable({
-				edges: { top: true, left: true, bottom: true, right: true },
-				listeners: {
-					start: function(event) {
-						console.log('start');
-						event.target.classList.add('resizing');
+				.resizable({
+					edges: { top: true, left: true, bottom: true, right: true },
+					listeners: {
+						start: function(event) {
+							console.log('start');
+							event.target.classList.add('resizing');
+						},
+						move: function(event) {
+							let { x, y } = event.target.dataset;
+
+							x = (parseFloat(x) || 0) + event.deltaRect.left;
+							y = (parseFloat(y) || 0) + event.deltaRect.top;
+
+							const pageContentWidth = document.querySelector('.page-content').clientWidth;
+							const pageContentHeight = document.querySelector('.page-content').clientHeight;
+
+							const width = event.rect.width * 100 / pageContentWidth;
+							const height = event.rect.height * 100 / pageContentHeight;
+
+							Object.assign(event.target.style, {
+								width: `${ width }%`,
+								height: `${ height }%`,
+							});
+
+							Object.assign(event.target.dataset, { x, y });
+						},
+						end: function(event) {
+							console.log('end');
+							event.target.classList.remove('resizing');
+						},
 					},
-					move: function(event) {
-						let { x, y } = event.target.dataset;
+				})
+				.draggable({
+					modifiers: [restrictToParent],
+					listeners: {
+						start(event) {
+							console.log(event.type, event.target);
+							event.target.classList.add('dragging');
+						},
+						move(event) {
 
-						x = (parseFloat(x) || 0) + event.deltaRect.left;
-						y = (parseFloat(y) || 0) + event.deltaRect.top;
+							obj.position.x += event.dx;
+							obj.position.y += event.dy;
 
-						const pageContentWidth = document.querySelector('.page-content').clientWidth;
-						const pageContentHeight = document.querySelector('.page-content').clientHeight;
+							const pageContentWidth = document.querySelector('.page-content').clientWidth;
+							const pageContentHeight = document.querySelector('.page-content').clientHeight;
 
-						const width = event.rect.width * 100 / pageContentWidth;
-						const height = event.rect.height * 100 / pageContentHeight;
+							const x = obj.position.x * 100 / pageContentWidth;
+							const y = obj.position.y * 100 / pageContentHeight;
 
-						Object.assign(event.target.style, {
-							width: `${ width }%`,
-							height: `${ height }%`
-						});
-
-						Object.assign(event.target.dataset, { x, y });
+							event.target.style.left = `${ x }%`;
+							event.target.style.top = `${ y }%`;
+						},
+						end: function(event) {
+							console.log('end');
+							event.target.classList.remove('dragging');
+						},
 					},
-					end: function(event) {
-						console.log('end');
-						event.target.classList.remove('resizing');
-					},
-				}
-			})
-			.draggable({
-				modifiers: [ restrictToParent ],
-				listeners: {
-					start (event) {
-						console.log(event.type, event.target);
-						event.target.classList.add('dragging');
-					},
-					move (event) {
+				})
+				.actionChecker(function(pointer, event, action, interactable, element, interaction) {
 
-						obj.position.x += event.dx;
-						obj.position.y += event.dy;
+					if(interact.matchesSelector(event.target, '.resize-handle')) {
 
-						const pageContentWidth = document.querySelector('.page-content').clientWidth;
-						const pageContentHeight = document.querySelector('.page-content').clientHeight;
+						// resize from the top and right edges
+						action.name = 'resize';
+						action.edges = { bottom: true, right: true };
 
-						const x = obj.position.x * 100 / pageContentWidth;
-						const y = obj.position.y * 100 / pageContentHeight;
+					} else {
 
-						event.target.style.left = `${ x }%`;
-						event.target.style.top = `${ y }%`;
-					},
-					end: function(event) {
-						console.log('end');
-						event.target.classList.remove('dragging');
-					},
-				}
-			})
-			.actionChecker(function (pointer, event, action, interactable, element, interaction) {
+						action.name = 'drag';
+					}
 
-				if (interact.matchesSelector(event.target, '.resize-handle')) {
-
-					// resize from the top and right edges
-					action.name  = 'resize';
-					action.edges = { bottom: true, right: true };
-
-				} else {
-
-					action.name = 'drag';
-				}
-
-				return action;
-			});
+					return action;
+				});
 		},
 		computed: {
 			...mapGetters({
@@ -216,13 +238,14 @@
 			workingPages() {
 
 				if(!this.worksheet.content?.pdf?.pages) return [];
-				return Object.values(this.worksheet.content?.pdf?.pages).filter(p => this.selectedPages.includes(p.object));
-			}
+				return Object.values(this.worksheet.content?.pdf?.pages).filter(p => this.selectedPages.includes(p.id));
+			},
 		},
 		methods: {
 			...mapActions({
 				updateContent: 'worksheet/updateContent',
 				updateOptions: 'worksheet/updateOptions',
+				setWorksheet: 'worksheet/setWorksheet',
 			}),
 			update(val) {
 				this.updateKey = val;
@@ -234,11 +257,12 @@
 			async loadPDFFields() {
 				const obj = this;
 
-				this.$loading.show({ container: this.$refs.editorWrapper });
-
+				let loader = this.$loading.show({ container: this.$refs.editorWrapper });
 				const res = await obj.$axios.$post(`/worksheets/${ this.worksheet.id }/convert-fields`);
+				loader.hide();
 
-				//this.$loading.hide({ container: this.$refs.editorWrapper });
+				this.setWorksheet(res.data.worksheet);
+				//this.updateContent(res.data.worksheet.content);
 
 				this.loadFields = true;
 				this.mode = 'editor';
@@ -247,7 +271,7 @@
 
 				if(this.selectedPages.includes(page)) {
 
-					this.selectedPages.splice(this.selectedPages.findIndex(p => p == page), 1);
+					this.selectedPages.splice(this.selectedPages.findIndex(p => p === page), 1);
 
 				} else {
 					this.selectedPages.push(page);
@@ -303,9 +327,9 @@
 
 				this.updateContent(res.data.worksheet.content);
 				this.mode = 'pages';
-			}
-		}
-	}
+			},
+		},
+	};
 </script>
 
 <style scoped lang="less">
