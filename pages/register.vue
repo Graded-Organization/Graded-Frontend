@@ -6,7 +6,7 @@
 		novalidate
 	>
 		<div class="logo-wrapper">
-			<graded-logo :size="8" />
+			<logo />
 		</div>
 
 		<transition-slide>
@@ -101,7 +101,12 @@
 								autocapitalize="off"
 								autocomplete="do-not-autofill"
 							/>
-							<div v-if="$v.registerFields.password.$model" class="password-score" :data-score="password.score">{{ password.score }}</div>
+							<div
+								v-if="$v.registerFields.password.$model"
+								class="password-score"
+								:data-score="password.score"
+							>{{ password.score }}
+							</div>
 						</div>
 
 						<transition-slide>
@@ -135,7 +140,10 @@
 				</div>
 
 				<div class="already">
-					<p>Already have an account? <nuxt-link to="/login">Sign in here</nuxt-link>.</p>
+					<p>Already have an account?
+						<nuxt-link to="/login">Sign in here</nuxt-link>
+						.
+					</p>
 				</div>
 			</div>
 		</transition-slide>
@@ -143,10 +151,13 @@
 			<div v-show="success">
 				<div class="the-content">
 					<h2>Alrighty!</h2>
-					<p>An email has been sent to your email address with a link to activate and access your <strong>GRADED!</strong> account.</p>
+					<p>An email has been sent to your email address with a link to activate and access your
+						<strong>GRADED!</strong> account.</p>
 					<p>Please check your Spam folder, we may be there.</p>
 
-					<p><nuxt-link to="/login" class="button button-primary">Sign in here</nuxt-link></p>
+					<p>
+						<nuxt-link to="/login" class="button button-primary">Sign in here</nuxt-link>
+					</p>
 				</div>
 
 			</div>
@@ -157,40 +168,41 @@
 <script>
 	import { required, email } from 'vuelidate/lib/validators';
 	import Password from 'vue-password-strength-meter';
+	import Logo from '~/assets/images/template/logo-transform.svg?inline';
 
 	export default {
 		name: 'RegisterPage',
 		layout: 'gate',
 		middleware: 'auth',
 		auth: 'guest',
-		components: { Password },
+		components: { Logo, Password },
 		data: () => ({
 			success: false,
 			messages: {
 				register: {
 					type: '',
-					text: ''
-				}
+					text: '',
+				},
 			},
 			registerFields: {
 				firstname: '',
 				lastname: '',
 				username: '',
-				password: ''
+				password: '',
 			},
 			password: {
 				suggestions: [],
 				warning: '',
-				score: 0
-			}
+				score: 0,
+			},
 		}),
 		validations: {
 			registerFields: {
 				firstname: { required },
 				lastname: { required },
 				username: { required, email },
-				password: { required }
-			}
+				password: { required },
+			},
 		},
 		mounted() {
 			AOS.init({ once: true });
@@ -200,7 +212,7 @@
 				var obj = this;
 
 				obj.$v.registerFields.$touch();
-				if (obj.$v.registerFields.$invalid) {
+				if(obj.$v.registerFields.$invalid) {
 
 					return;
 				}
@@ -209,7 +221,7 @@
 
 				this.success = true;
 			},
-			showFeedback({suggestions, warning}) {
+			showFeedback({ suggestions, warning }) {
 				console.log('🙏', suggestions);
 				console.log('⚠', warning);
 				this.password.warning = warning;
@@ -217,12 +229,17 @@
 			showScore(score) {
 				console.log('💯', score);
 				this.password.score = score;
-			}
-		}
+			},
+		},
 	};
 </script>
 
 <style lang="less" scoped>
+
+	.logo-wrapper svg {
+
+		width: 200px;
+	}
 
 	.password-score {
 
@@ -237,11 +254,15 @@
 		width: 2rem;
 		text-align: center;
 
-		&[data-score="0"]{ background: @background-1; }
-		&[data-score="1"]{ color: white; background: #ff4500; }
-		&[data-score="2"]{ color: white; background: orange; }
-		&[data-score="3"]{ color: white; background: #9acd32; }
-		&[data-score="4"]{ color: white; background: green; }
+		&[data-score='0'] { background: @background-1; }
+
+		&[data-score='1'] { color: white; background: #ff4500; }
+
+		&[data-score='2'] { color: white; background: orange; }
+
+		&[data-score='3'] { color: white; background: #9acd32; }
+
+		&[data-score='4'] { color: white; background: green; }
 	}
 
 	/deep/ .Password {

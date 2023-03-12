@@ -6,7 +6,7 @@
 		@submit.prevent="forgot"
 	>
 		<div class="logo-wrapper">
-			<graded-logo :size="8" />
+			<logo />
 		</div>
 
 		<div class="form-copy">
@@ -77,24 +77,26 @@
 
 <script>
 	import { required, email } from 'vuelidate/lib/validators';
+	import Logo from '~/assets/images/template/logo-transform.svg?inline';
 
 	export default {
 		name: 'LoginPageForgot',
 		layout: 'gate',
 		middleware: 'auth',
 		auth: 'guest',
+		components: { Logo },
 		transition: 'slide-big',
 		data: () => ({
 			messages: {
 				forgot: {
 					type: '',
-					text: ''
-				}
+					text: '',
+				},
 			},
-			forgotEmail: ''
+			forgotEmail: '',
 		}),
 		validations: {
-			forgotEmail: { required, email }
+			forgotEmail: { required, email },
 		},
 		mounted() {
 			AOS.init({ once: true });
@@ -104,7 +106,7 @@
 				var obj = this;
 
 				obj.$v.forgotEmail.$touch();
-				if (obj.$v.forgotEmail.$invalid) {
+				if(obj.$v.forgotEmail.$invalid) {
 
 					obj.messages.forgot.type = 'error';
 					obj.messages.forgot.text = 'Enter a valid email';
@@ -112,17 +114,23 @@
 				}
 
 				try {
-					await obj.$axios.post(`/users/password-link/${ obj.forgotEmail }`)
+					await obj.$axios.post(`/users/password-link/${ obj.forgotEmail }`);
 					obj.messages.forgot.type = 'success';
 					obj.messages.forgot.text = `Thank you, an email has been sent to ${ obj.forgotEmail } with an re-activation link.`;
-					return;
 
 				} catch(e) {
 
 					obj.messages.forgot.text = e.response?.data.message || e.message;
 					obj.messages.forgot.type = 'error';
 				}
-			}
-		}
+			},
+		},
 	};
 </script>
+
+<style lang="less" scoped>
+	.logo-wrapper svg {
+
+		width: 200px;
+	}
+</style>

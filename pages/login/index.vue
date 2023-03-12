@@ -6,7 +6,7 @@
 		novalidate
 	>
 		<div class="logo-wrapper">
-			<graded-logo :size="10" />
+			<logo />
 		</div>
 
 		<div class="form-copy">
@@ -109,7 +109,7 @@
 
 <script>
 	import { required, email } from 'vuelidate/lib/validators';
-	import Logo from "~/assets/images/template/logo-mono.svg?inline";
+	import Logo from '~/assets/images/template/logo-transform.svg?inline';
 	import GLogo from "~/assets/images/template/g-logo.svg?inline";
 
 	export default {
@@ -176,6 +176,11 @@
 </script>
 
 <style lang="less" scoped>
+
+	.logo-wrapper svg {
+
+		width: 200px;
+	}
 
 	.form-group {
 

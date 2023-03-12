@@ -4,7 +4,7 @@
 
 			<div class="header-area area-left">
 				<nuxt-link to="/dashboard" class="site-logo">
-					<graded-logo :size="2" />
+					<logo />
 				</nuxt-link>
 				<portal-target name="logo-portal" class="logo-portal">
 				</portal-target>
@@ -53,7 +53,7 @@
 </template>
 
 <script>
-	import Logo from "~/assets/images/template/logo-mono.svg?inline";
+	import Logo from '~/assets/images/template/logo-transform.svg?inline';
 
 	export default {
 		name: 'PlatformLayout',
@@ -116,7 +116,7 @@
 
 				svg {
 
-					width: 70px;
+					height: 38px;
 
 					rect,
 					polygon,

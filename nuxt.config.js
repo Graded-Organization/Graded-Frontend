@@ -113,6 +113,7 @@ export default {
 			Oxanium: [300, 400, 500, 700, 900],
 			'Titillium+Web': [300, 400, 600, 700, 900],
 			'Patrick Hand': [400],
+			'Flow+Block': [400]
 		},
 	},
 

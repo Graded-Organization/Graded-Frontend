@@ -32,6 +32,8 @@
     "one-colorpicker": "^1.0.12",
     "parse-css-color": "^0.2.1",
     "portal-vue": "^2.1.7",
+    "tilt.js": "^1.2.1",
+    "vanilla-tilt": "^1.8.0",
     "velocity-animate": "^1.5.2",
     "vue": "^2.6.14",
     "vue-color": "^2.8.1",
