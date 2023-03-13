@@ -7,11 +7,21 @@
 			<div class="area area4 is-init"></div>
 			<div class="area area5 is-init"></div>
 
-			<div class="user user1"></div>
-			<div class="user user2"></div>
-			<div class="user user3"></div>
-			<div class="user user4"></div>
+			<div class="user user1">
+				<img src="~/assets/images/template/avatar1.jpg">
+			</div>
+			<div class="user user2">
+				<img src="~/assets/images/template/avatar2.jpg">
+			</div>
+			<div class="user user3">
+				<img src="~/assets/images/template/avatar3.jpg">
+			</div>
+			<div class="user user4">
+				<img src="~/assets/images/template/avatar4.jpg">
+			</div>
 		</div>
+
+		<lines class="lines" />
 	</div>
 </template>
 
@@ -19,10 +29,20 @@
 	import VanillaTilt from 'vanilla-tilt';
 	import Velocity from 'velocity-animate';
 	import 'velocity-animate/velocity.ui';
+	import Lines from '~/assets/images/template/email-lines.svg?inline';
+	import { gsap } from 'gsap';
 
 	export default {
 		name: 'HomeSplash',
+		components: { Lines },
 		mounted() {
+
+			const element = document.querySelector('.js-tilt');
+			VanillaTilt.init(element, {
+				max: 25,
+				'full-page-listening': true,
+				perspective: 800,
+			});
 
 			this.presentSheet();
 		},
@@ -32,6 +52,8 @@
 				const sheet = document.querySelector('.sheet');
 				const areas = document.querySelectorAll('.area');
 				const users = document.querySelectorAll('.user');
+				const lines = document.querySelectorAll('.lines');
+				const envelopes = document.querySelectorAll('.envelope');
 
 				await Velocity(sheet, { scale: 0.25 }, { easing: 'easeInQuad', duration: 100 });
 
@@ -53,26 +75,66 @@
 
 				await Velocity(sheet, { scale: 0.5, top: 0 });
 
-				await Velocity(users[0], { opacity: 1, top: '150%' }, {
-					easing: 'easeInQuad',
-					delay: 100,
-					duration: 300,
-				});
-				await Velocity(users[1], { opacity: 1, top: '150%' }, {
-					easing: 'easeInQuad',
-					delay: 100,
-					duration: 300,
-				});
-				await Velocity(users[2], { opacity: 1, top: '150%' }, {
-					easing: 'easeInQuad',
-					delay: 100,
-					duration: 300,
-				});
-				await Velocity(users[3], { opacity: 1, top: '150%' }, {
-					easing: 'easeInQuad',
-					delay: 100,
-					duration: 300,
-				});
+				const userAppear = { opacity: 1, top: '200%' };
+				const userProps = { easing: 'easeInQuad', delay: 100, duration: 300 };
+
+				await Velocity(users[0], userAppear, userProps);
+				await Velocity(users[1], userAppear, userProps);
+				await Velocity(users[2], userAppear, userProps);
+				await Velocity(users[3], userAppear, userProps);
+
+				await Velocity(lines, { opacity: 1 }, { duration: 1500 });
+
+				for(let i = 1; i <= 4; i++) {
+					const val = { distance: 0 };
+
+					const path = document.querySelector(`.line${ i }`);
+					const email = document.querySelector(`.envelope${ i }`);
+					const distance = path.getTotalLength();
+
+					Velocity(email, { opacity: 1 }, { duration: 1 });
+
+					if(i === 4) {
+
+						await gsap.to(val, {
+							distance: distance,
+							duration: 3,
+							onUpdate: () => {
+
+								const point = path.getPointAtLength(val.distance);
+								const x = point.x - email.getBBox().width / 2;
+								const y = point.y - email.getBBox().height / 2;
+
+								email.setAttribute('transform', `translate(${ x }, ${ y })`);
+
+								if(val.distance * 100 / distance > 95) {
+									Velocity(email, { opacity: 0 });
+								}
+							},
+						});
+					} else {
+						gsap.to(val, {
+							distance: distance,
+							duration: 3,
+							onUpdate: () => {
+
+								const point = path.getPointAtLength(val.distance);
+								const x = point.x - email.getBBox().width / 2;
+								const y = point.y - email.getBBox().height / 2;
+
+								email.setAttribute('transform', `translate(${ x }, ${ y })`);
+
+								if(val.distance * 100 / distance > 95) {
+									Velocity(email, { opacity: 0 });
+								}
+							},
+						});
+					}
+				}
+
+				await Velocity(lines, { opacity: 0, delay: 1000 });
+
+				// Users start editing
 
 				Velocity(users[0], { top: 0, left: 0, width: '10%' }, { easing: 'easeInQuad', duration: 500 });
 				Velocity(users[1], { top: 0, left: '48%', width: '10%' }, {
@@ -92,7 +154,17 @@
 				});
 				await Velocity(sheet, { scale: 1.1, top: '20%', duration: 1000 });
 
-				await Velocity(sheet, { opacity: 0 }, { easing: 'easeOutQuad', duration: 500, delay: 2000 });
+				await Velocity(sheet, { top: '-100vh', opacity: 0 }, {
+					easing: 'easeOutQuad',
+					duration: 1000,
+					delay: 2000,
+				});
+
+				// Reset everything
+
+				for(let k = 0; k < envelopes.length; k++) {
+					envelopes[k].setAttribute('transform', `translate(280, 220)`);
+				}
 
 				Velocity(sheet, {
 						top: '60%',
@@ -123,16 +195,50 @@
 				Velocity(users[2], { left: '70%' }, { duration: 10 });
 				Velocity(users[3], { left: '130%' }, { duration: 10 });
 
-				await this.presentSheet();
+				setTimeout(() => {
+					this.presentSheet();
+				}, 1000);
+
 			},
 		},
 	};
 </script>
 
+<style>
+	html {
+
+		overflow-x: hidden;
+	}
+
+	@keyframes dash {
+		from {
+			stroke-dashoffset: 1000;
+		}
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+</style>
+
 <style lang="less" scoped>
 
 	.anim-wrapper {
 		aspect-ratio: 1;
+		transform-style: preserve-3d;
+	}
+
+	.lines {
+
+		opacity: 0;
+		.overlay-element();
+		z-index: 0;
+
+		path {
+			stroke-dasharray: 10;
+			stroke-dashoffset: 1000;
+		}
+
+		.line1, .line2, .line3, .line4 { animation: dash 25s linear forwards 100; }
 	}
 
 	.sheet {
@@ -145,6 +251,8 @@
 		background: white;
 		top: 60%;
 		opacity: 0;
+		transform-style: preserve-3d;
+		z-index: 1;
 
 		box-shadow: 1.2px 0px 2.2px rgba(0, 0, 0, 0.02),
 		2.9px 0.1px 5.3px rgba(0, 0, 0, 0.028),
@@ -161,13 +269,14 @@
 			background: #EEE;
 			box-sizing: border-box;
 			opacity: 0;
+			transform: translateZ(20px);
+			height: 29%;
 
 			&.area1 {
 
 				width: 45%;
 				top: 3.5%;
 				left: 3.5%;
-				height: 29%;
 				margin-left: -30%;
 				margin-top: -20%;
 			}
@@ -177,7 +286,6 @@
 				width: 45%;
 				top: 3.5%;
 				right: 3.5%;
-				height: 29%;
 				margin-right: -20%;
 				margin-top: -12%;
 			}
@@ -186,7 +294,6 @@
 
 				top: 29% + 6%;
 				width: 100% - 7%;
-				height: 29%;
 				left: 3.5%;
 				margin-left: -25%;
 			}
@@ -196,7 +303,6 @@
 				width: 45%;
 				bottom: 3.5%;
 				left: 3.5%;
-				height: 29%;
 				margin-left: -26%;
 				margin-bottom: -20%;
 			}
@@ -206,7 +312,6 @@
 				width: 45%;
 				bottom: 3.5%;
 				right: 3.5%;
-				height: 29%;
 				margin-right: -15%;
 			}
 		}
@@ -220,6 +325,17 @@
 			background: #0c8599;
 			top: 180%;
 			opacity: 0;
+			transform: translateZ(40px);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			img {
+
+				width: 90%;
+				margin: 5%;
+				border-radius: @radius-round;
+			}
 
 			&.user1 {
 

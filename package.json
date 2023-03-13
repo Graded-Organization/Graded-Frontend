@@ -21,6 +21,7 @@
     "drag-select-vue": "^1.8.0",
     "dragselect": "^2.3.1",
     "floating-vue": "^1.0.0-beta.18",
+    "gsap": "^3.11.4",
     "hashids": "^2.2.10",
     "interactjs": "^1.10.17",
     "jquery": "^3.6.0",

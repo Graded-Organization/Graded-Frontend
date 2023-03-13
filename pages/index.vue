@@ -381,7 +381,6 @@
 
 		display: flex;
 		align-items: center;
-		overflow: hidden;
 		padding-top: @margin-quad;
 
 		@media @sm-n-above {
