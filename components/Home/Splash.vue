@@ -92,7 +92,7 @@
 					const email = document.querySelector(`.envelope${ i }`);
 					const distance = path.getTotalLength();
 
-					Velocity(email, { opacity: 1 }, { duration: 1 });
+					email.style.opacity = '1';
 
 					if(i === 4) {
 
@@ -108,7 +108,7 @@
 								email.setAttribute('transform', `translate(${ x }, ${ y })`);
 
 								if(val.distance * 100 / distance > 95) {
-									Velocity(email, { opacity: 0 });
+									email.style.opacity = `${ 1 - (((val.distance * 100 / distance) / 100) - 0.9) }`;
 								}
 							},
 						});
@@ -125,7 +125,7 @@
 								email.setAttribute('transform', `translate(${ x }, ${ y })`);
 
 								if(val.distance * 100 / distance > 95) {
-									Velocity(email, { opacity: 0 });
+									email.style.opacity = `${ 1 - (((val.distance * 100 / distance) / 100) - 0.9) }`;
 								}
 							},
 						});
@@ -164,6 +164,7 @@
 
 				for(let k = 0; k < envelopes.length; k++) {
 					envelopes[k].setAttribute('transform', `translate(280, 220)`);
+					envelopes[k].style.opacity = '1';
 				}
 
 				Velocity(sheet, {
@@ -193,7 +194,7 @@
 				Velocity(users[0], { left: '-50%' }, { duration: 10 });
 				Velocity(users[1], { left: '10%' }, { duration: 10 });
 				Velocity(users[2], { left: '70%' }, { duration: 10 });
-				Velocity(users[3], { left: '130%' }, { duration: 10 });
+				await Velocity(users[3], { left: '130%' }, { duration: 10 });
 
 				setTimeout(() => {
 					this.presentSheet();
