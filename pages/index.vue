@@ -38,7 +38,15 @@
 					<div class="mx-default">
 						<div class="block-wrapper has-shadow">
 							<div class="row">
-								<div class="col col-12 col-sm-6"></div>
+								<div class="col col-12 col-sm-6">
+									<div class="sharing-wrapper">
+										<img
+											class="sharing"
+											src="~/assets/images/template/home/sharing.png"
+											alt="Share consulting tools with clients"
+										>
+									</div>
+								</div>
 								<div class="col col-12 col-sm-6">
 									<div class="copy">
 										<h2 class="title">Share consulting tools with clients</h2>
@@ -52,21 +60,26 @@
 				</div>
 			</div>
 
-			<div class="block block-build">
+			<div class="block block-build is-reverse">
 				<div class="inner">
 					<div class="mx-default">
 						<div class="block-wrapper">
-							<div class="row">
+							<div class="row middle">
 								<div class="col col-12 col-sm-6">
 									<div class="copy">
 										<h3 class="subtitle">Build & Share</h3>
 										<h2 class="title">Build and share in less than 5 minutes</h2>
 										<p>Upload your existing PDF, or build your tool from scratch!</p>
 										<p>You can use ready-made templates or choose images and videos to make it more fun.</p>
-										<p><a href="#" class="button button-primary">Learn more</a></p>
+										<!--<p><a href="#" class="button button-primary">Learn more</a></p>-->
 									</div>
 								</div>
-								<div class="col col-12 col-sm-6"></div>
+								<div class="col col-12 col-sm-6">
+									<img
+										src="~/assets/images/template/home/speed.png"
+										alt="Build and share in less than 5 minutes"
+									>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -77,14 +90,19 @@
 				<div class="inner">
 					<div class="mx-default">
 						<div class="block-wrapper">
-							<div class="row">
-								<div class="col col-12 col-sm-6"></div>
+							<div class="row middle">
+								<div class="col col-12 col-sm-6">
+									<img
+										src="~/assets/images/template/home/analytics.png"
+										alt="Build and share in less than 5 minutes"
+									>
+								</div>
 								<div class="col col-12 col-sm-6">
 									<div class="copy">
 										<h3 class="subtitle">Powerful Analytics</h3>
 										<h2 class="title">Analyze student responses</h2>
 										<p>Make data-driven decisions and gain insights into effectiveness of your tools.</p>
-										<p><a href="#" class="button button-primary">Learn more</a></p>
+										<!--<p><a href="#" class="button button-primary">Learn more</a></p>-->
 									</div>
 								</div>
 							</div>
@@ -104,10 +122,15 @@
 										<h2 class="title">Collect marketing leads</h2>
 										<p>Move away from downloadable e-books or PDFs, and collect all responses from your lead magnets.</p>
 										<p>Not only generate a lead, but understand how qualified they are based on their use of your lead magnet.</p>
-										<p><a href="#" class="button button-primary">Learn more</a></p>
+										<!--<p><a href="#" class="button button-primary">Learn more</a></p>-->
 									</div>
 								</div>
-								<div class="col col-12 col-sm-6"></div>
+								<div class="col col-12 col-sm-6">
+									<img
+										src="~/assets/images/template/home/leads.png"
+										alt="Collect marketing leads"
+									>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -438,4 +461,42 @@
 			text-align: center;
 		}
 	}
+
+	.sharing-wrapper {
+
+		@media @sm-n-below {
+
+			border-bottom: 1px solid @border-1;
+			margin-left: -3rem;
+			width: calc(~'100% + 6rem');
+			margin-bottom: @margin-double;
+			margin-top: -7.5rem;
+		}
+
+		@media @md-n-above {
+
+			position: absolute;
+			bottom: -3rem;
+			left: -2rem;
+			width: 98%;
+		}
+	}
+
+	.block-build {
+
+		@media @sm-n-below {
+			&.is-reverse .row {
+
+				flex-direction: column-reverse;
+			}
+		}
+
+		img {
+
+			margin: 0 auto;
+			max-width: 60%;
+			margin-bottom: @margin-double;
+		}
+	}
+
 </style>
