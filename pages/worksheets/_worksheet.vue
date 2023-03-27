@@ -12,18 +12,39 @@
 
 			<portal to="menu-portal">
 				<ul class="worksheet-general-menu">
-					<li class="menu-item"><nuxt-link :to="`/worksheets/${ $route.params.worksheet }`">Editor</nuxt-link></li>
-					<li class="menu-item"><nuxt-link :to="`/worksheets/${ $route.params.worksheet }/grading`">Grading</nuxt-link></li>
-					<li class="menu-item"><nuxt-link :to="`/worksheets/${ $route.params.worksheet }/reporting`">Reporting</nuxt-link></li>
-					<li class="menu-item"><nuxt-link :to="`/worksheets/${ $route.params.worksheet }/sharing`">Sharing</nuxt-link></li>
+					<li class="menu-item">
+						<nuxt-link :to="`/worksheets/${ $route.params.worksheet }`">Build</nuxt-link>
+					</li>
+					<!--<li class="menu-item">
+						<nuxt-link :to="`/worksheets/${ $route.params.worksheet }/grading`">Grading</nuxt-link>
+					</li>-->
+					<li class="menu-item">
+						<nuxt-link :to="`/worksheets/${ $route.params.worksheet }/reporting`">Reporting</nuxt-link>
+					</li>
+					<!--<li class="menu-item">
+						<nuxt-link :to="`/worksheets/${ $route.params.worksheet }/sharing`">Sharing</nuxt-link>
+					</li>-->
 				</ul>
 			</portal>
 
 			<portal to="user-portal">
 				<div class="preview-wrapper">
-					<a :href="`/preview/${ worksheet.id }`" target="_blank" class="button button-small button-primary">Preview Worksheet</a>
+					<a
+						:href="`/preview/${ worksheet.id }`"
+						target="_blank"
+						class="button button-small button-ghost-primary"
+					>Preview</a>
+					<a @click.prevent="sharingModal = true" class="button button-small button-primary ml-half">Share</a>
 				</div>
 			</portal>
+
+			<graded-modal
+				v-model="sharingModal"
+				name="sharing-tool"
+				:show-close="true"
+			>
+				<graded-sharing :worksheet="worksheet" />
+			</graded-modal>
 
 			<nuxt-child />
 		</template>
@@ -38,13 +59,15 @@
 		name: 'WorkSheetPage',
 		middleware: 'auth',
 		layout: 'platform',
-		mixins: [ WorksheetMixin ],
-		data: () => ({}),
+		mixins: [WorksheetMixin],
+		data: () => ({
+			sharingModal: false,
+		}),
 		methods: {},
 		async fetch() {
 			await this.fetchWorksheet(this.$route.params.worksheet);
-		}
-	}
+		},
+	};
 </script>
 
 <style scoped lang="less">
@@ -71,7 +94,6 @@
 
 		.menu-item {
 
-
 			a {
 
 				display: block;
@@ -88,7 +110,6 @@
 			}
 
 			&:hover {
-
 
 				a {
 
@@ -127,6 +148,11 @@
 			color: @primary;
 			text-decoration: none;
 		}
+	}
+
+	/deep/ .modal-container .sharing-wrapper {
+
+		padding: 0 !important;
 	}
 
 </style>

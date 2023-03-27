@@ -2,7 +2,17 @@
 	<div class="section-dashboard-sharing" v-if="sharing">
 		<div class="inner boxfix-vert">
 			<div class="m-double">
-				<div class="sharing-wrapper">
+				<div class="|">
+
+					<a href="#" @click.prevent="sharingModal = true" class="button button-primary">Share</a>
+
+					<graded-modal
+						v-model="sharingModal"
+						name="sharing-tool"
+						:show-close="true"
+					>
+						<graded-sharing />
+					</graded-modal>
 
 					<h2 class="sharing-title">Share by Link</h2>
 
@@ -340,6 +350,7 @@
 			showModal: false,
 			sharingLoading: false,
 			sharing: null,
+			sharingModal: false,
 			invitee: {
 				firstname: '',
 				lastname: '',
@@ -608,6 +619,12 @@
 				}
 			}
 		}
+	}
+
+	/deep/ .modal-container .sharing-wrapper {
+
+		width: 400px;
+		padding: 0 !important;
 	}
 
 </style>
