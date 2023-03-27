@@ -29,6 +29,7 @@
     "less-loader": "^7",
     "nuxt": "^2.15.8",
     "nuxt-clipboard": "^0.0.7",
+    "nuxt-highlightjs": "^1.0.3",
     "nuxt-socket-io": "^1.0.18",
     "one-colorpicker": "^1.0.12",
     "parse-css-color": "^0.2.1",

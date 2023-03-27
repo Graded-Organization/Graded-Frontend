@@ -153,6 +153,16 @@
 	/deep/ .modal-container .sharing-wrapper {
 
 		padding: 0 !important;
+
+		.mode-default, .mode-email {
+
+			width: 400px;
+		}
+
+		.mode-embed {
+
+			width: 700px;
+		}
 	}
 
 </style>

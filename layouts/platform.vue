@@ -246,7 +246,8 @@
 
 		.site-footer {
 
-			background: @background-2 url('~/assets/images/template/rb-texture.png') right bottom no-repeat;;
+			//background: @background-2 url('~/assets/images/template/rb-texture.png') right bottom no-repeat;
+			background: @background-2;
 			position: fixed;
 			z-index: 100;
 			width: 100%;

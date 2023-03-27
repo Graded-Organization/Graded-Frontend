@@ -77,6 +77,9 @@ export default {
 		'@nuxtjs/axios',
 		'@nuxtjs/auth-next',
 		'@nuxtjs/i18n',
+		['nuxt-highlightjs', {
+			style: 'dark',
+		}],
 	],
 
 	io: {
@@ -113,7 +116,7 @@ export default {
 			Oxanium: [300, 400, 500, 700, 900],
 			'Titillium+Web': [300, 400, 600, 700, 900],
 			'Patrick Hand': [400],
-			'Flow+Block': [400]
+			'Flow+Block': [400],
 		},
 	},
 

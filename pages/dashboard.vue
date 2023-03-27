@@ -28,7 +28,11 @@
 							</nuxt-link>
 
 							<div class="worksheet-actions">
-								<a href="#" @click.prevent="showDeleteWorksheet(worksheet.id)" class="button button-small button-danger">
+								<a
+									href="#"
+									@click.prevent="showDeleteWorksheet(worksheet.id)"
+									class="button button-small button-danger"
+								>
 									<i class="fal fa-fw fa-times" />
 								</a>
 							</div>
@@ -51,7 +55,11 @@
 				</div>
 
 				<form-group label="Workbook Name" required>
-					<input type="text" class="input-block form-control form-control-medium" placeholder="My super duper new workbook">
+					<input
+						type="text"
+						class="input-block form-control form-control-medium"
+						placeholder="My super duper new workbook"
+					>
 				</form-group>
 
 				<p class="text-right">
@@ -74,7 +82,7 @@
 
 				<div class="row flexcol">
 					<div class="col">
-						<div class="new-card" @click="type = 'grid'" :class="{ 'is-selected': type == 'grid' }">
+						<div class="new-card" @click="type = 'grid'" :class="{ 'is-selected': type === 'grid' }">
 							<h2>Grid Based Sheet</h2>
 							<img src="@/assets/images/template/grid-based.png" alt="Grid-based">
 							<p>This sheet gives you an editor to create areas inside in a grid-based view.</p>
@@ -82,7 +90,7 @@
 
 					</div>
 					<div class="col">
-						<div class="new-card" @click="type = 'pdf'" :class="{ 'is-selected': type == 'pdf' }">
+						<div class="new-card" @click="type = 'pdf'" :class="{ 'is-selected': type === 'pdf' }">
 							<h2>PDF Sheet</h2>
 							<img src="@/assets/images/template/pdf-based.png" alt="PDF based">
 							<p>Upload your own PDF and create form fields on top of it.</p>
@@ -92,7 +100,13 @@
 
 				<p class="text-right">
 					<a href="#" @click.prevent="closeNewWorksheet" class="button button-ghost-gray">Cancel</a>
-					<a href="#" @click.prevent="createWorksheet" :disabled="!type" :class="{ 'disabled': !type }" class="button button-primary">Create</a>
+					<a
+						href="#"
+						@click.prevent="createWorksheet"
+						:disabled="!type"
+						:class="{ 'disabled': !type }"
+						class="button button-primary"
+					>Create</a>
 				</p>
 			</div>
 		</graded-modal>
@@ -108,7 +122,11 @@
 
 					<p class="text-right">
 						<a href="#" @click.prevent="close" class="button button-ghost-gray">Nevermind</a>
-						<a href="#" @click.prevent="deleteWorkSheet(params.id)" class="button button-primary">Yes, delete worksheet</a>
+						<a
+							href="#"
+							@click.prevent="deleteWorkSheet(params.id)"
+							class="button button-primary"
+						>Yes, delete worksheet</a>
 					</p>
 				</div>
 			</template>
@@ -127,14 +145,14 @@
 			worksheets: [],
 			newWorksheetModal: false,
 			newWorkbookModal: false,
-			deleteModal: false
+			deleteModal: false,
 		}),
 		methods: {
 			newFolder() { this.$vfm.show('new-workbook'); },
 			showDeleteWorksheet(id) { this.$vfm.show('delete-worksheet', { id: id }); },
 			async deleteWorkSheet(id) {
 
-				const worksheet = await this.$axios.$delete(`/users/me/worksheets/${id}`);
+				const worksheet = await this.$axios.$delete(`/users/me/worksheets/${ id }`);
 				const worksheets = await this.$axios.$get('/users/me/worksheets');
 				this.deleteModal = false;
 				this.worksheets = worksheets.data;
@@ -143,19 +161,23 @@
 			async createWorksheet() {
 
 				if(this.type) {
-					const worksheet = await this.$axios.$post('worksheets', { id_user: this.$auth.user.id, type: this.type, name: 'Untitled Worksheet' });
-					this.$router.push({ path: `/worksheets/${ worksheet.data.id }` });
+					const worksheet = await this.$axios.$post('worksheets', {
+						id_user: this.$auth.user.id,
+						type: this.type,
+						name: 'Untitled Worksheet',
+					});
+					await this.$router.push({ path: `/worksheets/${ worksheet.data.id }` });
 				}
 			},
 			closeNewWorkbook() { this.newWorkbookModal = false; },
-			closeNewWorksheet() { this.newWorksheetModal = false; }
+			closeNewWorksheet() { this.newWorksheetModal = false; },
 		},
 		async fetch() {
 
 			const worksheets = await this.$axios.$get('/users/me/worksheets');
 			this.worksheets = worksheets.data;
-		}
-	}
+		},
+	};
 </script>
 
 <style scoped lang="less">
@@ -184,7 +206,7 @@
 
 			.card-wrapper {
 
-				background: @green-3 url('~/assets/images/template/texture-transparency-x1000.png') center center repeat;
+				//background: @green-3 url('~/assets/images/template/texture-transparency-x1000.png') center center repeat;
 				margin: @margin-half;
 				border-radius: @radius-1;
 				padding: @margin-default;
@@ -231,7 +253,7 @@
 				text-align: center;
 				border-radius: @radius-1;
 				cursor: pointer;
-				background: white url('~/assets/images/template/texture-transparency-x1000.png') repeat;
+				//background: white url('~/assets/images/template/texture-transparency-x1000.png') repeat;
 				background-blend-mode: multiply;
 				transition: background 500ms;
 
