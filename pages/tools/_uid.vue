@@ -78,7 +78,7 @@
 					</div>
 
 					<form-group label="Email" required :class="{ 'has-error': $v.user.email.$error }">
-						<input type="email" v-model.trim="$v.user.email.$model" class="input-block form-control">
+						<input type="email" :readonly="true" v-model.trim="$v.user.email.$model" class="input-block form-control">
 					</form-group>
 
 					<form-group
@@ -125,14 +125,13 @@
 						<div class="col">
 							<a
 								href="#"
-								@click.prevent="authenticate"
 								class="button button-block button-ghost-primary"
 							>Continue as guest</a>
 						</div>
 						<div class="col">
 							<a
 								href="#"
-								@click.prevent="authenticate"
+								@click.prevent="joinWorksheet"
 								class="button button-block button-primary"
 							>Create account</a>
 						</div>
@@ -266,7 +265,7 @@
 
 				return styles;
 			},
-			async authenticate() {
+			async joinWorksheet() {
 
 				this.$v.$touch();
 				if(this.$v.$invalid) {
@@ -286,9 +285,11 @@
 					answers: {},
 				};
 
-				const authenticate = await this.$axios.$post(`/applications/`, application);
+				const join = await this.$axios.$post(`/worksheets/${ this.$route.params.uid }/join`, this.user);
 
-				await this.$router.push({ path: `/application/${ authenticate.data.uid }` });
+				console.log(join);
+
+				//await this.$router.push({ path: `/application/${ authenticate.data.uid }` });
 
 			},
 		},
