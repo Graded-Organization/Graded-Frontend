@@ -132,4 +132,8 @@
 		font-family: monospace;
 		padding: @margin-double;
 	}
+
+	.hljs {
+		background: transparent;
+	}
 </style>

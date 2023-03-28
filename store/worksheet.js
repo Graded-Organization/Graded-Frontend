@@ -87,7 +87,7 @@ export const actions = {
 	setToolAreaStyle({ commit }, payload) { commit('setToolAreaStyle', payload); },
 
 	async fetchWorksheet({ commit }, payload) {
-		const worksheet = await this.$axios.$get(`/worksheets/${ payload }?pdo[blocks]=getBlocks`);
+		const worksheet = await this.$axios.$get(`/worksheets/${ payload }?pdo[blocks]=getBlocks&pdo[users]=getUsers`);
 		commit('setWorksheet', worksheet.data);
 	},
 	updateBlock({ commit }, payload) { commit('updateBlock', payload); },

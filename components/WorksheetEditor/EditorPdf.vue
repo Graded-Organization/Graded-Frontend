@@ -38,15 +38,16 @@
 				<div class="message message-fields mb-default" v-if="loadFields == null && !fieldsFromPDF">
 					<span>Hey, it looks like your PDF has form fields, do you want to load them in your worksheet?</span>
 
+
 					<span class="buttons">
 						<a
 							href="#"
-							@click.prevent="loadPDFFields"
+							@click.prevent="loadPDFFields(true)"
 							class="button button-small button-primary"
 						>Yes, please kind sir</a>
 						<a
 							href="#"
-							@click.prevent="loadFields = false"
+							@click.prevent="loadPDFFields(false)"
 							class="button button-small button-danger"
 						>No need</a>
 					</span>
@@ -233,7 +234,7 @@
 				return this.worksheet.content?.pdf?.pages || [];
 			},
 			fieldsFromPDF() {
-				return this.worksheet.options?.fields_from_pdf;
+				return typeof this.worksheet.options?.fields_from_pdf !== 'undefined';
 			},
 			workingPages() {
 
@@ -254,15 +255,18 @@
 
 				this.updateContent(null);
 			},
-			async loadPDFFields() {
+			async loadPDFFields(flag) {
 				const obj = this;
 
-				let loader = this.$loading.show({ container: this.$refs.editorWrapper });
-				const res = await obj.$axios.$post(`/worksheets/${ this.worksheet.id }/convert-fields`);
-				loader.hide();
+				if(flag) {
 
-				this.setWorksheet(res.data.worksheet);
-				//this.updateContent(res.data.worksheet.content);
+					let loader = this.$loading.show({ container: this.$refs.editorWrapper });
+					const res = await obj.$axios.$post(`/worksheets/${ this.worksheet.id }/convert-fields`);
+					loader.hide();
+					this.setWorksheet(res.data.worksheet);
+				}
+
+				this.updateOptions(this.$shallow({ ...this.worksheet.options, fields_from_pdf: flag }));
 
 				this.loadFields = true;
 				this.mode = 'editor';
