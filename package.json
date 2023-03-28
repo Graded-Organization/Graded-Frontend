@@ -47,6 +47,7 @@
     "vue-fragment": "^1.6.0",
     "vue-good-table": "^2.21.11",
     "vue-js-modal": "^2.0.1",
+    "vue-jwt-decode": "^0.1.0",
     "vue-loading-overlay": "^3.0",
     "vue-masonry-wall": "^0.3.2",
     "vue-moment": "^4.1.0",

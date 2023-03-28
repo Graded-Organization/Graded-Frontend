@@ -40,7 +40,6 @@
 							</div>
 							<form-group>
 								<select class="form-control form-control-small">
-									<option value="owner">Owner</option>
 									<option value="coowner">Co-Owner</option>
 									<option value="view-only">View Only</option>
 									<option value="editor">Editor</option>
@@ -112,7 +111,6 @@
 				<div class="col col-4">
 					<form-group>
 						<select :disabled="sending" v-model="inviteType" class="input-block form-control">
-							<option value="owner">Owner</option>
 							<option value="coowner">Co-Owner</option>
 							<option value="view-only">View Only</option>
 							<option value="editor">Editor</option>
@@ -140,8 +138,14 @@
 				</div>
 			</div>
 			<p class="text-right">
-				<a href="#" @click.prevent="returnMode" class="button button-link">Cancel</a>
-				<a href="#" @click.prevent="sendInvites" class="button button-primary">Send</a>
+				<a href="#" @click.prevent="returnMode" class="button button-link" :disabled="sending">Cancel</a>
+				<a
+					href="#"
+					@click.prevent="sendInvites"
+					class="button button-primary"
+					:disabled="sending"
+					:class="{'is-loading': sending }"
+				>Send</a>
 			</p>
 		</div>
 
@@ -176,7 +180,7 @@
 			people: [],
 			options: [],
 			invitees: [],
-			inviteType: 'owner',
+			inviteType: 'coowner',
 			inviteMessage: '',
 			sending: false,
 		}),
