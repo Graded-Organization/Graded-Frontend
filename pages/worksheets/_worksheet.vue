@@ -156,7 +156,7 @@
 
 		.mode-default, .mode-email {
 
-			width: 400px;
+			width: 500px;
 		}
 
 		.mode-embed {

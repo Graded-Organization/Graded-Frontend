@@ -3,14 +3,13 @@
 		<h2 class="sharing-title">
 			<img src="~/assets/images/template/transform-robot.svg" alt="Normie">
 			Invite users to join this tool
+			<span
+				class="tag"
+				v-tooltip.bottom="'Guests can collaborate on this tool simultaneously. Information submitted is visible to you and to all collaborators.'"
+			>Collaborative</span>
 		</h2>
 
 		<div class="mode-default" v-show="mode === 'default'">
-			<div class="message mb-default">
-				<h3 class="sharing-subtitle">Collaborative Tool</h3>
-				<p>Guests can collaborate on this tool simultaneously. Information submitted is visible to you and to all collaborators.</p>
-			</div>
-
 			<form-group class="mb-double">
 				<input
 					class="input-block form-control"
@@ -69,7 +68,7 @@
 					<a href="#" class="button button-small button-secondary">Copy Link</a>
 				</div>
 
-				<div class="sharing-action">
+				<!--<div class="sharing-action">
 					<i class="far fa-fw fa-code"></i>
 					<span>Embed this tool on a website</span>
 					<a
@@ -77,7 +76,7 @@
 						@click.prevent="mode = 'embed'"
 						class="button button-small button-secondary"
 					>Get Embed Code</a>
-				</div>
+				</div>-->
 			</div>
 		</div>
 
@@ -331,6 +330,18 @@
 </script>
 
 <style scoped lang="less">
+
+	.tag {
+
+		display: inline-block;
+		background: @primary;
+		font-size: 0.7rem;
+		margin-left: @margin-half;
+		vertical-align: middle;
+		border-radius: @radius-round;
+		padding: @margin-half @margin-default;
+		font-weight: normal;
+	}
 
 	.message {
 

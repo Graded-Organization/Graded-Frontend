@@ -76,7 +76,7 @@
 		position: relative;
 		display: flex;
 		flex-direction: column;
-		max-height: 90%;
+		//max-height: 90%;
 		border-radius: 0.25rem;
 		background: white;
 		padding: @margin-double;
