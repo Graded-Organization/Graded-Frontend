@@ -16,12 +16,12 @@
 
 			<div class="header-actions">
 				<template>
-					<a href="#" @click.prevent="enterModal = true" class="button button-primary">Share</a>
+					<a href="#" @click.prevent="showJoin" class="button button-primary">Share</a>
 				</template>
 			</div>
 		</div>
 
-		<div class="application-body" @click="enterModal = true">
+		<div class="application-body" @click="showJoin">
 			<div class="inner">
 
 				<div class="my-default">
@@ -42,7 +42,8 @@
 				</h2>
 
 				<p class="enter-invitation">
-					<strong>{{ link.options.invitee.nicename }}</strong> is inviting you to collaborate on this tool</p>
+					<strong>{{ link.options.invitee.nicename }}</strong> is inviting you to collaborate on this tool
+				</p>
 
 				<div class="submit-application" :class="{ 'animate__animated animate__shakeX': authenticateHasError }">
 
@@ -78,7 +79,12 @@
 					</div>
 
 					<form-group label="Email" required :class="{ 'has-error': $v.user.email.$error }">
-						<input type="email" :readonly="true" v-model.trim="$v.user.email.$model" class="input-block form-control">
+						<input
+							type="email"
+							:readonly="true"
+							v-model.trim="$v.user.email.$model"
+							class="input-block form-control"
+						>
 					</form-group>
 
 					<form-group
@@ -86,37 +92,7 @@
 						required
 						:has-error="$v.user.password.$error"
 					>
-						<div class="input-wrapper">
-							<input
-								v-model.trim="$v.user.password.$model"
-								type="password"
-								tabindex="1"
-								class="form-control input-block"
-								autocorrect="off"
-								autocapitalize="off"
-								autocomplete="do-not-autofill"
-							/>
-							<div
-								v-if="$v.user.password.$model"
-								class="password-score"
-								:data-score="password.score"
-							>{{ password.score }}
-							</div>
-						</div>
-
-						<transition-slide>
-							<div v-if="!$v.user.password.$error">
-								<password
-									v-model="$v.user.password.$model"
-									:strength-meter-only="true"
-									@score="showScore"
-									@feedback="showFeedback"
-								/>
-								<div class="help-block">
-									<span v-if="password.warning">{{ password.warning }}</span>
-								</div>
-							</div>
-						</transition-slide>
+						<password-input v-model.trim="$v.user.password.$model"></password-input>
 
 						<template #help-block>This field is required</template>
 					</form-group>
@@ -145,7 +121,6 @@
 <script>
 	import Logo from '~/assets/images/template/transform-robot.svg?inline';
 	import GLogo from '~/assets/images/template/g-logo.svg?inline';
-	import Password from 'vue-password-strength-meter';
 
 	import WorksheetMixin from '../worksheets/worksheet.mixin.js';
 	import Vue from 'vue';
@@ -157,9 +132,9 @@
 		name: 'WorkSheetApplication',
 		layout: 'preview',
 		mixins: [WorksheetMixin],
-		components: { Logo, GLogo, Password, VueJwtDecode },
+		components: { Logo, GLogo, VueJwtDecode },
 		data: () => ({
-			enterModal: true,
+			enterModal: false,
 			authenticateHasError: false,
 			link: null,
 			user: {
@@ -168,13 +143,9 @@
 				email: '',
 				password: '',
 			},
-			password: {
-				suggestions: [],
-				warning: '',
-				score: 0,
-			},
 		}),
 		mounted() {
+			this.enterModal = !this.$auth.loggedIn;
 		},
 		validations: {
 			user: {
@@ -243,14 +214,11 @@
 			},
 		},
 		methods: {
-			showFeedback({ suggestions, warning }) {
-				console.log('🙏', suggestions);
-				console.log('⚠', warning);
-				this.password.warning = warning;
-			},
-			showScore(score) {
-				console.log('💯', score);
-				this.password.score = score;
+			showJoin() {
+				if(!this.$auth.loggedIn) {
+
+					this.enterModal = true;
+				}
 			},
 			getToolAreaStyle(area) {
 
@@ -289,7 +257,11 @@
 
 				console.log(join);
 
+				await this.$auth.setUserToken(join.jwt);
+				await this.$auth.fetchUser();
+
 				//await this.$router.push({ path: `/application/${ authenticate.data.uid }` });
+				this.$nuxt.refresh();
 
 			},
 		},
@@ -297,12 +269,12 @@
 
 			await this.fetchWorksheet(this.$route.params.uid);
 
-			const jwt = VueJwtDecode.decode(this.$route.query.jwt);
-
-			const link = await this.$axios.$get(`/links/${ jwt.sub }`);
-			this.link = link.data;
-
-			this.user.email = this.link.options.email;
+			if(this.$route.query.jwt) {
+				const jwt = VueJwtDecode.decode(this.$route.query.jwt);
+				const link = await this.$axios.$get(`/links/${ jwt.sub }`);
+				this.link = link.data;
+				this.user.email = this.link.options.email;
+			}
 		},
 	};
 </script>
@@ -468,40 +440,6 @@
 
 		text-align: center;
 		margin-bottom: @margin-default;
-	}
-
-	.password-score {
-
-		position: absolute;
-		top: 0;
-		right: @margin-half;
-		line-height: 1rem;
-		padding: @margin-half;
-		background: @background-1;
-		top: calc(~"50% - ((1rem + @{margin-half} + @{margin-half})/2)");
-		border-radius: 2px;
-		width: 2rem;
-		text-align: center;
-
-		&[data-score='0'] { background: @background-1; }
-
-		&[data-score='1'] { color: white; background: #ff4500; }
-
-		&[data-score='2'] { color: white; background: orange; }
-
-		&[data-score='3'] { color: white; background: #9acd32; }
-
-		&[data-score='4'] { color: white; background: green; }
-	}
-
-	/deep/ .Password {
-
-		max-width: 100%;
-
-		.Password__strength-meter {
-
-			margin-bottom: 0;
-		}
 	}
 
 </style>
