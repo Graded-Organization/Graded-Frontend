@@ -15,6 +15,21 @@
 			</div>
 
 			<div class="header-actions">
+
+				<div class="student-info">
+					<div class="connected-user" v-for="user in connectedUsers">
+						<div class="avatar-wrapper">
+							<img
+								class="avatar"
+								width="40"
+								:src="`${ $config.apiUrl }/users/${ user.id }/avatar?size=200`"
+								v-tooltip.bottom="user.nicename"
+								:style="`border-color: ${ $stringToColour(user.nicename) }`"
+							>
+						</div>
+					</div>
+				</div>
+
 				<template>
 					<a href="#" @click.prevent="showJoin" class="button button-primary">Share</a>
 				</template>
@@ -137,6 +152,8 @@
 			enterModal: false,
 			authenticateHasError: false,
 			link: null,
+			socket: {},
+			connectedUsers: [],
 			user: {
 				firstname: '',
 				lastname: '',
@@ -146,6 +163,7 @@
 		}),
 		mounted() {
 			this.enterModal = !this.$auth.loggedIn;
+			this.sockets();
 		},
 		validations: {
 			user: {
@@ -214,6 +232,35 @@
 			},
 		},
 		methods: {
+			sockets() {
+
+				if(this.$auth.loggedIn) {
+
+					this.socket = this.$nuxtSocket({});
+
+					this.socket.emit('connected', { ...this.$auth.user, application: this.$route.params.id });
+					this.checkConnected();
+
+					this.socket.on('connectedUsers', (msg, cb) => {
+
+						this.connectedUsers = msg;
+						this.checkConnected();
+					});
+
+					this.socket.on('focusedFields', (msg, cb) => {
+
+						this.focusedFields = msg;
+					});
+
+					this.socket.on('newAnswer', (msg, cb) => {
+
+						this.addAnswer(msg);
+					});
+				}
+			},
+			checkConnected() {
+				this.socket.emit('checkConnected');
+			},
 			showJoin() {
 				if(!this.$auth.loggedIn) {
 
