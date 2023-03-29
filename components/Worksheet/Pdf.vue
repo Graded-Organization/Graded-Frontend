@@ -151,7 +151,7 @@
 					this.$parent.socket.emit('focusTool', {
 						userId: this.$auth.user.id,
 						userName: this.$auth.user.nicename,
-						application: this.$route.params.id,
+						application: this.$route.params.uid,
 						fieldId: tool.id,
 					});
 				}
@@ -165,7 +165,7 @@
 				if(typeof this.$parent.socket !== 'undefined') {
 					this.$parent.socket.emit('blurTool', {
 						userId: this.$auth.user.id,
-						application: this.$route.params.id,
+						application: this.$route.params.uid,
 						fieldId: tool.id,
 					});
 				}
@@ -178,7 +178,7 @@
 
 				console.log('broadcastNewAnswer', answer);
 
-				answer.application = this.$route.params.id;
+				answer.application = this.$route.params.uid;
 
 				if(typeof this.$parent.socket !== 'undefined') {
 					this.$parent.socket.emit('newAnswer', answer);

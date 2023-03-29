@@ -160,7 +160,7 @@
 					content: content
 				};
 
-				const applicationAnswer = await this.$axios.$post(`/applications/${this.$route.params.id}/answer`, answer);
+				const applicationAnswer = await this.$axios.$post(`/worksheets/${this.$route.params.uid}/answer`, answer);
 
 				this.addAnswer(applicationAnswer.data);
 				this.$emit('new-answer', applicationAnswer.data);

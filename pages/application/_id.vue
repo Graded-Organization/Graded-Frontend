@@ -133,8 +133,8 @@
 
 					<worksheet v-if="worksheet.type === 'grid'" v-model="answers" />
 					<worksheet-pdf
-						:focused-fields="focusedFields"
 						v-else
+						:focused-fields="focusedFields"
 					/>
 
 					<graded-modal

@@ -41,7 +41,10 @@
 
 				<div class="my-default">
 					<worksheet v-if="worksheet.type === 'grid'" />
-					<worksheet-pdf v-else />
+					<worksheet-pdf
+						v-else
+						:focused-fields="focusedFields"
+					/>
 				</div>
 			</div>
 		</div>
@@ -50,7 +53,7 @@
 			v-model="enterModal"
 			name="submit-application"
 		>
-			<template v-slot="{ params, close }">
+			<template v-slot="{ params, close }" v-if="!$auth.loggedIn">
 				<h2 class="enter-title">
 					<img src="~/assets/images/template/transform-robot.svg" alt="Normie">
 					Get started!
@@ -153,6 +156,7 @@
 			authenticateHasError: false,
 			link: null,
 			socket: {},
+			focusedFields: [],
 			connectedUsers: [],
 			user: {
 				firstname: '',
@@ -238,7 +242,7 @@
 
 					this.socket = this.$nuxtSocket({});
 
-					this.socket.emit('connected', { ...this.$auth.user, application: this.$route.params.id });
+					this.socket.emit('connected', { ...this.$auth.user, application: this.$route.params.uid });
 					this.checkConnected();
 
 					this.socket.on('connectedUsers', (msg, cb) => {
@@ -321,6 +325,11 @@
 				const link = await this.$axios.$get(`/links/${ jwt.sub }`);
 				this.link = link.data;
 				this.user.email = this.link.options.email;
+			} else {
+
+				const answers = await this.$axios.$get(`/worksheets/${ this.$route.params.uid }/answers`);
+				this.setAnswers(answers.data);
+				this.link = true;
 			}
 		},
 	};
@@ -419,6 +428,30 @@
 
 				padding-right: @margin-default;
 				text-align: right;
+
+				display: flex;
+
+				.avatar-wrapper {
+
+					&:before {
+
+						content: '';
+						width: 12px;
+						height: 12px;
+						background: @success;
+						border: 2px solid white;
+						position: absolute;
+						top: 0;
+						right: 0;
+						border-radius: @radius-round;
+					}
+				}
+
+				.avatar {
+
+					border: 3px solid transparent;
+					margin-left: @margin-half;
+				}
 
 				h3 {
 
