@@ -478,6 +478,7 @@
 		.file-uploader-dropzone {
 
 			aspect-ratio: auto;
+			width: 100%;
 			height: 500px;
 			display: flex;
 			align-items: center;
