@@ -386,6 +386,10 @@
 				await this.$auth.setUserToken(joinRes.jwt);
 				this.$auth.options.rewriteRedirects = oldRedirect;
 
+				if(this.userStatus === 'Active' && this.hasAccount) {
+					this.sockets();
+				}
+
 			} else {
 
 				if(this.$auth.loggedIn) {
