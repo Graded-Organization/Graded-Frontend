@@ -7,7 +7,7 @@
 				:loading="uploadingAttachment"
 			>
 				<div class="uploader-start">
-					<img src="@/assets/images/template/worksheep-pdf.png" alt="">
+					<graded-pdf-animation />
 					<p>To start, please load a PDF file.</p>
 				</div>
 			</file-uploader>
