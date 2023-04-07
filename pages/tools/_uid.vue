@@ -1,139 +1,171 @@
 <template>
-	<div class="application-wrapper" v-if="worksheet && link">
+	<div class="application-wrapper">
 
-		<div class="application-header">
+		<!-- wait for nuxt fetch -->
+		<p v-if="$fetchState.pending">Loading...</p>
+		<p v-else-if="$fetchState.error">An error occurred</p>
+		<template v-else>
+			<div class="application-header">
 
-			<nuxt-link to="/dashboard" class="site-logo">
-				<logo />
-			</nuxt-link>
+				<nuxt-link to="/dashboard" class="site-logo">
+					<logo />
+				</nuxt-link>
 
-			<div class="worksheet-title">
-				<div>
-					<h2 class="worksheet-name-wrapper">{{ worksheetName }}</h2>
-					<p v-if="worksheetDescription" class="worksheet-description-wrapper">{{ worksheetDescription }}</p>
-				</div>
-			</div>
-
-			<div class="header-actions">
-
-				<div class="student-info">
-					<div class="connected-user" v-for="user in connectedUsers">
-						<div class="avatar-wrapper">
-							<img
-								class="avatar"
-								width="40"
-								:src="`${ $config.apiUrl }/users/${ user.id }/avatar?size=200`"
-								v-tooltip.bottom="user.nicename"
-								:style="`border-color: ${ $stringToColour(user.nicename) }`"
-							>
-						</div>
+				<div class="worksheet-title">
+					<div>
+						<h2 class="worksheet-name-wrapper">{{ worksheetName }}</h2>
+						<p
+							v-if="worksheetDescription"
+							class="worksheet-description-wrapper"
+						>{{ worksheetDescription }}</p>
 					</div>
 				</div>
 
-				<template>
-					<a href="#" @click.prevent="showJoin" class="button button-primary">Share</a>
-				</template>
-			</div>
-		</div>
+				<div class="header-actions">
 
-		<div class="application-body" @click="showJoin">
-			<div class="inner">
+					<div class="student-info">
+						<div class="connected-user" v-for="user in connectedUsers">
+							<div class="avatar-wrapper">
+								<img
+									class="avatar"
+									width="40"
+									:src="`${ $config.apiUrl }/users/${ user.id }/avatar?size=200`"
+									v-tooltip.bottom="user.nicename"
+									:style="`border-color: ${ $stringToColour(user.nicename) }`"
+								>
+							</div>
+						</div>
+					</div>
 
-				<div class="my-default">
-					<worksheet v-if="worksheet.type === 'grid'" />
-					<worksheet-pdf
-						v-else
-						:focused-fields="focusedFields"
-					/>
+					<template>
+						<a href="#" @click.prevent="showJoin" class="button button-primary">Share</a>
+					</template>
 				</div>
 			</div>
-		</div>
 
-		<graded-modal
-			v-model="enterModal"
-			name="submit-application"
-		>
-			<template v-slot="{ params, close }" v-if="!$auth.loggedIn">
-				<h2 class="enter-title">
-					<img src="~/assets/images/template/transform-robot.svg" alt="Normie">
-					Get started!
-				</h2>
+			<div class="application-body" @click="showJoin">
+				<div class="inner">
 
-				<p class="enter-invitation">
-					<strong>{{ link.options.inviter.nicename }}</strong> is inviting you to collaborate on this tool as
-					<strong>{{ link.options.invite_type }}</strong>.
-				</p>
+					<div class="my-default">
+						<worksheet v-if="worksheet.type === 'grid'" />
+						<worksheet-pdf
+							v-else
+							:focused-fields="focusedFields"
+						/>
+					</div>
+				</div>
+			</div>
 
-				<div class="submit-application" :class="{ 'animate__animated animate__shakeX': authenticateHasError }">
+			<graded-modal
+				v-model="enterModal"
+				name="submit-application"
+				v-if="!$auth.loggedIn || ($auth.loggedIn && $route.query.jwt)"
+			>
+				<template v-slot="{ params, close }">
+					<h2 class="enter-title">
+						<img src="~/assets/images/template/transform-robot.svg" alt="Normie">
+						Get started!
+					</h2>
 
-					<p class="mb-default">
-						<a href="#" @click.prevent="googleLogin" class="button button-google button-block">
-							<span class="icon"><g-logo /></span>
-							Access with Google Account
-						</a>
+					<h2 v-if="hasAccount">Hello {{ $auth.user.nicename }}!</h2>
+
+					<p class="enter-invitation">
+						<strong>{{ link.options.inviter.nicename }}</strong> is inviting you to collaborate on this tool as
+						<strong>{{ link.options.invite_type }}</strong>.
 					</p>
 
-					<p class="text-center mb-default">or continue with your email</p>
-
-					<div class="row">
-						<div class="col col-6">
-							<form-group label="First name" required :class="{ 'has-error': $v.user.firstname.$error }">
-								<input
-									type="text"
-									v-model.trim="$v.user.firstname.$model"
-									class="input-block form-control"
-								>
-							</form-group>
-						</div>
-
-						<div class="col col-6">
-							<form-group label="Last name" required :class="{ 'has-error': $v.user.lastname.$error }">
-								<input
-									type="text"
-									v-model.trim="$v.user.lastname.$model"
-									class="input-block form-control"
-								>
-							</form-group>
-						</div>
-					</div>
-
-					<form-group label="Email" required :class="{ 'has-error': $v.user.email.$error }">
-						<input
-							type="email"
-							:readonly="true"
-							v-model.trim="$v.user.email.$model"
-							class="input-block form-control"
-						>
-					</form-group>
-
-					<form-group
-						label="Create Password"
-						required
-						:has-error="$v.user.password.$error"
+					<div
+						v-if="!hasAccount"
+						class="submit-application"
+						:class="{ 'animate__animated animate__shakeX': authenticateHasError }"
 					>
-						<password-input v-model.trim="$v.user.password.$model"></password-input>
+						<p class="mb-default">
+							<a href="#" @click.prevent="googleLogin" class="button button-google button-block">
+								<span class="icon"><g-logo /></span>
+								Access with Google Account
+							</a>
+						</p>
 
-						<template #help-block>This field is required</template>
-					</form-group>
+						<p class="text-center mb-default">or continue with your email</p>
 
-					<div class="row">
-						<div class="col">
-							<a
-								href="#"
-								class="button button-block button-ghost-primary"
-							>Skip for now</a>
+						<div class="row">
+							<div class="col col-6">
+								<form-group
+									label="First name"
+									required
+									:class="{ 'has-error': $v.user.firstname.$error }"
+								>
+									<input
+										type="text"
+										v-model.trim="$v.user.firstname.$model"
+										class="input-block form-control"
+									>
+								</form-group>
+							</div>
+
+							<div class="col col-6">
+								<form-group
+									label="Last name"
+									required
+									:class="{ 'has-error': $v.user.lastname.$error }"
+								>
+									<input
+										type="text"
+										v-model.trim="$v.user.lastname.$model"
+										class="input-block form-control"
+									>
+								</form-group>
+							</div>
 						</div>
-						<div class="col">
-							<a
-								href="#"
-								@click.prevent="joinWorksheet"
-								class="button button-block button-primary"
-							>Create account</a>
+
+						<form-group label="Email" required :class="{ 'has-error': $v.user.email.$error }">
+							<input
+								type="email"
+								:readonly="true"
+								v-model.trim="$v.user.email.$model"
+								class="input-block form-control"
+							>
+						</form-group>
+
+						<form-group
+							label="Create Password"
+							required
+							:has-error="$v.user.password.$error"
+						>
+							<password-input v-model.trim="$v.user.password.$model"></password-input>
+
+							<template #help-block>This field is required</template>
+						</form-group>
+
+						<div class="row">
+							<div class="col">
+								<a
+									href="#"
+									class="button button-block button-ghost-primary"
+								>Skip for now</a>
+							</div>
+							<div class="col">
+								<a
+									href="#"
+									@click.prevent="joinWorksheet"
+									class="button button-block button-primary"
+								>Create account</a>
+							</div>
 						</div>
 					</div>
-				</div>
-			</template>
-		</graded-modal>
+					<div v-else>
+						<div class="submit-application">
+							<p class="mb-default">
+								<a href="#" @click.prevent="authJoin" class="button button-block button-primary">
+									Join
+								</a>
+							</p>
+						</div>
+					</div>
+
+				</template>
+			</graded-modal>
+		</template>
 	</div>
 </template>
 
@@ -153,6 +185,8 @@
 		mixins: [WorksheetMixin],
 		components: { Logo, GLogo, VueJwtDecode },
 		data: () => ({
+			hasAccount: false,
+			userStatus: null,
 			enterModal: false,
 			authenticateHasError: false,
 			link: null,
@@ -167,8 +201,6 @@
 			},
 		}),
 		mounted() {
-			this.enterModal = !this.$auth.loggedIn;
-			this.sockets();
 		},
 		validations: {
 			user: {
@@ -285,6 +317,21 @@
 
 				return styles;
 			},
+			async authJoin() {
+
+				await this.$axios.$post(`/worksheets/${ this.$route.params.uid }/join`, {
+					email: this.user.email,
+				});
+				await this.$auth.fetchUser();
+
+				this.sockets();
+
+				// Close modal
+				this.enterModal = false;
+
+				// Remove query from url
+				await this.$router.push({ path: this.$route.path });
+			},
 			async joinWorksheet() {
 
 				this.$v.$touch();
@@ -297,36 +344,53 @@
 					return;
 				}
 
-				const application = {
-					id_worksheet: this.worksheet.id,
-					status: 'Pending',
-					user_name: `${ this.user.firstname } ${ this.user.lastname }`,
-					user_email: this.user.email,
-					answers: {},
-				};
-
-				const join = await this.$axios.$post(`/worksheets/${ this.$route.params.uid }/join`, this.user);
-
-				console.log(join);
-
-				await this.$auth.setUserToken(join.jwt);
+				await this.$axios.$post(`/worksheets/${ this.$route.params.uid }/join`, this.user);
 				await this.$auth.fetchUser();
 
-				//await this.$router.push({ path: `/application/${ authenticate.data.uid }` });
-				this.$nuxt.refresh();
+				this.sockets();
 
+				// Close modal
+				this.enterModal = false;
+
+				// Remove query from url
+				await this.$router.push({ path: this.$route.path });
 			},
 		},
 		async fetch() {
 
 			await this.fetchWorksheet(this.$route.params.uid);
 
+			// Magic link from inviter
 			if(this.$route.query.jwt) {
+
 				const jwt = VueJwtDecode.decode(this.$route.query.jwt);
 				const link = await this.$axios.$get(`/links/${ jwt.sub }`);
 				this.link = link.data;
 				this.user.email = this.link.options.email;
+
+				// Send join event to get the user bearer token
+				// {id}/log-and-join/{jwt}
+				const joinRes = await this.$axios.$get(`/worksheets/${ this.$route.params.uid }/log-and-join/${ this.$route.query.jwt }`);
+
+				// Check the user status
+				this.userStatus = joinRes.data.worksheet_status;
+				this.hasAccount = joinRes.data.has_password;
+
+				// If not has password or is pending, show the modal
+				if(this.userStatus === 'Pending' || !this.hasAccount) {
+					this.enterModal = true;
+				}
+
+				const oldRedirect = this.$auth.options.redirect;
+				this.$auth.options.redirect = false;
+				await this.$auth.setUserToken(joinRes.jwt);
+				this.$auth.options.rewriteRedirects = oldRedirect;
+
 			} else {
+
+				if(this.$auth.loggedIn) {
+					this.sockets();
+				}
 
 				const answers = await this.$axios.$get(`/worksheets/${ this.$route.params.uid }/answers`);
 				this.setAnswers(answers.data);

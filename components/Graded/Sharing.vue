@@ -26,11 +26,11 @@
 						<div class="person" v-for="person in invitees" :key="`person-${person.email}`">
 							<div class="media-object person-info">
 								<div class="media">
-									<img
-										:src="getAvatar(person.email)"
+									<user-avatar
+										:user-id="person.id"
+										:user-nicename="person.name || 'Worksheet User'"
 										class="avatar"
-										:alt="person.name || 'Worksheet User'"
-									>
+									/>
 								</div>
 								<div class="media-body">
 									<h4>{{ person.name || 'Worksheet User' }}</h4>
@@ -40,13 +40,14 @@
 							<form-group>
 								<select
 									class="form-control form-control-small"
-									v-model="person.role"
+									:value="person.role"
 									:disabled="person.role === 'owner'"
+									@input="changeRole(person, $event.target.value)"
 								>
 									<option v-if="person.role === 'owner'" value="owner">Owner</option>
 									<option value="coowner">Co-Owner</option>
-									<option value="view-only">View Only</option>
 									<option value="editor">Editor</option>
+									<option value="view-only">View Only</option>
 								</select>
 							</form-group>
 						</div>
@@ -71,8 +72,8 @@
 					<form-group>
 						<select :disabled="sending" v-model="inviteType" class="form-control form-control-small">
 							<option value="coowner">Co-Owner</option>
-							<option value="view-only">View Only</option>
 							<option value="editor">Editor</option>
+							<option value="view-only">View Only</option>
 						</select>
 						<a href="#" class="button button-small button-secondary">Copy Link</a>
 					</form-group>
@@ -123,8 +124,8 @@
 					<form-group>
 						<select :disabled="sending" v-model="inviteType" class="input-block form-control">
 							<option value="coowner">Co-Owner</option>
-							<option value="view-only">View Only</option>
 							<option value="editor">Editor</option>
+							<option value="view-only">View Only</option>
 						</select>
 					</form-group>
 				</div>
@@ -199,6 +200,7 @@
 			for(const user of this.worksheet.users) {
 				console.log('user', user);
 				this.invitees.push({
+					id: user.id,
 					name: user.nicename ?? 'Worksheet Invitee',
 					email: user.email,
 					role: user.role,
@@ -316,14 +318,16 @@
 
 				if(response.status === 200) {
 
-					let newInvitees = this.$shallow(this.people);
-					for(let i = 0; i < newInvitees.length; i++) {
-						newInvitees[i].name = 'Worksheet Invitee';
-						newInvitees[i].type = this.inviteType;
-					}
+					// Get the users from the getUsers endpoint
+					const users = await this.$axios.$get(`/worksheets/${ this.worksheet.id }/users`);
 
-					// merge new invitees with existing invitees
-					this.invitees = this.invitees.concat(newInvitees);
+					// Update the whole invitees array
+					this.invitees = users.data.map(user => ({
+						id: user.id,
+						name: user.nicename ?? 'Worksheet Invitee',
+						email: user.email,
+						role: user.role,
+					}));
 
 					this.people = [];
 					this.options = [];
@@ -338,6 +342,27 @@
 				}
 
 				this.sending = false;
+			},
+
+			async changeRole(user, role) {
+
+				//{id}/users/{id_user}/role
+				const res = await this.$axios.$put(`/worksheets/${ this.worksheet.id }/users/${ user.id }/role`, { role });
+
+				//Update the invitees array to reflect the new role
+				this.invitees = this.invitees.map(invitee => {
+					if(invitee.id === user.id) {
+						invitee.role = role;
+					}
+					return invitee;
+				});
+
+				// Notify the user that the roles was changed
+				this.$notify({
+					group: 'graded',
+					title: 'Role changed!',
+					text: `The role of ${ user.name } has been changed to ${ role }`,
+				});
 			},
 		},
 	};

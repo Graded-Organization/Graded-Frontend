@@ -16,16 +16,16 @@
 			},
 			userId: {
 				type: [Number, String],
-				defualt: 0,
+				default: 0,
 			},
-			userNiceName: {
+			userNicename: {
 				type: String,
 				default: ''
 			}
 		},
 		computed: {
 			uID() { return this.user?.id ?? this.userId; },
-			nicename() { return this.user?.nicename || this.userNiceName; }
+			nicename() { return this.user?.nicename || this.userNicename; }
 		}
 	};
 </script>
