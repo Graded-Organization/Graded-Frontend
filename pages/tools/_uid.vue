@@ -60,7 +60,8 @@
 				</h2>
 
 				<p class="enter-invitation">
-					<strong>{{ link.options.invitee.nicename }}</strong> is inviting you to collaborate on this tool
+					<strong>{{ link.options.inviter.nicename }}</strong> is inviting you to collaborate on this tool as
+					<strong>{{ link.options.invite_type }}</strong>.
 				</p>
 
 				<div class="submit-application" :class="{ 'animate__animated animate__shakeX': authenticateHasError }">
@@ -120,7 +121,7 @@
 							<a
 								href="#"
 								class="button button-block button-ghost-primary"
-							>Continue as guest</a>
+							>Skip for now</a>
 						</div>
 						<div class="col">
 							<a

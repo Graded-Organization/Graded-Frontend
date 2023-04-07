@@ -1,5 +1,5 @@
 <template>
-	<div class="platform-layout">
+	<div class="platform-layout" v-if="$auth.user">
 		<header class="site-header">
 
 			<div class="header-area area-left">
@@ -57,9 +57,15 @@
 
 	export default {
 		name: 'PlatformLayout',
+		middleware: 'auth',
 		components: { Logo },
 		data: () => ({}),
-		mounted() {},
+		mounted() {
+			// If not logged in, redirect to login page
+			if(!this.$auth.loggedIn) {
+				this.$router.push('/login');
+			}
+		},
 		methods: {
 			async logout() {
 				await this.$auth.logout();

@@ -8,7 +8,6 @@
 				v-tooltip.bottom="'Guests can collaborate on this tool simultaneously. Information submitted is visible to you and to all collaborators.'"
 			>Collaborative</span>
 		</h2>
-
 		<div class="mode-default" v-show="mode === 'default'">
 			<form-group class="mb-double">
 				<input
@@ -39,7 +38,12 @@
 								</div>
 							</div>
 							<form-group>
-								<select class="form-control form-control-small">
+								<select
+									class="form-control form-control-small"
+									v-model="person.role"
+									:disabled="person.role === 'owner'"
+								>
+									<option v-if="person.role === 'owner'" value="owner">Owner</option>
 									<option value="coowner">Co-Owner</option>
 									<option value="view-only">View Only</option>
 									<option value="editor">Editor</option>
@@ -64,7 +68,14 @@
 				<div class="sharing-action">
 					<i class="far fa-fw fa-link"></i>
 					<span>Share a link to invite users</span>
-					<a href="#" class="button button-small button-secondary">Copy Link</a>
+					<form-group>
+						<select :disabled="sending" v-model="inviteType" class="form-control form-control-small">
+							<option value="coowner">Co-Owner</option>
+							<option value="view-only">View Only</option>
+							<option value="editor">Editor</option>
+						</select>
+						<a href="#" class="button button-small button-secondary">Copy Link</a>
+					</form-group>
 				</div>
 
 				<!--<div class="sharing-action">
@@ -162,7 +173,6 @@
 
 <script>
 	import md5 from 'md5';
-	import worksheet from '@/components/Worksheet/Worksheet';
 
 	export default {
 		name: 'Sharing',
@@ -175,7 +185,7 @@
 		data: () => ({
 			mode: 'default',
 			notifyPeople: true,
-			guestShare: false,
+			guestShare: true,
 			badEmail: false,
 			people: [],
 			options: [],
@@ -189,9 +199,9 @@
 			for(const user of this.worksheet.users) {
 				console.log('user', user);
 				this.invitees.push({
-					name: 'Worksheet Invitee',
-					email: user.options.email,
-					type: user.options.invite_type,
+					name: user.nicename ?? 'Worksheet Invitee',
+					email: user.email,
+					role: user.role,
 				});
 			}
 			console.log(this.worksheet.users);
@@ -393,10 +403,25 @@
 				margin-right: @margin-half;
 			}
 
-			.button {
+			.form-group {
 
-				min-width: 140px;
 				margin-left: auto;
+				margin-bottom: 0;
+				display: flex;
+
+				.form-control {
+
+					border-bottom-right-radius: 0 !important;
+					border-top-right-radius: 0 !important;
+					border-right: none;
+				}
+
+				.button {
+
+					border-bottom-left-radius: 0 !important;
+					border-top-left-radius: 0 !important;
+					min-width: 100px;
+				}
 			}
 		}
 	}

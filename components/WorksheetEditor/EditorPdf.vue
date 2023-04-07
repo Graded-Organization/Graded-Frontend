@@ -1,5 +1,5 @@
 <template>
-	<div class="editor" v-if="worksheet">
+	<div class="editor" v-if="worksheet" ref="editor">
 		<template v-if="!Object.values(worksheet.content).length">
 			<file-uploader
 				@update="uploadAttachment"
@@ -17,7 +17,7 @@
 
 			<div class="editor-controls mb-default">
 				<p class="controls-info"><strong>Total pages:</strong> {{ Object.values(pages).length }}</p>
-				<p class="controls-buttons">
+				<!--<p class="controls-buttons">
 					<a href="#" @click="startAgain" class="button button-ghost-primary button-small">Upload new PDF</a>
 					<a
 						href="#"
@@ -31,7 +31,7 @@
 						@click="mode = 'editor'"
 						class="button button-ghost-primary button-small"
 					>View Editor</a>
-				</p>
+				</p>-->
 			</div>
 
 			<transition-slide>
@@ -128,7 +128,6 @@
 			uploadingAttachment: false,
 		}),
 		mounted() {
-
 			const obj = this;
 
 			this.selectedPages = this.worksheet.options?.selected_pages ? this.$shallow(this.worksheet.options?.selected_pages) : [];
@@ -260,17 +259,26 @@
 
 				if(flag) {
 
-					let loader = this.$loading.show({ container: this.$refs.editorWrapper });
+					let loader = this.$loading.show();
 					const res = await obj.$axios.$post(`/worksheets/${ this.worksheet.id }/convert-fields`);
 					loader.hide();
 					this.setWorksheet(res.data.worksheet);
 				}
+
+				this.selectAllPages();
 
 				this.updateOptions(this.$shallow({ ...this.worksheet.options, fields_from_pdf: flag }));
 
 				this.loadFields = true;
 				this.mode = 'editor';
 			},
+			//Select all pages
+			selectAllPages() {
+
+				this.selectedPages = this.pages.map(p => p.id);
+				this.updateOptions(this.$shallow({ ...this.worksheet.options, selected_pages: this.selectedPages }));
+			},
+			// Toggles the selected page
 			togglePage(page) {
 
 				if(this.selectedPages.includes(page)) {
@@ -360,6 +368,12 @@
 		.controls-info {
 
 			font-size: 0.8rem;
+			background: @background-2;
+			padding: @margin-half @margin-double;
+			border-radius: @radius-2;
+			position: absolute;
+			right: 0;
+			top: -3rem;
 		}
 
 		.controls-buttons {

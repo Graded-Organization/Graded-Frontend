@@ -137,9 +137,9 @@
 <script>
 	export default {
 		name: 'DashboardPage',
-		middleware: 'auth',
 		layout: 'platform',
-		mounted() {},
+		mounted() {
+		},
 		data: () => ({
 			type: '',
 			worksheets: [],
