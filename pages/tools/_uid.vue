@@ -30,7 +30,7 @@
 									class="avatar"
 									width="40"
 									:src="`${ $config.apiUrl }/users/${ user.id }/avatar?size=200`"
-									v-tooltip.bottom="user.nicename"
+									v-tooltip.bottom="user.nicename || user.login"
 									:style="`border-color: ${ $stringToColour(user.nicename) }`"
 								>
 							</div>
@@ -142,6 +142,7 @@
 								<a
 									href="#"
 									class="button button-block button-ghost-primary"
+									@click.prevent="skipForNow"
 								>Skip for now</a>
 							</div>
 							<div class="col">
@@ -332,6 +333,22 @@
 				// Remove query from url
 				await this.$router.push({ path: this.$route.path });
 			},
+			async skipForNow() {
+
+				await this.$axios.$post(`/worksheets/${ this.$route.params.uid }/join`, {
+					email: this.user.email,
+				});
+				await this.$auth.fetchUser();
+
+				this.sockets();
+
+				// Close modal
+				this.enterModal = false;
+
+				// Remove query from url
+				await this.$router.push({ path: this.$route.path });
+			},
+
 			async joinWorksheet() {
 
 				this.$v.$touch();
@@ -375,6 +392,8 @@
 				// Check the user status
 				this.userStatus = joinRes.data.worksheet_status;
 				this.hasAccount = joinRes.data.has_password;
+
+				this.link.options.invite_type = joinRes.data.role;
 
 				// If not has password or is pending, show the modal
 				if(this.userStatus === 'Pending' || !this.hasAccount) {
