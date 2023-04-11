@@ -7,7 +7,7 @@
 		<span
 			class="field-name"
 			:style="isFocused ? `background-color: ${ $stringToColour(isFocused.userName) }; border-color: ${ $stringToColour(isFocused.userName) }` : ''"
-			:class="{ 'is-checkbox': value.type == 'checkbox', 'is-select': value.type == 'select', 'is-radio': value.type == 'radio' }"
+			:class="{ 'is-checkbox': value.type === 'checkbox', 'is-select': value.type === 'select', 'is-radio': value.type === 'radio' }"
 		>
 			<span v-if="isFocused">{{ isFocused.userName }} is editing <strong>{{ value.name }}</strong></span>
 			<span v-else>{{ value.name }}</span>
@@ -15,29 +15,29 @@
 
 		<div
 			class="field-input"
-			:class="{ 'is-checkbox': value.type == 'checkbox', 'is-select': value.type == 'select', 'is-radio': value.type == 'radio' }"
+			:class="{ 'is-checkbox': value.type === 'checkbox', 'is-select': value.type === 'select', 'is-radio': value.type === 'radio' }"
 		>
-			<input type="checkbox" v-if="value.type == 'checkbox'">
-			<input type="radio" v-if="value.type == 'radio'">
+			<input type="checkbox" v-if="value.type === 'checkbox'">
+			<input type="radio" v-if="value.type === 'radio'">
 
 			<input
 				class="field-control"
 				:type="inputType(value.type)"
 				v-model="latestAnswer"
-				v-if="value.type == 'short-text-input' || value.type == 'date-input' || value.type == 'number-input'"
+				v-if="value.type === 'short-text-input' || value.type === 'date-input' || value.type === 'number-input'"
 				@focus="focusField"
 				:disabled="isFocused"
 			>
 
 			<textarea
-				v-if="value.type == 'long-text-input'"
+				v-if="value.type === 'long-text-input'"
 				class="field-control"
 				@focus="focusField"
 				:disabled="isFocused"
 				v-model="latestAnswer"
 			/>
 
-			<select v-if="value.type == 'select'">
+			<select v-if="value.type === 'select'">
 				<option v-for="choice in value.content.choices">{{ choice }}</option>
 			</select>
 		</div>
@@ -45,17 +45,16 @@
 		<div
 			:style="isFocused ? `background-color: ${ $stringToColour(isFocused.userName) }; border-color: ${ $stringToColour(isFocused.userName) }` : ''"
 			class="field-air"
-			:class="{ 'is-checkbox': value.type == 'checkbox', 'is-select': value.type == 'select', 'is-radio': value.type == 'radio' }"
+			:class="{ 'is-checkbox': value.type === 'checkbox', 'is-select': value.type === 'select', 'is-radio': value.type === 'radio' }"
 		/>
 
-		<button
+		<!--<button
 			v-if="!isFocused"
 			class="field-close"
 			@click="blurField"
 		>
 			<i class="fal fa-fw fa-times" />
-		</button>
-
+		</button>-->
 
 		<img
 			v-if="isFocused"
@@ -63,7 +62,6 @@
 			class="focus-avatar avatar"
 			:style="isFocused ? `background-color: ${ $stringToColour(isFocused.userName) }; border-color: ${ $stringToColour(isFocused.userName) }` : ''"
 		>
-
 	</div>
 </template>
 
@@ -77,23 +75,23 @@
 		props: {
 			value: {
 				type: Object,
-				required: true
+				required: true,
 			},
 			selected: {
 				type: Boolean,
-				default: false
+				default: false,
 			},
 			focused: {
 				type: Boolean,
-				default: false
+				default: false,
 			},
 			isFocused: {
 				type: [Object, Boolean],
-				default: false
-			}
+				default: false,
+			},
 		},
 		data: () => ({
-			answer: ''
+			answer: '',
 		}),
 		computed: {
 			...mapGetters({ answers: 'worksheet/answers' }),
@@ -103,7 +101,7 @@
 					top: this.value.content.geo?.y + '%',
 					left: this.value.content.geo?.x + '%',
 					width: this.value.content.geo?.width + '%',
-					height: this.value.content.geo?.height + '%'
+					height: this.value.content.geo?.height + '%',
 				};
 			},
 			latestAnswer: {
@@ -112,7 +110,7 @@
 
 					if(latestAnswers.length) {
 						const latestAnswer = latestAnswers.reduce(function(prev, current) {
-							return (prev.id > current.id) ? prev : current
+							return (prev.id > current.id) ? prev : current;
 						});
 						if(latestAnswer) return latestAnswer.content.userAnswer;
 					}
@@ -121,8 +119,8 @@
 				},
 				set(answer) {
 					this.answer = answer;
-				}
-			}
+				},
+			},
 		},
 		methods: {
 			...mapActions({ addAnswer: 'worksheet/addAnswer' }),
@@ -150,25 +148,25 @@
 
 			async saveAnswer() {
 
-				const content =  {
+				const content = {
 					userAnswer: this.answer,
-					originalQuestion: this.value
+					originalQuestion: this.value,
 				};
 
 				const answer = {
 					id_block: this.value.id,
-					content: content
+					content: content,
 				};
 
-				const applicationAnswer = await this.$axios.$post(`/worksheets/${this.$route.params.uid}/answer`, answer);
+				const applicationAnswer = await this.$axios.$post(`/worksheets/${ this.$route.params.uid }/answer`, answer);
 
 				this.addAnswer(applicationAnswer.data);
 				this.$emit('new-answer', applicationAnswer.data);
-			}
+			},
 		},
 		async fetch() {
 
-		}
+		},
 	};
 </script>
 
@@ -178,6 +176,7 @@
 
 		&:hover {
 			z-index: 0;
+
 			.field-name, .field-air { opacity: 0; }
 		}
 	}
@@ -348,13 +347,14 @@
 		&:hover {
 
 			z-index: 100;
+
 			.field-name, .field-air { opacity: 1; }
 		}
-
 
 		&.is-focused {
 
 			z-index: 100;
+
 			.field-name, .field-air {
 
 				opacity: 1;

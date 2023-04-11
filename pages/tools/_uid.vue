@@ -469,7 +469,7 @@
 		left: 0;
 		background: white;
 		width: 100%;
-		z-index: 100;
+		z-index: 101;
 
 		.site-logo {
 

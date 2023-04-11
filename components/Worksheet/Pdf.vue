@@ -1,17 +1,26 @@
 <template>
 	<div class="editor mb-double" v-if="worksheet">
 
+		<div class="selected-tool-info" v-if="selectedTool">
+			<p>You are editing <strong>{{ selectedFieldInfo.name }}</strong> on {{ selectedFieldInfo.area }}</p>
+		</div>
+
 		<div class="editor-wrapper" ref="editorWrapper">
 			<div class="pdf-editor">
 				<div class="editor-page" v-for="page in workingPages">
 					<img :src="page.image" alt="">
 
 					<div class="page-content">
-						<div class="page-opacity" :class="{ 'is-active' : !!selectedTool || !!focusedTool }"></div>
+						<div
+							@click="blurTool"
+							class="page-opacity"
+							:class="{ 'is-active' : !!selectedTool || !!focusedTool }"
+						></div>
 						<worksheet-pdf-field
 							v-for="field in getPageFields(page.id)"
 							:key="field.id"
 							:value="field"
+							:ref="`field-${field.id}`"
 							:is-focused="checkFocus(field.id)"
 							:selected="selectedTool == field.id"
 							@focus-tool="focusTool"
@@ -70,6 +79,9 @@
 				rows: 'worksheet/rows',
 				columns: 'worksheet/columns',
 			}),
+			selectedFieldInfo() {
+				return this.worksheet.blocks.find(b => b.id == this.selectedTool);
+			},
 			pages() {
 
 				if(!this.worksheet.content?.pdf?.pages) return [];
@@ -158,6 +170,13 @@
 			},
 
 			blurTool(tool) {
+
+				if(!!this.focusedTool) {
+
+					console.log(this.focusedTool.id, this.$refs);
+					// Run the blurField action on the ref of the field
+					this.$refs[`field-${ this.focusedTool.id }`][0].blurField();
+				}
 
 				this.focusedTool = null;
 				this.deselectTool();
@@ -321,6 +340,17 @@
 			align-items: center;
 			justify-content: center;
 		}
+	}
+
+	.selected-tool-info {
+
+		position: fixed;
+		right: @margin-double;
+		bottom: @margin-double;
+		background: @background-0;
+		box-shadow: @shadow-3;
+		padding: @margin-double;
+		z-index: 100;
 	}
 
 </style>
