@@ -23,7 +23,7 @@
 
 				<div class="people-wrapper">
 					<template v-if="invitees.length">
-						<div class="person" v-for="person in invitees" :key="`person-${person.email}`">
+						<div class="person" v-for="(person, i) in invitees" :key="`person-${person.email}`">
 							<div class="media-object person-info">
 								<div class="media">
 									<user-avatar
@@ -42,12 +42,16 @@
 									class="form-control form-control-small"
 									:value="person.role"
 									:disabled="person.role === 'owner'"
-									@input="changeRole(person, $event.target.value)"
+									:ref="`actions-select-${i}`"
+									@input="inviteeAction(person, $event.target.value, person.role, i)"
 								>
 									<option v-if="person.role === 'owner'" value="owner">Owner</option>
 									<option value="coowner">Co-Owner</option>
 									<option value="editor">Editor</option>
 									<option value="view-only">View Only</option>
+									<option value="copy">Copy invite link</option>
+									<option value="resend">Resend email invitation</option>
+									<option value="remove">Remove Access</option>
 								</select>
 							</form-group>
 						</div>
@@ -70,12 +74,12 @@
 					<i class="far fa-fw fa-link"></i>
 					<span>Share a link to invite users</span>
 					<form-group>
-						<select :disabled="sending" v-model="inviteType" class="form-control form-control-small">
+						<select :disabled="sending" v-model="inviteLinkType" class="form-control form-control-small">
 							<option value="coowner">Co-Owner</option>
 							<option value="editor">Editor</option>
 							<option value="view-only">View Only</option>
 						</select>
-						<a href="#" class="button button-small button-secondary">Copy Link</a>
+						<a href="#" @click.prevent="copyLink" class="button button-small button-secondary">Copy Link</a>
 					</form-group>
 				</div>
 
@@ -192,8 +196,15 @@
 			options: [],
 			invitees: [],
 			inviteType: 'coowner',
+			inviteLinkType: 'coowner',
 			inviteMessage: '',
 			sending: false,
+			roles: {
+				owner: 'Owner',
+				coowner: 'Co-Owner',
+				editor: 'Editor',
+				'view-only': 'View Only',
+			},
 		}),
 		mounted() {
 			// iterating users in worksheet
@@ -292,6 +303,24 @@
 				}
 			},
 
+			async copyLink() {
+				try {
+
+					const text = `${ this.$config.baseUrl }/worksheet/${ this.worksheet.uid }/${ this.inviteLinkType }`;
+
+					await this.$copyText(text);
+
+					this.$notify({
+						group: 'graded',
+						title: 'Copied!',
+						text: 'Link copied to clipboard, sweet!',
+					});
+
+				} catch(e) {
+					console.error(e);
+				}
+			},
+
 			async sendInvites() {
 
 				const emails = this.people.map(person => person.email);
@@ -342,6 +371,67 @@
 				}
 
 				this.sending = false;
+			},
+
+			async inviteeAction(user, action, role, i) {
+				switch(action) {
+					case 'copy':
+						this.$refs[`actions-select-${ i }`][0].value = role;
+
+						// Get join link from {id}/users/{id_user}/link
+						const res = await this.$axios.$get(`/worksheets/${ this.worksheet.id }/users/${ user.id }/link`);
+
+						// Copy the link to the clipboard
+						await this.$copyText(res.data);
+
+						// Notify the user
+						this.$notify({
+							group: 'graded',
+							title: 'Copied!',
+							text: 'Link copied to clipboard, sweet!',
+						});
+
+						break;
+					case 'resend':
+						this.$refs[`actions-select-${ i }`][0].value = role;
+
+						console.log(role);
+
+						// Resend invite to {id}/users/{id_user}/resend-invitation
+						const resResend = await this.$axios.$post(`/worksheets/${ this.worksheet.id }/users/${ user.id }/resend-invitation`,
+							{ invite_type: role });
+
+						// Notify the user
+						this.$notify({
+							group: 'graded',
+							title: 'Invite resent!',
+							text: 'The invite has been resent.',
+						});
+
+						break;
+					case 'remove':
+						this.$refs[`actions-select-${ i }`][0].value = role;
+
+						// Delete user from {id}/users/{id_user}
+						const resDelete = await this.$axios.$delete(`/worksheets/${ this.worksheet.id }/users/${ user.id }`);
+
+						// Remove the user from the invitees array
+						this.invitees = this.invitees.filter(invitee => invitee.id !== user.id);
+
+						// Notify the user
+						this.$notify({
+							group: 'graded',
+							title: 'Access removed!',
+							text: 'The access for the user has been removed.',
+						});
+
+						break;
+					case 'coowner':
+					case 'editor':
+					case 'view-only':
+						await this.changeRole(user, action);
+						break;
+				}
 			},
 
 			async changeRole(user, role) {
