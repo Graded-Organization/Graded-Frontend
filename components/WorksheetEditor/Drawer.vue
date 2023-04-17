@@ -40,7 +40,7 @@
 
 	.drawer-editor {
 
-		height: calc(~"100% - 67px - 43px") !important;
+		height: calc(~"100% - 63px - 43px") !important;
 		border-left: 1px solid @border-1;
 
 		top: 63px;

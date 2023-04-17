@@ -1,12 +1,13 @@
 <template>
 	<div
+		@mousedown="focusField"
 		class="field-wrapper"
 		:style="fieldStyles"
 		:class="{ 'is-selected': selected, 'is-focused': focused }"
 	>
 		<span
 			class="field-name"
-			:class="{ 'is-checkbox': value.type == 'checkbox', 'is-select': value.type == 'select', 'is-radio': value.type == 'radio' }"
+			:class="{ 'is-checkbox': value.type === 'checkbox', 'is-select': value.type === 'select', 'is-radio': value.type === 'radio' }"
 		>
 			<a href="#" @click.prevent="$emit('show-tool', value.id)" v-if="!selected">
 				<i class="fas fa-fw fa-external-link-square-alt" />
@@ -20,19 +21,25 @@
 		</span>
 
 		<div
-			@mousedown="focusField"
 			class="field-input"
-			:class="{ 'is-checkbox': value.type == 'checkbox', 'is-select': value.type == 'select', 'is-radio': value.type == 'radio' }"
+			:class="{ 'is-checkbox': value.type === 'checkbox', 'is-select': value.type === 'select', 'is-radio': value.type === 'radio' }"
 		>
-			<input type="checkbox" v-if="value.type == 'checkbox'">
-			<input type="radio" v-if="value.type == 'radio'">
+			<input type="checkbox" v-if="value.type === 'checkbox'">
+			<input type="radio" v-if="value.type === 'radio'">
 
-			<select v-if="value.type == 'select'">
+			<span class="input-placeholder" v-if="!!value.placeholder">
+				{{ value.placeholder }}
+			</span>
+
+			<select v-if="value.type === 'select'">
 				<option v-for="choice in value.content.choices">{{ choice }}</option>
 			</select>
 		</div>
 
-		<div class="field-air" :class="{ 'is-checkbox': value.type == 'checkbox', 'is-select': value.type == 'select', 'is-radio': value.type == 'radio' }">
+		<div
+			class="field-air"
+			:class="{ 'is-checkbox': value.type === 'checkbox', 'is-select': value.type === 'select', 'is-radio': value.type === 'radio' }"
+		>
 			<div class="resize-handle"></div>
 		</div>
 	</div>
@@ -48,15 +55,15 @@
 		props: {
 			value: {
 				type: Object,
-				required: true
+				required: true,
 			},
 			selected: {
 				type: Boolean,
-				default: false
+				default: false,
 			},
 			focused: {
 				type: Boolean,
-				default: false
+				default: false,
 			},
 		},
 		computed: {
@@ -66,7 +73,7 @@
 					top: this.value.content.geo?.y + '%',
 					left: this.value.content.geo?.x + '%',
 					width: this.value.content.geo?.width + '%',
-					height: this.value.content.geo?.height + '%'
+					height: this.value.content.geo?.height + '%',
 				};
 			},
 		},
@@ -82,15 +89,15 @@
 
 				const ret = {
 					id: this.value.id,
-					x: ((left/100) * pageContentWidth),
-					y: ((top/100) * pageContentHeight)
+					x: ((left / 100) * pageContentWidth),
+					y: ((top / 100) * pageContentHeight),
 				};
 
 				console.log('ret', ret);
 
 				this.$emit('focus-tool', ret);
-			}
-		}
+			},
+		},
 	};
 </script>
 
@@ -100,6 +107,7 @@
 
 		&:hover {
 			z-index: 0;
+
 			.field-name, .field-air { opacity: 0; }
 		}
 	}
@@ -121,7 +129,6 @@
 			align-items: center;
 			white-space: nowrap;
 			position: absolute;
-			line-height: 22px;
 			height: 22px;
 			top: -31px;
 			left: 0;
@@ -205,6 +212,14 @@
 			padding: @margin-half;
 			z-index: 1;
 
+			.input-placeholder {
+
+				position: absolute;
+				color: @gray-7;
+				top: 50%;
+				transform: translateY(-50%);
+			}
+
 			&.is-radio {
 
 				border-radius: @radius-round;
@@ -241,6 +256,7 @@
 		&.is-focused {
 
 			z-index: 100;
+
 			.field-name, .field-air { opacity: 1; }
 		}
 
@@ -249,6 +265,7 @@
 			z-index: 100;
 
 			.field-name, .field-air { opacity: 1; }
+
 			width: 80% !important;
 			min-height: 100px !important;
 			left: 10% !important;

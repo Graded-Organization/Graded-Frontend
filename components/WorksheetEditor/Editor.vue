@@ -156,7 +156,7 @@
 			toolAreas: {},
 
 			// Control
-			hoveredCell: [-1, -1]
+			hoveredCell: [-1, -1],
 		}),
 		watch: {
 			currentToolArea(n, o) {
@@ -166,15 +166,15 @@
 				handler(n, o) {
 					this.setAssignedAreas(n);
 				},
-				deep: true
+				deep: true,
 			},
 			toolAreas: {
 				handler(n, o) {
 					this.setToolAreas(n);
 					this.$emit('input', this.worksheet);
 				},
-				deep: true
-			}
+				deep: true,
+			},
 		},
 		mounted() {
 
@@ -232,7 +232,7 @@
 
 				let css = '';
 				for(const r in this.areas) {
-					css = `${css} "${ this.areas[r].join(' ').trim() }"`;
+					css = `${ css } "${ this.areas[r].join(' ').trim() }"`;
 				}
 
 				return css.trim();
@@ -252,8 +252,8 @@
 
 				return {
 					'grid-template-columns': cols.join(' '),
-					'grid-template-rows': rows.join(' ')
-				}
+					'grid-template-rows': rows.join(' '),
+				};
 			},
 			gridAreaStyle() {
 
@@ -271,8 +271,8 @@
 				return {
 					'grid-template-areas': this.cssAreas,
 					'grid-template-columns': cols.join(' '),
-					'grid-template-rows': rows.join(' ')
-				}
+					'grid-template-rows': rows.join(' '),
+				};
 			},
 		},
 		methods: {
@@ -283,7 +283,7 @@
 				deleteArea: 'worksheet/deleteArea',
 				setRows: 'worksheet/setRows',
 				setColumns: 'worksheet/setColumns',
-				setToolAreas: 'worksheet/setToolAreas'
+				setToolAreas: 'worksheet/setToolAreas',
 			}),
 			getToolByArea(cell) {
 
@@ -302,7 +302,7 @@
 					area: document.getElementById('grid-area'),
 					selectables: document.getElementsByClassName('drag-element'),
 					draggability: false,
-					immediateDrag: false
+					immediateDrag: false,
 				});
 
 				this.ds.subscribe('dragstart', (cObj) => { this.selectCells(cObj.items); });
@@ -313,7 +313,7 @@
 
 				// Check if it can expand
 
-				if(dir == 'right' && !info.touchRight) {
+				if(dir === 'right' && !info.touchRight) {
 
 					let colToGrab = info.maxPoint[0] + 1;
 					let zone = [info.origin[1], info.maxPoint[1]];
@@ -324,7 +324,7 @@
 					}
 				}
 
-				if(dir == 'left' && !info.touchLeft) {
+				if(dir === 'left' && !info.touchLeft) {
 
 					let colToGrab = info.origin[0] - 1;
 					let zone = [info.origin[1], info.maxPoint[1]];
@@ -335,7 +335,7 @@
 					}
 				}
 
-				if(dir == 'bottom' && !info.touchBottom) {
+				if(dir === 'bottom' && !info.touchBottom) {
 
 					let rowToGrab = info.maxPoint[1] + 1;
 					let zone = [info.origin[0], info.maxPoint[0]];
@@ -346,7 +346,7 @@
 					}
 				}
 
-				if(dir == 'top' && !info.touchTop) {
+				if(dir === 'top' && !info.touchTop) {
 
 					let rowToGrab = info.origin[1] - 1;
 					let zone = [info.origin[0], info.maxPoint[0]];
@@ -370,8 +370,8 @@
 					let colToRemove = info.maxPoint[0];
 
 					for(var row = 0; row < this.rows; row++) {
-						if(typeof this.assignedAreas[`area${colToRemove}-${row}`] !== 'undefined' && this.assignedAreas[`area${colToRemove}-${row}`] == area) {
-							this.deleteArea(`area${colToRemove}-${row}`);
+						if(typeof this.assignedAreas[`area${ colToRemove }-${ row }`] !== 'undefined' && this.assignedAreas[`area${ colToRemove }-${ row }`] == area) {
+							this.deleteArea(`area${ colToRemove }-${ row }`);
 						}
 					}
 				}
@@ -381,8 +381,8 @@
 					let colToRemove = info.origin[0];
 
 					for(var row = 0; row < this.rows; row++) {
-						if(typeof this.assignedAreas[`area${colToRemove}-${row}`] !== 'undefined' && this.assignedAreas[`area${colToRemove}-${row}`] == area) {
-							this.deleteArea(`area${colToRemove}-${row}`);
+						if(typeof this.assignedAreas[`area${ colToRemove }-${ row }`] !== 'undefined' && this.assignedAreas[`area${ colToRemove }-${ row }`] == area) {
+							this.deleteArea(`area${ colToRemove }-${ row }`);
 						}
 					}
 				}
@@ -392,8 +392,8 @@
 					let rowToRemove = info.maxPoint[1];
 
 					for(var col = 0; col < this.columns; col++) {
-						if(typeof this.assignedAreas[`area${col}-${rowToRemove}`] !== 'undefined' && this.assignedAreas[`area${col}-${rowToRemove}`] == area) {
-							this.deleteArea(`area${col}-${rowToRemove}`);
+						if(typeof this.assignedAreas[`area${ col }-${ rowToRemove }`] !== 'undefined' && this.assignedAreas[`area${ col }-${ rowToRemove }`] == area) {
+							this.deleteArea(`area${ col }-${ rowToRemove }`);
 						}
 					}
 				}
@@ -403,8 +403,8 @@
 					let rowToRemove = info.origin[1];
 
 					for(var col = 0; col < this.columns; col++) {
-						if(typeof this.assignedAreas[`area${col}-${rowToRemove}`] !== 'undefined' && this.assignedAreas[`area${col}-${rowToRemove}`] == area) {
-							this.deleteArea(`area${col}-${rowToRemove}`);
+						if(typeof this.assignedAreas[`area${ col }-${ rowToRemove }`] !== 'undefined' && this.assignedAreas[`area${ col }-${ rowToRemove }`] == area) {
+							this.deleteArea(`area${ col }-${ rowToRemove }`);
 						}
 					}
 				}
@@ -419,7 +419,7 @@
 
 				return [
 					(maxPoints[0] + 1) - Math.max(0, origin[0]),
-					(maxPoints[1] + 1) - Math.max(0, origin[1])
+					(maxPoints[1] + 1) - Math.max(0, origin[1]),
 				];
 			},
 			getOriginPoints(area) {
@@ -458,7 +458,7 @@
 
 				if(typeof this.worksheet.content?.toolAreas[area] !== 'undefined') {
 
-					styles = {...styles, ...(this.worksheet.content.toolAreas[area]?.styles || {})};
+					styles = { ...styles, ...(this.worksheet.content.toolAreas[area]?.styles || {}) };
 				}
 
 				return styles;
@@ -488,7 +488,7 @@
 
 					return true;
 
-				//If there are adjacent areas, we need to check a little more.
+					//If there are adjacent areas, we need to check a little more.
 				} else {
 
 					for(const a in adjacent) {
@@ -512,15 +512,15 @@
 				let adjacent = this.getAdjacentCol(col, zone, area);
 
 				for(var row = 0; row < this.rows; row++) {
-					if(typeof this.assignedAreas[`area${col}-${row}`] !== 'undefined' && adjacent.includes(this.assignedAreas[`area${col}-${row}`])) {
-						this.deleteArea(`area${col}-${row}`);
+					if(typeof this.assignedAreas[`area${ col }-${ row }`] !== 'undefined' && adjacent.includes(this.assignedAreas[`area${ col }-${ row }`])) {
+						this.deleteArea(`area${ col }-${ row }`);
 					}
 				}
 
 				for(var i = zone[0]; i <= zone[1]; i++) {
 					this.setAssignedArea({
-						name: `area${col}-${i}`,
-						value: area
+						name: `area${ col }-${ i }`,
+						value: area,
 					});
 					//Vue.set(this.assignedAreas, `area${col}-${i}`, area);
 				}
@@ -549,7 +549,7 @@
 
 					return true;
 
-				//If there are adjacent areas, we need to check a little more.
+					//If there are adjacent areas, we need to check a little more.
 				} else {
 
 					for(const a in adjacent) {
@@ -570,16 +570,16 @@
 				let adjacent = this.getAdjacentRow(row, zone, area);
 
 				for(var col = 0; col < this.columns; col++) {
-					if(typeof this.assignedAreas[`area${col}-${row}`] !== 'undefined' && adjacent.includes(this.assignedAreas[`area${col}-${row}`])) {
-						this.deleteArea(`area${col}-${row}`);
+					if(typeof this.assignedAreas[`area${ col }-${ row }`] !== 'undefined' && adjacent.includes(this.assignedAreas[`area${ col }-${ row }`])) {
+						this.deleteArea(`area${ col }-${ row }`);
 					}
 				}
 
 				for(var i = zone[0]; i <= zone[1]; i++) {
 
 					this.setAssignedArea({
-						name: `area${i}-${row}`,
-						value: area
+						name: `area${ i }-${ row }`,
+						value: area,
 					});
 
 					//Vue.set(this.assignedAreas, `area${i}-${row}`, area);
@@ -601,14 +601,14 @@
 				let y = e.clientY - rect.top;  //y position within the element.
 
 				let colRanges = [];
-				let colSize = Math.round(gridAreas.offsetWidth/this.columns);
+				let colSize = Math.round(gridAreas.offsetWidth / this.columns);
 
 				let rowRanges = [];
-				let rowSize = Math.round(gridAreas.offsetHeight/this.rows);
+				let rowSize = Math.round(gridAreas.offsetHeight / this.rows);
 
 				// Setting column ranges
 				for(var i = 0; i < this.columns; i++) {
-					colRanges.push([colSize*i, (colSize*(i+1)) - 1]);
+					colRanges.push([colSize * i, (colSize * (i + 1)) - 1]);
 				}
 
 				for(const col in colRanges) {
@@ -621,7 +621,7 @@
 
 				// Setting row ranges
 				for(var i = 0; i < this.rows; i++) {
-					rowRanges.push([rowSize*i, (rowSize*(i+1)) - 1]);
+					rowRanges.push([rowSize * i, (rowSize * (i + 1)) - 1]);
 				}
 
 				for(const row in rowRanges) {
@@ -651,7 +651,7 @@
 
 					if(this.assignedAreas[a] == area) cells.push([
 						a.replace('area', '').split('-')[0],
-						a.replace('area', '').split('-')[1]
+						a.replace('area', '').split('-')[1],
 					]);
 				}
 
@@ -724,11 +724,11 @@
 				}, 100);
 			},
 			addCol() {
-				this.setColumns(this.columns+1);
+				this.setColumns(this.columns + 1);
 				this.reset();
 			},
 			addRow() {
-				this.setRows(this.rows+1);
+				this.setRows(this.rows + 1);
 				this.reset();
 			},
 			removeCol() {
@@ -739,23 +739,23 @@
 
 					let col = item.replace('area', '').split('-')[0];
 
-					if(col == this.columns-1) {
+					if(col == this.columns - 1) {
 
 						this.$modal.show('dialog', {
 							text: 'Cannot remove column because there are tools in the column',
 							buttons: [
 								{
 									title: 'Accept',
-									handler: () => { this.$modal.hide('dialog') }
-								}
-							]
+									handler: () => { this.$modal.hide('dialog'); },
+								},
+							],
 						});
 
 						return;
 					}
 				}
 
-				if(this.columns > 6) this.setColumns(this.columns-1);
+				if(this.columns > 6) this.setColumns(this.columns - 1);
 				this.reset();
 			},
 			removeRow() {
@@ -766,23 +766,22 @@
 
 					let row = item.replace('area', '').split('-')[1];
 
-					if(row == this.rows-1) {
+					if(row == this.rows - 1) {
 
 						this.$modal.show('dialog', {
 							text: 'Cannot remove row because there are tools in the row',
 							buttons: [
 								{
 									title: 'Accept',
-									handler: () => { this.$modal.hide('dialog') }
-								}
-							]
+									handler: () => { this.$modal.hide('dialog'); },
+								},
+							],
 						});
 						return;
 					}
 				}
 
-
-				if(this.rows > 6) this.setRows(this.rows-1);
+				if(this.rows > 6) this.setRows(this.rows - 1);
 				this.reset();
 			},
 			selectionOcurred(cObj) {
@@ -821,7 +820,7 @@
 
 					this.setAssignedArea({
 						name: this.selectedItems[s],
-						value: this.newAreaName || `tool-area-${ hashids.encode(timestamp) }`
+						value: this.newAreaName || `tool-area-${ hashids.encode(timestamp) }`,
 					});
 				}
 
@@ -854,14 +853,14 @@
 				const block = await this.$axios.$post('worksheet-blocks', {
 					id_worksheet: this.$route.params.worksheet,
 					type: tool,
-					area: this.cellToAddTool
+					area: this.cellToAddTool,
 				});
 
 				this.editToolArea(this.cellToAddTool);
 				this.$emit('tool-added', block.data);
-			}
-		}
-	}
+			},
+		},
+	};
 </script>
 
 <style scoped lang="less">
@@ -894,11 +893,13 @@
 		justify-content: center;
 
 		&.is-selected { background: @blue-1; }
+
 		&.is-forbidden { background: @red-1; }
 
 		&.drag-element {
 
 			&:hover:not(.is-selected) { background: @gray-1; }
+
 			&:hover:is(.is-selected) { background: @blue-2; }
 		}
 
@@ -927,6 +928,7 @@
 			}
 
 			&.free-cells { pointer-events: none; }
+
 			&.overlapping-cells { pointer-events: auto; }
 		}
 

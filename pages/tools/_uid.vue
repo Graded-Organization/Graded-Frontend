@@ -81,7 +81,9 @@
 					>
 						<p class="mb-default">
 							<a href="#" @click.prevent="googleLogin" class="button button-google button-block">
-								<span class="icon"><g-logo /></span>
+								<span class="icon">
+									<g-logo />
+								</span>
 								Access with Google Account
 							</a>
 						</p>

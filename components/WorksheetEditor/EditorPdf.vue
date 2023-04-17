@@ -38,7 +38,6 @@
 				<div class="message message-fields mb-default" v-if="loadFields == null && !fieldsFromPDF">
 					<span>Hey, it looks like your PDF has form fields, do you want to load them in your worksheet?</span>
 
-
 					<span class="buttons">
 						<a
 							href="#"
@@ -77,7 +76,11 @@
 					<img :src="page.image" alt="">
 
 					<div class="page-content">
-						<div class="page-opacity" :class="{ 'is-active' : !!selectedTool || !!focusedTool }"></div>
+						<div
+							class="page-opacity"
+							:class="{ 'is-active' : !!selectedTool || !!focusedTool }"
+							@click="closeDrawer"
+						></div>
 						<worksheet-editor-pdf-field
 							v-for="field in getPageFields(page.id)"
 							:key="field.id"
@@ -126,6 +129,7 @@
 			updateKey: 0,
 			position: { x: 0, y: 0 },
 			uploadingAttachment: false,
+			source: null,
 		}),
 		mounted() {
 			const obj = this;
@@ -145,6 +149,7 @@
 						start: function(event) {
 							console.log('start');
 							event.target.classList.add('resizing');
+							obj.showDrawer = false;
 						},
 						move: function(event) {
 							let { x, y } = event.target.dataset;
@@ -165,8 +170,29 @@
 
 							Object.assign(event.target.dataset, { x, y });
 						},
-						end: function(event) {
-							console.log('end');
+						end: async function(event) {
+
+							if(!!obj.source) obj.source.cancel('User saved again');
+							obj.source = obj.$axios.CancelToken.source();
+
+							obj.showDrawer = true;
+
+							const pageContentWidth = document.querySelector('.page-content').clientWidth;
+							const pageContentHeight = document.querySelector('.page-content').clientHeight;
+
+							const width = event.rect.width * 100 / pageContentWidth;
+							const height = event.rect.height * 100 / pageContentHeight;
+
+							// get shallow content of focusedTool
+							const focusedTool = obj.$shallow(obj.focusedTool);
+
+							Vue.set(focusedTool.content.geo, 'width', width);
+							Vue.set(focusedTool.content.geo, 'height', height);
+
+							await obj.$axios.$put(`worksheet-blocks/${ obj.focusedTool.id }`, focusedTool, {
+								cancelToken: obj.source.token,
+							});
+
 							event.target.classList.remove('resizing');
 						},
 					},
@@ -177,6 +203,8 @@
 						start(event) {
 							console.log(event.type, event.target);
 							event.target.classList.add('dragging');
+
+							obj.showDrawer = false;
 						},
 						move(event) {
 
@@ -192,8 +220,27 @@
 							event.target.style.left = `${ x }%`;
 							event.target.style.top = `${ y }%`;
 						},
-						end: function(event) {
-							console.log('end');
+						end: async function(event) {
+
+							if(!!obj.source) obj.source.cancel('User saved again');
+							obj.source = obj.$axios.CancelToken.source();
+
+							obj.showDrawer = true;
+
+							// get .pdf-editor width
+							const editorWidth = document.querySelector('.editor-page').clientWidth;
+							const editorHeight = document.querySelector('.editor-page').clientHeight;
+
+							// get shallow content of focusedTool
+							const focusedTool = obj.$shallow(obj.focusedTool);
+
+							Vue.set(focusedTool.content.geo, 'x', obj.position.x * 100 / editorWidth);
+							Vue.set(focusedTool.content.geo, 'y', obj.position.y * 100 / editorHeight);
+
+							await obj.$axios.$put(`worksheet-blocks/${ obj.focusedTool.id }`, focusedTool, {
+								cancelToken: obj.source.token,
+							});
+
 							event.target.classList.remove('dragging');
 						},
 					},

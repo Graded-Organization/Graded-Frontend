@@ -1,11 +1,15 @@
 <template>
 	<div>
-		<h2 class="drawer-title">Edit Woksheet Fields</h2>
+		<h2 class="drawer-title">Edit Tool Fields</h2>
 
 		<worksheet-editor-drawer-block title="Tool Info">
 
 			<form-group label="Name">
 				<input type="text" v-model="field.name" class="input-block form-control">
+			</form-group>
+
+			<form-group label="Placeholder" v-if="field.type !== 'multiple-choice-question'">
+				<input type="text" v-model="field.placeholder" class="input-block form-control" placeholder="Enter a placeholder for the field">
 			</form-group>
 
 			<form-group label="Field Type">
@@ -20,7 +24,7 @@
 				</select>
 			</form-group>
 
-			<form-group v-if="field.type == 'currency-input'" label="Predefined Currency">
+			<form-group v-if="field.type === 'currency-input'" label="Predefined Currency">
 				<currency-input v-model="field.content.predefined_currency" />
 			</form-group>
 
