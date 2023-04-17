@@ -2,7 +2,7 @@
 	<div>
 		<h2 class="drawer-title">Edit Tool Area</h2>
 
-		<worksheet-editor-drawer-block title="Formating">
+		<worksheet-editor-drawer-block title="Formatting">
 			<form-group class="form-group-color">
 				<color-picker v-model="properties.backgroundColor" @change="change" />
 				<label>Background Color</label>

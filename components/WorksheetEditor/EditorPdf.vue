@@ -91,6 +91,7 @@
 							@hide-tool="deselectTool"
 							@focus-tool="focusTool"
 							class="resize-drag"
+							:class="{ 'is-interacting' : focusedTool && focusedTool.id == field.id }"
 						/>
 					</div>
 				</div>
@@ -130,6 +131,7 @@
 			position: { x: 0, y: 0 },
 			uploadingAttachment: false,
 			source: null,
+			interacting: false
 		}),
 		mounted() {
 			const obj = this;
@@ -150,6 +152,7 @@
 							console.log('start');
 							event.target.classList.add('resizing');
 							obj.showDrawer = false;
+							obj.interacting = true;
 						},
 						move: function(event) {
 							let { x, y } = event.target.dataset;
@@ -176,6 +179,7 @@
 							obj.source = obj.$axios.CancelToken.source();
 
 							obj.showDrawer = true;
+							obj.interacting = false;
 
 							const pageContentWidth = document.querySelector('.page-content').clientWidth;
 							const pageContentHeight = document.querySelector('.page-content').clientHeight;
@@ -205,6 +209,7 @@
 							event.target.classList.add('dragging');
 
 							obj.showDrawer = false;
+							obj.interacting = true;
 						},
 						move(event) {
 
@@ -226,6 +231,7 @@
 							obj.source = obj.$axios.CancelToken.source();
 
 							obj.showDrawer = true;
+							obj.interacting = false;
 
 							// get .pdf-editor width
 							const editorWidth = document.querySelector('.editor-page').clientWidth;

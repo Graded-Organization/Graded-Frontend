@@ -23,6 +23,7 @@
 		<div
 			class="field-input"
 			:class="{ 'is-checkbox': value.type === 'checkbox', 'is-select': value.type === 'select', 'is-radio': value.type === 'radio' }"
+			:style="inputStyles"
 		>
 			<input type="checkbox" v-if="value.type === 'checkbox'">
 			<input type="radio" v-if="value.type === 'radio'">
@@ -69,12 +70,25 @@
 		computed: {
 			fieldStyles() {
 
-				return {
+				const styles = {
 					top: this.value.content.geo?.y + '%',
 					left: this.value.content.geo?.x + '%',
 					width: this.value.content.geo?.width + '%',
 					height: this.value.content.geo?.height + '%',
 				};
+
+				return styles;
+			},
+			inputStyles() {
+
+				const styles = {};
+
+				styles.backgroundColor = this.value.styles?.backgroundColor || '#CCCCCC';
+				styles.color = this.value.styles?.color || '#000000';
+				styles.borderColor = this.value.styles?.borderColor || '#000000';
+				styles.borderWidth = this.value.styles?.borderWidth || '0px';
+
+				return styles;
 			},
 		},
 		methods: {
@@ -110,6 +124,11 @@
 
 			.field-name, .field-air { opacity: 0; }
 		}
+	}
+
+	.is-interacting {
+
+		.field-name, .field-air { opacity: 0; }
 	}
 
 	.drag-handle > * {
@@ -215,7 +234,6 @@
 			.input-placeholder {
 
 				position: absolute;
-				color: @gray-7;
 				top: 50%;
 				transform: translateY(-50%);
 			}

@@ -2,6 +2,30 @@
 	<div>
 		<h2 class="drawer-title">Edit Tool Fields</h2>
 
+		<worksheet-editor-drawer-block title="Formatting">
+			<form-group class="form-group-color">
+				<color-picker v-model="field.styles.backgroundColor" @change="change" />
+				<label>Background Color</label>
+			</form-group>
+
+			<form-group class="form-group-color">
+				<color-picker v-model="field.styles.color" />
+				<label>Text Color</label>
+			</form-group>
+
+			<form-group class="form-group-color">
+				<color-picker v-model="field.styles.borderColor" />
+				<label>Border Color</label>
+			</form-group>
+
+			<form-group label="Border Width">
+				<form-group class="controls-group">
+					<input v-model="borderWidth" type="number" class="input-block form-control">
+					<span class="group-label">px</span>
+				</form-group>
+			</form-group>
+		</worksheet-editor-drawer-block>
+
 		<worksheet-editor-drawer-block title="Tool Info">
 
 			<form-group label="Name">
@@ -9,7 +33,12 @@
 			</form-group>
 
 			<form-group label="Placeholder" v-if="field.type !== 'multiple-choice-question'">
-				<input type="text" v-model="field.placeholder" class="input-block form-control" placeholder="Enter a placeholder for the field">
+				<input
+					type="text"
+					v-model="field.placeholder"
+					class="input-block form-control"
+					placeholder="Enter a placeholder for the field"
+				>
 			</form-group>
 
 			<form-group label="Field Type">
@@ -43,8 +72,8 @@
 		props: {
 			block: {
 				type: Object,
-				required: true
-			}
+				required: true,
+			},
 		},
 		watch: {
 			field: {
@@ -56,14 +85,28 @@
 					this.save();
 					this.$emit('update', this.blockUpdateKey);
 				},
-				deep: true
-			}
+				deep: true,
+			},
 		},
 		data: () => ({
 			field: '',
-			blockUpdateKey: ''
+			blockUpdateKey: '',
 		}),
+		mounted() {
+
+			console.log('this.field.styles', this.field);
+
+
+		},
 		computed: {
+			borderWidth: {
+				get() {
+					return parseInt(this.field.styles.borderWidth);
+				},
+				set(value) {
+					this.field.styles.borderWidth = `${ value }px`;
+				},
+			},
 		},
 		created() {
 			this.field = this.$shallow(this.block);
@@ -71,7 +114,7 @@
 		methods: {
 			...mapActions({
 				setLoading: 'worksheet/setLoading',
-				updateField: 'worksheet/updateField'
+				updateField: 'worksheet/updateField',
 			}),
 			async save() {
 
@@ -80,14 +123,14 @@
 
 				this.setLoading(true);
 				await this.$axios.$put(`worksheet-blocks/${ this.field.id }`, this.field, {
-					cancelToken: this.source.token
+					cancelToken: this.source.token,
 				});
 				this.updateField(this.$shallow(this.field));
 
 				this.setLoading(false);
-			}
-		}
-	}
+			},
+		},
+	};
 </script>
 
 <style lang="less" scoped>
