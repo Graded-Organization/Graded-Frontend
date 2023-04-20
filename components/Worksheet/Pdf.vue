@@ -95,8 +95,6 @@
 
 				if(!this.worksheet.content?.pdf?.pages) return [];
 
-
-
 				return Object.values(this.worksheet.content?.pdf?.pages)
 					.filter(p => this.selectedPages.includes(p.id));
 			},

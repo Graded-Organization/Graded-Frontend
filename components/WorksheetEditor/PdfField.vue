@@ -83,9 +83,9 @@
 
 				const styles = {};
 
-				styles.backgroundColor = this.value.styles?.backgroundColor || '#CCCCCC';
-				styles.color = this.value.styles?.color || '#000000';
-				styles.borderColor = this.value.styles?.borderColor || '#000000';
+				styles.backgroundColor = this.value.styles?.backgroundColor || 'rgba(237, 237, 237, 0.5)';
+				styles.color = this.value.styles?.color || '#333333';
+				styles.borderColor = this.value.styles?.borderColor || 'transparent';
 				styles.borderWidth = this.value.styles?.borderWidth || '0px';
 
 				return styles;
@@ -225,7 +225,7 @@
 
 		.field-input {
 
-			background: #CCC;
+			background: fade(#EDEDED, 50%);
 			.overlay-element();
 			resize: none;
 			padding: @margin-half;
