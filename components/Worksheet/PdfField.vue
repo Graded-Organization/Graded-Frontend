@@ -27,6 +27,7 @@
 				v-if="value.type === 'short-text-input' || value.type === 'date-input' || value.type === 'number-input'"
 				@focus="focusField"
 				:disabled="isFocused"
+				:style="inputStyles"
 			>
 
 			<textarea
@@ -35,6 +36,7 @@
 				@focus="focusField"
 				:disabled="isFocused"
 				v-model="latestAnswer"
+				:style="inputStyles"
 			/>
 
 			<select v-if="value.type === 'select'">
@@ -103,6 +105,17 @@
 					width: this.value.content.geo?.width + '%',
 					height: this.value.content.geo?.height + '%',
 				};
+			},
+			inputStyles() {
+
+				const styles = {};
+
+				styles.backgroundColor = this.value.styles?.backgroundColor || 'rgba(237, 237, 237, 0.5)';
+				styles.color = this.value.styles?.color || '#333333';
+				styles.borderColor = this.value.styles?.borderColor || 'transparent';
+				styles.borderWidth = this.value.styles?.borderWidth || '0px';
+
+				return styles;
 			},
 			latestAnswer: {
 				get() {
