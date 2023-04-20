@@ -30,7 +30,7 @@
 			<portal to="user-portal">
 				<div class="preview-wrapper">
 					<a
-						:href="`/preview/${ worksheet.id }`"
+						:href="`/tools/${ worksheet.uid }`"
 						target="_blank"
 						class="button button-small button-ghost-primary"
 					>Preview</a>
