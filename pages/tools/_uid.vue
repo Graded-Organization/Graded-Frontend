@@ -38,7 +38,8 @@
 					</div>
 
 					<template>
-						<a href="#" @click.prevent="showJoin" class="button button-primary">Share</a>
+						<!--<a href="#" @click.prevent="showJoin" class="button button-primary">Share</a>-->
+						<a @click.prevent="sharingModal = true" class="button button-small button-primary ml-half">Share</a>
 					</template>
 				</div>
 			</div>
@@ -168,6 +169,14 @@
 
 				</template>
 			</graded-modal>
+
+			<graded-modal
+				v-model="sharingModal"
+				name="sharing-tool"
+				:show-close="true"
+			>
+				<graded-sharing :worksheet="worksheet" />
+			</graded-modal>
 		</template>
 	</div>
 </template>
@@ -188,6 +197,7 @@
 		mixins: [WorksheetMixin],
 		components: { Logo, GLogo, VueJwtDecode },
 		data: () => ({
+			sharingModal: false,
 			hasAccount: false,
 			userStatus: null,
 			enterModal: false,
