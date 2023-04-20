@@ -4,7 +4,7 @@
 
 		<worksheet-editor-drawer-block title="Formatting">
 			<form-group class="form-group-color">
-				<color-picker v-model="field.styles.backgroundColor" @change="change" />
+				<color-picker v-model="field.styles.backgroundColor" />
 				<label>Background Color</label>
 			</form-group>
 

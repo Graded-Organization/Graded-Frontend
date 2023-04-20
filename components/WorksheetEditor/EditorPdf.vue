@@ -1,5 +1,5 @@
 <template>
-	<div class="editor" v-if="worksheet" ref="editor">
+	<div class="editor" v-if="worksheet" ref="editor" @keydown.esc="cancelTool">
 		<template v-if="!Object.values(worksheet.content).length">
 			<file-uploader
 				@update="uploadAttachment"
@@ -17,6 +17,9 @@
 
 			<div class="editor-controls mb-default">
 				<p class="controls-info"><strong>Total pages:</strong> {{ Object.values(pages).length }}</p>
+				<a href="#" class="button button-small ml-default button-primary" @click.prevent="toggleFieldTool">
+					{{ edition !== 'field' ? 'Add field' : 'Cancel field' }}
+				</a>
 				<!--<p class="controls-buttons">
 					<a href="#" @click="startAgain" class="button button-ghost-primary button-small">Upload new PDF</a>
 					<a
@@ -75,7 +78,11 @@
 				<div class="editor-page" v-for="page in workingPages">
 					<img :src="page.image" alt="">
 
-					<div class="page-content">
+					<div
+						class="page-content"
+						:class="{ 'add-field': edition === 'field' }"
+						@click="addField(page.id, $event)"
+					>
 						<div
 							class="page-opacity"
 							:class="{ 'is-active' : !!selectedTool || !!focusedTool }"
@@ -121,6 +128,7 @@
 	export default {
 		name: 'WorkSheetEditorPDF',
 		data: () => ({
+			worksheetKey: 0,
 			mode: '',
 			loadFields: null,
 			selectedPages: [],
@@ -131,7 +139,8 @@
 			position: { x: 0, y: 0 },
 			uploadingAttachment: false,
 			source: null,
-			interacting: false
+			interacting: false,
+			edition: '',
 		}),
 		mounted() {
 			const obj = this;
@@ -299,6 +308,7 @@
 				updateContent: 'worksheet/updateContent',
 				updateOptions: 'worksheet/updateOptions',
 				setWorksheet: 'worksheet/setWorksheet',
+				addBlock: 'worksheet/addBlock',
 			}),
 			update(val) {
 				this.updateKey = val;
@@ -350,7 +360,7 @@
 
 			getPageFields(page) {
 
-				return this.worksheet.blocks.filter(b => b.area == page);
+				return this.worksheet.blocks.filter(b => b.area === page);
 			},
 
 			focusTool(tool) {
@@ -379,11 +389,11 @@
 			},
 
 			async uploadAttachment(files) {
-				var obj = this;
+				const obj = this;
 
 				this.uploadingAttachment = true;
 
-				var formData = new FormData();
+				const formData = new FormData();
 				formData.append('file', files[0]);
 
 				const res = await obj.$axios.$post(`/worksheets/${ this.worksheet.id }/upload-pdf`, formData);
@@ -392,6 +402,68 @@
 
 				this.updateContent(res.data.worksheet.content);
 				this.mode = 'pages';
+			},
+
+			addField(id, event) {
+
+				if(this.edition !== 'field') return;
+
+				const obj = this;
+
+				// get the x and y coordinates of the mouse relative to the clicked element
+				const x = event.clientX - event.target.getBoundingClientRect().left;
+				const y = event.clientY - event.target.getBoundingClientRect().top;
+
+				console.log(x, y);
+
+				// get x and y coordinates relative to current clicked element and in percentage
+				const xPercentage = (x - event.target.offsetLeft) / event.target.offsetWidth * 100;
+				const yPercentage = (y - event.target.offsetTop) / event.target.offsetHeight * 100;
+
+				const field = {
+					id: this.worksheet.blocks.length + 1,
+					area: id,
+					content: {
+						geo: {
+							x: xPercentage,
+							y: yPercentage,
+							width: 25,
+							height: 1.6,
+						},
+						type: 'text',
+					},
+					styles: {
+						backgroundColor: 'rgba(237, 237, 237, 0.5)',
+						color: '#333333',
+						borderColor: 'transparent',
+						borderWidth: 0,
+					},
+					name: 'New Field',
+					type: 'short-text-input',
+				};
+
+				this.addBlock(field);
+
+				// Finish edition
+				this.edition = '';
+
+				/*this.focusedTool = field;
+				this.showDrawer = true;*/
+			},
+
+			cancelTool() {
+				this.edition = '';
+			},
+
+			toggleFieldTool() {
+
+				if(this.edition === 'field') {
+
+					this.edition = '';
+					return;
+				}
+
+				this.edition = 'field';
 			},
 		},
 	};
@@ -417,6 +489,9 @@
 
 		display: flex;
 		align-items: center;
+		position: absolute;
+		right: 0;
+		top: -3rem;
 
 		.controls-info {
 
@@ -424,9 +499,6 @@
 			background: @background-2;
 			padding: @margin-half @margin-double;
 			border-radius: @radius-2;
-			position: absolute;
-			right: 0;
-			top: -3rem;
 		}
 
 		.controls-buttons {
@@ -523,6 +595,12 @@
 			.page-content {
 
 				.overlay-element();
+
+				&.add-field {
+
+					// Change cursor to crosshair
+					cursor: crosshair;
+				}
 			}
 		}
 	}

@@ -22,7 +22,7 @@ export const mutations = {
 	updateContent(state, content) { Vue.set(state.worksheet, 'content', content); },
 	updateOptions(state, options) { Vue.set(state.worksheet, 'options', options); },
 	setLoading(state, loading) { state.loading = loading; },
-	addBlock(state, block) { state.blocks.push(block); },
+	addBlock(state, block) { state.blocks.push(block); state.worksheet.blocks.push(block); },
 
 	setWorksheetProp(state, prop) { Vue.set(state.worksheet.content, prop.name, prop.value); },
 	setWorksheetGradingProp(state, prop) { Vue.set(state.worksheet.content.grading, prop.name, prop.value); },
