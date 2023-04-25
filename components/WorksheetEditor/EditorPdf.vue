@@ -7,7 +7,7 @@
 				:loading="uploadingAttachment"
 			>
 				<div class="uploader-start">
-					<graded-pdf-animation />
+					<graded-pdf-animation class="animation" />
 					<p>To start, please load a PDF file.</p>
 				</div>
 			</file-uploader>
@@ -46,7 +46,7 @@
 							href="#"
 							@click.prevent="loadPDFFields(true)"
 							class="button button-small button-primary"
-						>Yes, please kind sir</a>
+						>Yes, please</a>
 						<a
 							href="#"
 							@click.prevent="loadPDFFields(false)"
@@ -56,7 +56,7 @@
 				</div>
 			</transition-slide>
 
-			<template v-if="mode === 'pages'">
+			<!--<template v-if="mode === 'pages'">
 				<p class="text-center mb-default">Please select what pages do you want to use:</p>
 				<div class="row">
 					<div class="col col-md-4" v-for="(page, i) in pages">
@@ -71,9 +71,9 @@
 						</a>
 					</div>
 				</div>
-			</template>
+			</template>-->
 
-			<div class="pdf-editor" v-if="mode === 'editor'">
+			<div class="pdf-editor">
 
 				<div class="editor-page" v-for="page in workingPages">
 					<img :src="page.image" alt="">
@@ -329,7 +329,6 @@
 				}
 
 				this.selectAllPages();
-
 				this.updateOptions(this.$shallow({ ...this.worksheet.options, fields_from_pdf: flag }));
 
 				this.loadFields = true;
@@ -401,7 +400,8 @@
 				this.uploadingAttachment = false;
 
 				this.updateContent(res.data.worksheet.content);
-				this.mode = 'pages';
+				this.selectAllPages();
+				this.mode = 'editor';
 			},
 
 			addField(id, event) {
@@ -615,6 +615,11 @@
 			align-items: center;
 			justify-content: center;
 		}
+	}
+
+	.animation {
+
+		pointer-events: none;
 	}
 
 </style>
