@@ -416,6 +416,7 @@
 				// if it does not have fields, set the loadFields to true
 				if(!hasFields) {
 					this.loadFields = true;
+					this.updateOptions(this.$shallow({ ...this.worksheet.options, fields_from_pdf: true }));
 				}
 
 				this.uploadingAttachment = false;
