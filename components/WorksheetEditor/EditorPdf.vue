@@ -397,6 +397,27 @@
 
 				const res = await obj.$axios.$post(`/worksheets/${ this.worksheet.id }/upload-pdf`, formData);
 
+				console.log(res.data);
+
+				// Checking if it has fields
+				const pages = res.data.worksheet.content.pdf.pages;
+
+				// iterate fields to check if there is any field inside
+				let hasFields = false;
+
+				for(let i = 0; i < pages.length; i++) {
+
+					if(pages[i].fields.length > 0) {
+						hasFields = true;
+						break;
+					}
+				}
+
+				// if it does not have fields, set the loadFields to true
+				if(!hasFields) {
+					this.loadFields = true;
+				}
+
 				this.uploadingAttachment = false;
 
 				this.updateContent(res.data.worksheet.content);
@@ -570,6 +591,7 @@
 
 			border-radius: @component-border-radius;
 			box-shadow: @-shadow-3;
+			margin-bottom: @margin-double;
 
 			img {
 
