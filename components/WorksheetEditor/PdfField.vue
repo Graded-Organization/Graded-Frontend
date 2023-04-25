@@ -28,7 +28,7 @@
 			<input type="checkbox" v-if="value.type === 'checkbox'">
 			<input type="radio" v-if="value.type === 'radio'">
 
-			<span class="input-placeholder" v-if="!!value.placeholder">
+			<span class="input-placeholder" v-if="!!value.content.placeholder">
 				{{ value.content.placeholder }}
 			</span>
 

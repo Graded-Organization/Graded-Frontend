@@ -425,7 +425,7 @@
 				this.mode = 'editor';
 			},
 
-			addField(id, event) {
+			async addField(id, event) {
 
 				if(this.edition !== 'field') return;
 
@@ -463,7 +463,9 @@
 					type: 'short-text-input',
 				};
 
-				this.addBlock(field);
+				// Add field via API
+				const res = await obj.$axios.$post(`/worksheets/${ this.worksheet.id }/fields`, { field });
+				this.addBlock(res.data);
 
 				// Finish edition
 				this.edition = '';

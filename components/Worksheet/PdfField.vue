@@ -28,6 +28,7 @@
 				@focus="focusField"
 				:disabled="isFocused"
 				:style="inputStyles"
+				:placeholder="value.content.placeholder"
 			>
 
 			<textarea
@@ -355,6 +356,11 @@
 				padding: @margin-third;
 				resize: none;
 				font-size: 0.8rem;
+
+				// Change placeholder color
+				&::placeholder {
+					color: fade(white, 75%);
+				}
 			}
 		}
 
