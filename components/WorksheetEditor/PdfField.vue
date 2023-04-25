@@ -29,7 +29,7 @@
 			<input type="radio" v-if="value.type === 'radio'">
 
 			<span class="input-placeholder" v-if="!!value.placeholder">
-				{{ value.placeholder }}
+				{{ value.content.placeholder }}
 			</span>
 
 			<select v-if="value.type === 'select'">

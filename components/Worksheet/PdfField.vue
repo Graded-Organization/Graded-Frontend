@@ -37,6 +37,7 @@
 				:disabled="isFocused"
 				v-model="latestAnswer"
 				:style="inputStyles"
+				:placeholder="value.content.placeholder"
 			/>
 
 			<select v-if="value.type === 'select'">
@@ -311,7 +312,7 @@
 
 		.field-input {
 
-			background: #CCC;
+			//background: #CCC;
 			.overlay-element();
 			resize: none;
 			padding: @margin-half;

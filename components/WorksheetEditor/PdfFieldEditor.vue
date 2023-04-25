@@ -35,7 +35,7 @@
 			<form-group label="Placeholder" v-if="field.type !== 'multiple-choice-question'">
 				<input
 					type="text"
-					v-model="field.placeholder"
+					v-model="field.content.placeholder"
 					class="input-block form-control"
 					placeholder="Enter a placeholder for the field"
 				>
@@ -95,7 +95,15 @@
 		mounted() {
 
 			console.log('this.field.styles', this.field);
-
+			// check if field has styles
+			if(!this.field.styles || !Object.keys(this.field.styles).length) {
+				Vue.set(this.field, 'styles', {
+					backgroundColor: 'rgba(237, 237, 237, 0.5)',
+					color: '#333333',
+					borderColor: 'transparent',
+					borderWidth: 0,
+				});
+			}
 
 		},
 		computed: {
