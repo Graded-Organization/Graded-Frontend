@@ -37,9 +37,12 @@
 						</div>
 					</div>
 
-					<template>
+					<template v-if="$auth.loggedIn">
 						<!--<a href="#" @click.prevent="showJoin" class="button button-primary">Share</a>-->
-						<a @click.prevent="sharingModal = true" class="button button-small button-primary ml-half">Share</a>
+						<a
+							@click.prevent="sharingModal = true"
+							class="button button-small button-primary ml-half"
+						>Share</a>
 					</template>
 				</div>
 			</div>
@@ -51,6 +54,7 @@
 						<worksheet v-if="worksheet.type === 'grid'" />
 						<worksheet-pdf
 							v-else
+							:class="{ 'not-active': !$auth.loggedIn }"
 							:focused-fields="focusedFields"
 						/>
 					</div>
@@ -69,7 +73,7 @@
 					</h2>
 
 					<p class="enter-invitation" v-if="typeof link.options === 'undefined'">
-						Join this tool as co-owner
+						Join this tool as {{ roles[queryParamRole] }}
 					</p>
 
 					<h2 v-if="hasAccount">Hello {{ $auth.user.nicename }}!</h2>
@@ -128,7 +132,7 @@
 						<form-group label="Email" required :class="{ 'has-error': $v.user.email.$error }">
 							<input
 								type="email"
-								:readonly="false"
+								:readonly="!!workingJWTLink"
 								v-model.trim="$v.user.email.$model"
 								class="input-block form-control"
 							>
@@ -145,7 +149,7 @@
 						</form-group>
 
 						<div class="row">
-							<div class="col">
+							<div class="col" v-if="workingJWTLink">
 								<a
 									href="#"
 									class="button button-block button-ghost-primary"
@@ -216,6 +220,11 @@
 				email: '',
 				password: '',
 			},
+			roles: {
+				coowner: 'Co-owner',
+				editor: 'Editor',
+				'view-only': 'View only',
+			},
 		}),
 		mounted() {
 
@@ -229,6 +238,13 @@
 			},
 		},
 		computed: {
+			workingJWTLink() {
+
+				return this.$route.query.jwt && this.link && this.user.email;
+			},
+			queryParamRole() {
+				return this.$route.query.t || 'view-only';
+			},
 			assignedAreas() { return this.worksheet.content.assignedAreas; },
 			toolAreas() { return this.worksheet.content.toolAreas; },
 			worksheetName() {return this.worksheet.name || 'Untitled Worksheet'; },
@@ -371,15 +387,38 @@
 				this.$v.$touch();
 				if(this.$v.$invalid) {
 					this.authenticateHasError = true;
+
 					setTimeout(function() {
 						this.authenticateHasError = false;
-
 					}.bind(this), 1000);
 					return;
 				}
 
-				await this.$axios.$post(`/worksheets/${ this.$route.params.uid }/join`, this.user);
-				await this.$auth.fetchUser();
+				// There are two cases, a user joining with a jwt or a public link
+
+				if(this.workingJWTLink) {
+
+					await this.$axios.$post(`/worksheets/${ this.$route.params.uid }/join`, this.user);
+					await this.$auth.fetchUser();
+
+				} else {
+
+					// Public link
+
+					console.log('public link');
+
+					// Get the t query param
+					const role = this.$route.query.t || 'editor';
+
+					const joinRes = await this.$axios.$post(`/worksheets/${ this.$route.params.uid }/join`, { ...this.user, role });
+
+					const oldRedirect = this.$auth.options.redirect;
+					this.$auth.options.redirect = false;
+					await this.$auth.setUserToken(joinRes.jwt);
+					this.$auth.options.rewriteRedirects = oldRedirect;
+
+					await this.$auth.fetchUser();
+				}
 
 				this.sockets();
 
@@ -627,6 +666,11 @@
 
 		text-align: center;
 		margin-bottom: @margin-default;
+	}
+
+	.not-active {
+
+		pointer-events: none;
 	}
 
 </style>
