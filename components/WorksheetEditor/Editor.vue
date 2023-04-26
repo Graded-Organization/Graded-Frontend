@@ -129,7 +129,6 @@
 <script>
 	import Vue from 'vue';
 	import DragSelect from 'dragselect';
-	import { cloneDeep, tap, set } from 'lodash';
 	import Hashids from 'hashids';
 
 	import { mapGetters, mapActions } from 'vuex';
@@ -307,7 +306,7 @@
 
 				this.ds.subscribe('dragstart', (cObj) => { this.selectCells(cObj.items); });
 				this.ds.subscribe('dragmove', (cObj) => { this.selectCells(cObj.items); });
-				this.ds.subscribe('callback', (cObj) => { this.selectionOcurred(cObj); });
+				this.ds.subscribe('callback', (cObj) => { this.selectionOccurred(cObj); });
 			},
 			expand(area, dir, info) {
 
@@ -784,10 +783,10 @@
 				if(this.rows > 6) this.setRows(this.rows - 1);
 				this.reset();
 			},
-			selectionOcurred(cObj) {
+			selectionOccurred(cObj) {
 				this.selectCells(cObj.items);
 
-				console.log('selectionOcurred', this.selectedItems);
+				console.log('selectionOccurred', this.selectedItems);
 
 				for(const c in this.selectedItems) {
 					if(this.isOverlaping(this.selectedItems[c])) {

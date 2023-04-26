@@ -404,7 +404,7 @@
 
 			closeDrawer() {
 				this.showDrawer = false;
-				this.focusedTool = null;
+				this.focusedToolId = null;
 			},
 
 			async uploadAttachment(files) {

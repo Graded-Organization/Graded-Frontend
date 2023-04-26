@@ -1,3 +1,4 @@
+<!--suppress VueMissingComponentImportInspection -->
 <template>
 	<div>
 		<h2 class="drawer-title">Edit Tool Fields</h2>
@@ -58,6 +59,14 @@
 			</form-group>
 
 		</worksheet-editor-drawer-block>
+
+		<div class="p-default">
+			<a
+				href="#"
+				class="button button-danger button-block"
+				@click.prevent="removeField"
+			>Remove Field</a>
+		</div>
 
 		<portal-target name="tool-area-editor"></portal-target>
 	</div>
@@ -136,6 +145,36 @@
 				this.updateField(this.$shallow(this.field));
 
 				this.setLoading(false);
+			},
+			removeField() {
+				// Send modal confirmation
+				this.$modal.show('dialog', {
+					title: 'Remove Field',
+					text: 'Are you sure you want to remove this field?',
+					buttons: [
+						{
+							title: 'Cancel',
+							handler: () => {
+								this.$modal.hide('dialog');
+							},
+						},
+						{
+							title: 'Remove',
+							handler: () => {
+
+								// Remove field with API
+								this.$axios.$delete(`worksheet-blocks/${ this.field.id }`);
+
+								//Clean up field from store (removeBlock)
+								this.$store.commit('worksheet/removeBlock', this.field);
+
+								this.$parent.close();
+
+								this.$modal.hide('dialog');
+							},
+						},
+					],
+				});
 			},
 		},
 	};

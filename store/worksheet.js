@@ -50,6 +50,14 @@ export const mutations = {
 		Vue.set(state.blocks, blockIndex, block);
 	},
 
+	removeBlock(state, block) {
+
+		let blockIndex = state.blocks.findIndex(b => b.id == block.id);
+		state.blocks.splice(blockIndex, 1);
+		let worksheetBlockIndex = state.worksheet.blocks.findIndex(b => b.id == block.id);
+		state.worksheet.blocks.splice(worksheetBlockIndex, 1);
+	},
+
 	updateField(state, block) {
 
 		let blockIndex = state.worksheet.blocks.findIndex(b => b.id == block.id);
@@ -92,6 +100,7 @@ export const actions = {
 	},
 	updateBlock({ commit }, payload) { commit('updateBlock', payload); },
 	updateField({ commit }, payload) { commit('updateField', payload); },
+	removeBlock({ commit }, payload) { commit('removeBlock', payload); },
 
 	// Application
 	setApplication({ commit }, payload) { commit('setApplication', payload); },
