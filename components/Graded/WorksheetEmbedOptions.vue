@@ -71,7 +71,7 @@
 
 <script>
 	export default {
-		name: 'WorksheetEmbedOptions',
+		name: 'GradedWorksheetEmbedOptions',
 		props: {
 			worksheet: {
 				type: Object,

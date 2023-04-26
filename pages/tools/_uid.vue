@@ -403,10 +403,6 @@
 
 				} else {
 
-					// Public link
-
-					console.log('public link');
-
 					// Get the t query param
 					const role = this.$route.query.t || 'editor';
 

@@ -1,3 +1,4 @@
+<!--suppress VueMissingComponentImportInspection -->
 <template>
 	<div class="sharing-wrapper">
 		<h2 class="sharing-title">
