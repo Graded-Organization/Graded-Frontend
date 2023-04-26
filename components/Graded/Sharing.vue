@@ -306,7 +306,7 @@
 			async copyLink() {
 				try {
 
-					const text = `${ this.$config.baseUrl }/worksheet/${ this.worksheet.uid }/${ this.inviteLinkType }`;
+					const text = `${ this.$config.baseUrl }/tools/${ this.worksheet.uid }?t=${ this.inviteLinkType }`;
 
 					await this.$copyText(text);
 

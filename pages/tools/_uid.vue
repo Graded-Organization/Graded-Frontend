@@ -68,9 +68,13 @@
 						Get started!
 					</h2>
 
+					<p class="enter-invitation" v-if="typeof link.options === 'undefined'">
+						Join this tool as co-owner
+					</p>
+
 					<h2 v-if="hasAccount">Hello {{ $auth.user.nicename }}!</h2>
 
-					<p class="enter-invitation">
+					<p class="enter-invitation" v-if="typeof link.options !== 'undefined'">
 						<strong>{{ link.options.inviter.nicename }}</strong> is inviting you to collaborate on this tool as
 						<strong>{{ link.options.invite_type }}</strong>.
 					</p>
@@ -124,7 +128,7 @@
 						<form-group label="Email" required :class="{ 'has-error': $v.user.email.$error }">
 							<input
 								type="email"
-								:readonly="true"
+								:readonly="false"
 								v-model.trim="$v.user.email.$model"
 								class="input-block form-control"
 							>
@@ -214,6 +218,7 @@
 			},
 		}),
 		mounted() {
+
 		},
 		validations: {
 			user: {
@@ -425,6 +430,8 @@
 
 				if(this.$auth.loggedIn) {
 					this.sockets();
+				} else {
+					this.showJoin();
 				}
 
 				const answers = await this.$axios.$get(`/worksheets/${ this.$route.params.uid }/answers`);

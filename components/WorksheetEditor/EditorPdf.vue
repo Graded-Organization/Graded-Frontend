@@ -133,7 +133,8 @@
 			loadFields: null,
 			selectedPages: [],
 			selectedTool: '', // Drawer open, big version visible
-			focusedTool: null, // Drawer open
+			//focusedTool: null, // Drawer open
+			focusedToolId: null,
 			showDrawer: false,
 			updateKey: 0,
 			position: { x: 0, y: 0 },
@@ -206,6 +207,12 @@
 								cancelToken: obj.source.token,
 							});
 
+							// Find index of focused tool in worksheet blocks
+							const index = obj.worksheet.blocks.findIndex(block => block.id == obj.focusedTool.id);
+
+							// Replace focused tool with updated version
+							obj.updateBlock(focusedTool);
+
 							event.target.classList.remove('resizing');
 						},
 					},
@@ -256,6 +263,12 @@
 								cancelToken: obj.source.token,
 							});
 
+							// Find index of focused tool in worksheet blocks
+							const index = obj.worksheet.blocks.findIndex(block => block.id == obj.focusedTool.id);
+
+							// Replace focused tool with updated version
+							obj.updateBlock(focusedTool);
+
 							event.target.classList.remove('dragging');
 						},
 					},
@@ -288,6 +301,10 @@
 				rows: 'worksheet/rows',
 				columns: 'worksheet/columns',
 			}),
+			focusedTool() {
+				if(!this.focusedToolId) return null;
+				return this.blocks.find(block => block.id == this.focusedToolId);
+			},
 			pages() {
 
 				if(!this.worksheet.content?.pdf?.pages) return [];
@@ -307,6 +324,7 @@
 			...mapActions({
 				updateContent: 'worksheet/updateContent',
 				updateOptions: 'worksheet/updateOptions',
+				updateBlock: 'worksheet/updateBlock',
 				setWorksheet: 'worksheet/setWorksheet',
 				addBlock: 'worksheet/addBlock',
 			}),
@@ -367,7 +385,9 @@
 				this.position.x = tool.x;
 				this.position.y = tool.y;
 
-				this.focusedTool = this.worksheet.blocks.find(b => b.id == tool.id);
+				this.focusedToolId = tool.id;
+
+				//this.focusedTool = this.worksheet.blocks.find(b => b.id == tool.id);
 				this.showDrawer = true;
 			},
 
