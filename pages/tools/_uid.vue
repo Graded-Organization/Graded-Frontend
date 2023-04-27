@@ -583,6 +583,9 @@
 
 				const res = await this.$axios.$get(`/worksheets/${ this.$route.params.uid }/check-access`);
 				if(res.data === 'Active') this.hasAccess = true;
+
+				// If user is the owner, they have access
+				if(this.$auth.user.id === this.worksheet.users.find(user => user.role === 'owner').id) this.hasAccess = true;
 			}
 
 			// Magic link from inviter
