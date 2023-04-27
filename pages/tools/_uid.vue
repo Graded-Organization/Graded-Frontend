@@ -69,119 +69,190 @@
 				v-if="!hasAccess"
 			>
 				<template v-slot="{ params, close }">
-					<h2 class="enter-title">
-						<img src="~/assets/images/template/transform-robot.svg" alt="Normie">
-						<span v-if="!hasAccount">Get started!</span>
-						<span v-else>Welcome back, {{ $auth.user.nicename }}</span>
-					</h2>
+					<div v-if="modalMode === 'register'">
+						<h2 class="enter-title">
+							<img src="~/assets/images/template/transform-robot.svg" alt="Normie">
+							<span v-if="!hasAccount">Get started!</span>
+							<span v-else>Welcome back, {{ $auth.user.nicename }}</span>
+						</h2>
 
-					<!--<p class="enter-invitation" v-if="typeof link.options === 'undefined'">
-						Join this tool as {{ roles[queryParamRole] }}
-					</p>-->
+						<!--<p class="enter-invitation" v-if="typeof link.options === 'undefined'">
+							Join this tool as {{ roles[queryParamRole] }}
+						</p>-->
 
-					<p class="enter-invitation" v-if="typeof link.options !== 'undefined'">
-						<strong>{{ link.options.inviter.nicename }}</strong> is inviting you to collaborate on this tool as
-						<strong>{{ link.options.invite_type }}</strong>.
-					</p>
-
-					<div
-						v-if="!hasAccount"
-						class="submit-application"
-						:class="{ 'animate__animated animate__shakeX': authenticateHasError }"
-					>
-						<p class="mb-default">
-							<a href="#" @click.prevent="googleLogin" class="button button-google button-block">
-								<span class="icon">
-									<g-logo />
-								</span>
-								Access with Google Account
-							</a>
+						<p class="enter-invitation" v-if="typeof link.options !== 'undefined'">
+							<strong>{{ link.options.inviter.nicename }}</strong> is inviting you to collaborate on this tool as
+							<strong>{{ link.options.invite_type }}</strong>.
 						</p>
 
-						<p class="text-center mb-default">or continue with your email</p>
-
-						<div class="row">
-							<div class="col col-6">
-								<form-group
-									label="First name"
-									required
-									:class="{ 'has-error': $v.user.firstname.$error }"
-								>
-									<input
-										type="text"
-										v-model.trim="$v.user.firstname.$model"
-										class="input-block form-control"
-									>
-								</form-group>
-							</div>
-
-							<div class="col col-6">
-								<form-group
-									label="Last name"
-									required
-									:class="{ 'has-error': $v.user.lastname.$error }"
-								>
-									<input
-										type="text"
-										v-model.trim="$v.user.lastname.$model"
-										class="input-block form-control"
-									>
-								</form-group>
-							</div>
-						</div>
-
-						<form-group label="Email" required :class="{ 'has-error': $v.user.email.$error }">
-							<input
-								type="email"
-								:readonly="!!workingJWTLink"
-								v-model.trim="$v.user.email.$model"
-								class="input-block form-control"
-							>
-						</form-group>
-
-						<form-group
-							label="Create Password"
-							required
-							:has-error="$v.user.password.$error"
+						<div
+							v-if="!hasAccount"
+							class="submit-application"
+							:class="{ 'animate__animated animate__shakeX': authenticateHasError }"
 						>
-							<password-input v-model.trim="$v.user.password.$model"></password-input>
-
-							<template #help-block>This field is required</template>
-						</form-group>
-
-						<div class="row">
-							<div class="col" v-if="workingJWTLink">
-								<a
-									href="#"
-									class="button button-block button-ghost-primary"
-									@click.prevent="skipForNow"
-								>Skip for now</a>
+							<div class="the-content text-center">
+								<p class="mb-default">
+									<strong>{{ owner }}</strong> is inviting you to join
+									<strong>{{ worksheetName }}</strong> as
+									<strong>{{ roles[queryParamRole] }}</strong>.<br>Create an account or login to start collaborating!
+								</p>
 							</div>
-							<div class="col">
-								<a
-									href="#"
-									@click.prevent="joinWorksheet"
-									class="button button-block button-primary"
-								>Create account</a>
-							</div>
-						</div>
-					</div>
-					<div v-else class="text-center">
-						<div class="the-content">
-							<p class="mb-default">
-								<strong>{{ owner }}</strong> is inviting you to join
-								<strong>{{ worksheetName }}</strong> as
-								<strong>{{ roles[queryParamRole] }}</strong>.<br>Accept the invite to start collaborating!
-							</p>
-						</div>
 
-						<div class="submit-application">
-							<p>
-								<a href="#" @click.prevent="authJoin" class="button button-block button-primary">
-									Accept invite
+							<!--<p class="mb-default">
+								<a href="#" @click.prevent="googleLogin" class="button button-google button-block">
+									<span class="icon">
+										<g-logo />
+									</span>
+									Access with Google Account
 								</a>
 							</p>
+
+							<p class="text-center mb-default">or continue with your email</p>-->
+
+							<div class="row">
+								<div class="col col-6">
+									<form-group
+										label="First name"
+										required
+										:class="{ 'has-error': $v.user.firstname.$error }"
+									>
+										<input
+											type="text"
+											v-model.trim="$v.user.firstname.$model"
+											class="input-block form-control"
+										>
+									</form-group>
+								</div>
+
+								<div class="col col-6">
+									<form-group
+										label="Last name"
+										required
+										:class="{ 'has-error': $v.user.lastname.$error }"
+									>
+										<input
+											type="text"
+											v-model.trim="$v.user.lastname.$model"
+											class="input-block form-control"
+										>
+									</form-group>
+								</div>
+							</div>
+
+							<form-group label="Email" required :class="{ 'has-error': $v.user.email.$error }">
+								<input
+									type="email"
+									:readonly="!!workingJWTLink"
+									v-model.trim="$v.user.email.$model"
+									class="input-block form-control"
+								>
+							</form-group>
+
+							<form-group
+								label="Create Password"
+								required
+								:has-error="$v.user.password.$error"
+							>
+								<password-input v-model.trim="$v.user.password.$model"></password-input>
+
+								<template #help-block>This field is required</template>
+							</form-group>
+
+							<div class="row">
+								<div class="col" v-if="workingJWTLink">
+									<a
+										href="#"
+										class="button button-block button-ghost-primary"
+										@click.prevent="skipForNow"
+									>Skip for now</a>
+								</div>
+								<div class="col">
+									<a
+										href="#"
+										@click.prevent="joinWorksheet"
+										class="button button-block button-primary"
+									>Create account</a>
+								</div>
+							</div>
 						</div>
+						<div v-else class="text-center">
+							<div class="the-content">
+								<p class="mb-default">
+									<strong>{{ owner }}</strong> is inviting you to join
+									<strong>{{ worksheetName }}</strong> as
+									<strong>{{ roles[queryParamRole] }}</strong>.<br>Accept the invite to start collaborating!
+								</p>
+							</div>
+
+							<div class="submit-application">
+								<p>
+									<a href="#" @click.prevent="authJoin" class="button button-block button-primary">
+										Accept invite
+									</a>
+								</p>
+							</div>
+						</div>
+
+						<p class="text-center pt-2">Have an account ? <a
+							@click.prevent="modalMode = 'login'"
+							href="#"
+						>Log in</a></p>
+					</div>
+
+					<div v-else>
+						<h2 class="enter-title">
+							<img src="~/assets/images/template/transform-robot.svg" alt="Normie">
+							<span v-if="!hasAccount">Log in</span>
+						</h2>
+
+						<div
+							v-if="!hasAccount"
+							class="submit-application"
+							:class="{ 'animate__animated animate__shakeX': authenticateHasError }"
+						>
+							<div class="the-content text-center">
+								<p class="mb-default">
+									<strong>{{ owner }}</strong> is inviting you to join
+									<strong>{{ worksheetName }}</strong> as
+									<strong>{{ roles[queryParamRole] }}</strong>.<br>Create an account or login to start collaborating!
+								</p>
+							</div>
+
+							<form-group label="Email" required :class="{ 'has-error': $v.login.email.$error }">
+								<input
+									type="email"
+									v-model.trim="$v.login.email.$model"
+									class="input-block form-control"
+								>
+							</form-group>
+
+							<form-group
+								label="Password"
+								required
+								:has-error="$v.login.password.$error"
+							>
+								<input
+									type="password"
+									v-model.trim="$v.login.password.$model"
+									class="input-block form-control"
+								>
+							</form-group>
+
+							<div class="row">
+								<div class="col">
+									<a
+										href="#"
+										@click.prevent="loginAndJoinWorksheet"
+										class="button button-block button-primary"
+									>Login</a>
+								</div>
+							</div>
+						</div>
+
+						<p class="text-center pt-2">Not on Transform yet ? <a
+							@click.prevent="modalMode = 'register'"
+							href="#"
+						>Sign Up</a></p>
 					</div>
 
 				</template>
@@ -230,6 +301,11 @@
 				email: '',
 				password: '',
 			},
+			login: {
+				email: '',
+				password: '',
+			},
+			modalMode: 'register',
 			roles: {
 				coowner: 'Co-owner',
 				editor: 'Editor',
@@ -243,6 +319,10 @@
 			user: {
 				firstname: { required },
 				lastname: { required },
+				email: { required, email },
+				password: { required },
+			},
+			login: {
 				email: { required, email },
 				password: { required },
 			},
@@ -366,12 +446,51 @@
 
 				return styles;
 			},
+			async loginAndJoinWorksheet() {
+				const obj = this;
+
+				const payload = { ...this.login, action: 'login' };
+
+				if(this.$route.query.t) {
+					payload.role = this.$route.query.t || 'editor';
+				}
+
+				try {
+
+					const joinRes = await this.$axios.$post(`/worksheets/${ this.$route.params.uid }/join`, payload);
+
+					const oldRedirect = this.$auth.options.redirect;
+					this.$auth.options.redirect = false;
+					await this.$auth.setUserToken(joinRes.jwt);
+					this.$auth.options.rewriteRedirects = oldRedirect;
+
+					await this.$auth.fetchUser();
+
+				} catch(e) {
+
+					// get response from server
+					const { response } = e;
+
+					return;
+				}
+				this.hasAccess = true;
+				this.hasAccount = true;
+
+				this.sockets();
+
+				// Close modal
+				this.enterModal = false;
+
+				// Remove query from url
+				await this.$router.push({ path: this.$route.path });
+			},
+
 			async authJoin() {
 
 				const email = !this.hasAccount ? this.user.email : this.$auth.user.email;
 				const payload = { email };
 
-				if(this.hasAccount) {
+				if(this.$route.query.t) {
 					payload.role = this.$route.query.t || 'editor';
 				}
 
