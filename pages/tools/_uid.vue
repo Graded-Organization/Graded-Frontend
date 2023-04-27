@@ -2,7 +2,9 @@
 	<div class="application-wrapper">
 
 		<!-- wait for nuxt fetch -->
-		<p v-if="$fetchState.pending">Loading...</p>
+		<div v-if="$fetchState.pending" class="application-loading">
+			<p>Loading...</p>
+		</div>
 		<p v-else-if="$fetchState.error">An error occurred</p>
 		<template v-else>
 			<div class="application-header">
@@ -37,7 +39,7 @@
 						</div>
 					</div>
 
-					<template v-if="$auth.loggedIn">
+					<template v-if="hasAccess">
 						<!--<a href="#" @click.prevent="showJoin" class="button button-primary">Share</a>-->
 						<a
 							@click.prevent="sharingModal = true"
@@ -54,7 +56,7 @@
 						<worksheet v-if="worksheet.type === 'grid'" />
 						<worksheet-pdf
 							v-else
-							:class="{ 'not-active': !$auth.loggedIn }"
+							:class="{ 'not-active': !hasAccessToWorksheet }"
 							:focused-fields="focusedFields"
 						/>
 					</div>
@@ -64,19 +66,18 @@
 			<graded-modal
 				v-model="enterModal"
 				name="submit-application"
-				v-if="!$auth.loggedIn || ($auth.loggedIn && $route.query.jwt)"
+				v-if="!hasAccess"
 			>
 				<template v-slot="{ params, close }">
 					<h2 class="enter-title">
 						<img src="~/assets/images/template/transform-robot.svg" alt="Normie">
-						Get started!
+						<span v-if="!hasAccount">Get started!</span>
+						<span v-else>Welcome back, {{ $auth.user.nicename }}</span>
 					</h2>
 
-					<p class="enter-invitation" v-if="typeof link.options === 'undefined'">
+					<!--<p class="enter-invitation" v-if="typeof link.options === 'undefined'">
 						Join this tool as {{ roles[queryParamRole] }}
-					</p>
-
-					<h2 v-if="hasAccount">Hello {{ $auth.user.nicename }}!</h2>
+					</p>-->
 
 					<p class="enter-invitation" v-if="typeof link.options !== 'undefined'">
 						<strong>{{ link.options.inviter.nicename }}</strong> is inviting you to collaborate on this tool as
@@ -165,11 +166,19 @@
 							</div>
 						</div>
 					</div>
-					<div v-else>
-						<div class="submit-application">
+					<div v-else class="text-center">
+						<div class="the-content">
 							<p class="mb-default">
+								<strong>{{ owner }}</strong> is inviting you to join
+								<strong>{{ worksheetName }}</strong> as
+								<strong>{{ roles[queryParamRole] }}</strong>.<br>Accept the invite to start collaborating!
+							</p>
+						</div>
+
+						<div class="submit-application">
+							<p>
 								<a href="#" @click.prevent="authJoin" class="button button-block button-primary">
-									Join
+									Accept invite
 								</a>
 							</p>
 						</div>
@@ -195,7 +204,7 @@
 
 	import WorksheetMixin from '../worksheets/worksheet.mixin.js';
 	import Vue from 'vue';
-	import { required, email } from 'vuelidate/lib/validators';
+	import { email, required } from 'vuelidate/lib/validators';
 
 	import VueJwtDecode from 'vue-jwt-decode';
 
@@ -205,6 +214,7 @@
 		mixins: [WorksheetMixin],
 		components: { Logo, GLogo, VueJwtDecode },
 		data: () => ({
+			hasAccess: false,
 			sharingModal: false,
 			hasAccount: false,
 			userStatus: null,
@@ -238,12 +248,17 @@
 			},
 		},
 		computed: {
+			hasAccessToWorksheet() {
+				if(this.$auth.loggedIn && this.hasAccess) return true;
+			},
 			workingJWTLink() {
-
 				return this.$route.query.jwt && this.link && this.user.email;
 			},
 			queryParamRole() {
 				return this.$route.query.t || 'view-only';
+			},
+			owner() {
+				return this.worksheet.users.find(user => user.role === 'owner').nicename;
 			},
 			assignedAreas() { return this.worksheet.content.assignedAreas; },
 			toolAreas() { return this.worksheet.content.toolAreas; },
@@ -333,7 +348,7 @@
 				this.socket.emit('checkConnected');
 			},
 			showJoin() {
-				if(!this.$auth.loggedIn) {
+				if(!this.hasAccess) {
 
 					this.enterModal = true;
 				}
@@ -353,10 +368,17 @@
 			},
 			async authJoin() {
 
-				await this.$axios.$post(`/worksheets/${ this.$route.params.uid }/join`, {
-					email: this.user.email,
-				});
+				const email = !this.hasAccount ? this.user.email : this.$auth.user.email;
+				const payload = { email };
+
+				if(this.hasAccount) {
+					payload.role = this.$route.query.t || 'editor';
+				}
+
+				await this.$axios.$post(`/worksheets/${ this.$route.params.uid }/join`, payload);
 				await this.$auth.fetchUser();
+
+				this.hasAccess = true;
 
 				this.sockets();
 
@@ -372,6 +394,7 @@
 					email: this.user.email,
 				});
 				await this.$auth.fetchUser();
+				this.hasAccess = true;
 
 				this.sockets();
 
@@ -400,13 +423,17 @@
 
 					await this.$axios.$post(`/worksheets/${ this.$route.params.uid }/join`, this.user);
 					await this.$auth.fetchUser();
+					this.hasAccess = true;
 
 				} else {
 
 					// Get the t query param
 					const role = this.$route.query.t || 'editor';
 
-					const joinRes = await this.$axios.$post(`/worksheets/${ this.$route.params.uid }/join`, { ...this.user, role });
+					const joinRes = await this.$axios.$post(`/worksheets/${ this.$route.params.uid }/join`, {
+						...this.user,
+						role,
+					});
 
 					const oldRedirect = this.$auth.options.redirect;
 					this.$auth.options.redirect = false;
@@ -414,6 +441,7 @@
 					this.$auth.options.rewriteRedirects = oldRedirect;
 
 					await this.$auth.fetchUser();
+					this.hasAccess = true;
 				}
 
 				this.sockets();
@@ -428,6 +456,15 @@
 		async fetch() {
 
 			await this.fetchWorksheet(this.$route.params.uid);
+
+			// If user is logged in, check if they have access to the worksheet
+			if(this.$auth.loggedIn) {
+
+				this.hasAccount = true;
+
+				const res = await this.$axios.$get(`/worksheets/${ this.$route.params.uid }/check-access`);
+				if(res.data) this.hasAccess = true;
+			}
 
 			// Magic link from inviter
 			if(this.$route.query.jwt) {
@@ -463,7 +500,7 @@
 
 			} else {
 
-				if(this.$auth.loggedIn) {
+				if(this.hasAccount && this.hasAccess) {
 					this.sockets();
 				} else {
 					this.showJoin();
@@ -478,6 +515,15 @@
 </script>
 
 <style scoped lang="less">
+
+	.application-loading {
+
+		.overlay-element();
+		position: fixed;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
 
 	.modal-title {
 
@@ -667,6 +713,12 @@
 	.not-active {
 
 		pointer-events: none;
+
+		/deep/ .field-wrapper {
+
+			//Blur
+			filter: blur(2px) !important;
+		}
 	}
 
 </style>
