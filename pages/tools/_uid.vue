@@ -193,7 +193,7 @@
 							</div>
 						</div>
 
-						<p class="text-center pt-2">Have an account ? <a
+						<p v-if="!hasAccount" class="text-center pt-2">Have an account ? <a
 							@click.prevent="modalMode = 'login'"
 							href="#"
 						>Log in</a></p>
@@ -526,8 +526,8 @@
 
 			async joinWorksheet() {
 
-				this.$v.$touch();
-				if(this.$v.$invalid) {
+				this.$v.user.$touch();
+				if(this.$v.user.$invalid) {
 					this.authenticateHasError = true;
 
 					setTimeout(function() {
@@ -582,7 +582,7 @@
 				this.hasAccount = true;
 
 				const res = await this.$axios.$get(`/worksheets/${ this.$route.params.uid }/check-access`);
-				if(res.data) this.hasAccess = true;
+				if(res.data === 'Active') this.hasAccess = true;
 			}
 
 			// Magic link from inviter
@@ -597,9 +597,11 @@
 				// {id}/log-and-join/{jwt}
 				const joinRes = await this.$axios.$get(`/worksheets/${ this.$route.params.uid }/log-and-join/${ this.$route.query.jwt }`);
 
+				console.log('joinRes', joinRes);
+
 				// Check the user status
-				this.userStatus = joinRes.data.worksheet_status;
-				this.hasAccount = joinRes.data.has_password;
+				this.userStatus = joinRes.data.user.worksheet_status;
+				this.hasAccount = joinRes.data.user.has_password;
 
 				this.link.options.invite_type = joinRes.data.role;
 
@@ -614,7 +616,7 @@
 				this.$auth.options.rewriteRedirects = oldRedirect;
 
 				const accessRes = await this.$axios.$get(`/worksheets/${ this.$route.params.uid }/check-access`);
-				if(accessRes.data) this.hasAccess = true;
+				if(accessRes.data === 'Active') this.hasAccess = true;
 
 				if(this.userStatus === 'Active' || this.hasAccess) {
 					this.sockets();
