@@ -467,7 +467,7 @@
 			}
 
 			// Magic link from inviter
-			if(this.$route.query.jwt) {
+			if(this.$route.query.jwt && !this.hasAccess) {
 
 				const jwt = VueJwtDecode.decode(this.$route.query.jwt);
 				const link = await this.$axios.$get(`/links/${ jwt.sub }`);
@@ -494,8 +494,12 @@
 				await this.$auth.setUserToken(joinRes.jwt);
 				this.$auth.options.rewriteRedirects = oldRedirect;
 
-				if(this.userStatus === 'Active' && this.hasAccount) {
+				const accessRes = await this.$axios.$get(`/worksheets/${ this.$route.params.uid }/check-access`);
+				if(accessRes.data) this.hasAccess = true;
+
+				if(this.userStatus === 'Active' || this.hasAccess) {
 					this.sockets();
+					this.hasAccess = true;
 				}
 
 			} else {
@@ -506,10 +510,11 @@
 					this.showJoin();
 				}
 
-				const answers = await this.$axios.$get(`/worksheets/${ this.$route.params.uid }/answers`);
-				this.setAnswers(answers.data);
 				this.link = true;
 			}
+
+			const answers = await this.$axios.$get(`/worksheets/${ this.$route.params.uid }/answers`);
+			this.setAnswers(answers.data);
 		},
 	};
 </script>
