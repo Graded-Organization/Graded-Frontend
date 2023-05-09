@@ -9,11 +9,14 @@
 		<template v-else>
 			<div class="application-header">
 
-				<nuxt-link to="/dashboard" class="site-logo">
+				<nuxt-link to="/dashboard" class="site-logo" v-if="!!branding">
 					<logo />
 				</nuxt-link>
 
-				<div class="worksheet-title">
+				<div
+					class="worksheet-title"
+					:class="{ 'no-logo': !branding }"
+				>
 					<div>
 						<h2 class="worksheet-name-wrapper">{{ worksheetName }}</h2>
 						<p
@@ -34,12 +37,13 @@
 									:src="`${ $config.apiUrl }/users/${ user.id }/avatar?size=200`"
 									v-tooltip.bottom="user.nicename || user.login"
 									:style="`border-color: ${ $stringToColour(user.nicename) }`"
+									:alt="user.nicename || user.login""
 								>
 							</div>
 						</div>
 					</div>
 
-					<template v-if="hasAccess">
+					<template v-if="hasAccess && actions">
 						<!--<a href="#" @click.prevent="showJoin" class="button button-primary">Share</a>-->
 						<a
 							@click.prevent="sharingModal = true"
@@ -282,9 +286,13 @@
 	export default {
 		name: 'WorkSheetApplication',
 		layout: 'preview',
-		mixins: [WorksheetMixin],
+		mixins: [ WorksheetMixin ],
 		components: { Logo, GLogo, VueJwtDecode },
 		data: () => ({
+			// Query Params
+			branding: true,
+			actions: true,
+			// General Options
 			hasAccess: false,
 			sharingModal: false,
 			hasAccount: false,
@@ -348,11 +356,11 @@
 
 				let cells = [];
 
-				for(var i = 0; i < this.rows; i++) {
+				for(let i = 0; i < this.rows; i++) {
 
 					cells[i] = [];
 
-					for(var j = 0; j < this.columns; j++) {
+					for(let j = 0; j < this.columns; j++) {
 
 						let areaName = `area${ j }-${ i }`;
 
@@ -576,6 +584,49 @@
 
 			await this.fetchWorksheet(this.$route.params.uid);
 
+			this.branding = this.$route.query.branding !== '0';
+			this.actions = this.$route.query.actions !== '0';
+
+			// Checking that query param embed is set to 1
+			if(this.$route.query.embed === '1') {
+
+				/**
+				 * ?embed=1
+				 * &actions=0
+				 * &user_firstname=Cynthia
+				 * &user_lastname=May
+				 * &user_email=cmay%40beemlightsauna.com
+				 * &user_avatar=https%3A%2F%2Fsensei.growthinstitute.com%2Fusers%2F39692%2Favatar
+				 */
+
+					// Check if we are receiving user_firstname, user_lastname and user_email
+				const userFirstname = this.$route.query.user_firstname;
+				const userLastname = this.$route.query.user_lastname;
+				const userEmail = this.$route.query.user_email;
+				const userAvatar = this.$route.query.user_avatar;
+
+				if(userFirstname && userLastname && userEmail) {
+
+					const embedUser = {
+						firstname: userFirstname,
+						lastname: userLastname,
+						email: userEmail,
+						avatar: userAvatar,
+					};
+
+					// Join
+					const embedRes = await this.$axios.$post(`/worksheets/${ this.$route.params.uid }/join`, embedUser);
+
+					const oldRedirect = this.$auth.options.redirect;
+					this.$auth.options.redirect = false;
+					await this.$auth.setUserToken(embedRes.jwt);
+					this.$auth.options.rewriteRedirects = oldRedirect;
+
+					await this.$auth.fetchUser();
+					this.hasAccess = true;
+				}
+			}
+
 			// If user is logged in, check if they have access to the worksheet
 			if(this.$auth.loggedIn) {
 
@@ -722,6 +773,11 @@
 
 			display: flex;
 			align-items: center;
+
+			&.no-logo {
+
+				padding-left: @margin-default;
+			}
 
 			h2 {
 
