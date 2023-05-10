@@ -14,7 +14,73 @@
 
 					<div class="inner">
 
-						<graded-data-table
+						<form-group>
+							<input
+								type="text"
+								class="input-block form-control form-control-search"
+								placeholder="Search..."
+								v-model="searchQuery"
+								@input="search"
+							>
+
+							<a class="search-control">
+								<i class="far fa-search" />
+							</a>
+						</form-group>
+
+						<table class="table">
+							<thead>
+								<th>Field</th>
+								<th>Input</th>
+								<th class="text-center">Collaborators</th>
+								<th>Last Edit Date</th>
+								<th>Versión History</th>
+							</thead>
+							<tbody>
+								<tr v-for="answer in orderedAnswers">
+									<!--<pre>{{ answer }}</pre>-->
+									<td>{{ answer.name }}</td>
+									<td>
+										<p>{{ answer.answers[0].content.userAnswer }}</p>
+									</td>
+									<td class="text-center">
+										<img
+											v-for="a in uniqueCollaborators(answer.answers)"
+											class="avatar"
+											width="20"
+											v-tooltip.bottom="a.nicename || a.login"
+											:src="`${ $config.apiUrl }/users/${ a.id }/avatar?size=35`"
+										>
+									</td>
+									<td>
+										{{ answer.answers[0].created }}
+									</td>
+									<td>
+										<a
+											href="#"
+											class="button button-xsmall button-pill button-primary"
+										>View History</a>
+									</td>
+									<!--
+									<td>{{ answer.content.originalQuestion.name }}</td>
+									<td>{{ answer.content.userAnswer }}</td>
+									<td>
+										<img
+											class="avatar"
+											width="20"
+											:src="`${ $config.apiUrl }/users/${ answer.id_user }/avatar?size=35`"
+										>
+									</td>
+									<td>{{ answer.created }}</td>
+									<td></td>
+									-->
+								</tr>
+
+							</tbody>
+
+						</table>
+
+						<!--<graded-data-table
 							:columns="columns"
 							:url="`/worksheets/${ $route.params.worksheet }/applications?pdo[applicants]=getApplicants&query_fields=id,uid,id_worsheet,grade,status,user_name,created,applicants`"
 							:max-height="`calc(100vh - 225px)`"
@@ -26,7 +92,7 @@
 								<a href="#" @click.prevent="showApplication(props.row)" class="button button-small button-ghost-primary button-pill">View</a>
 								<a v-tooltip.bottom="`Copy UID`" href="#" @click.prevent="copy(`${ props.row.uid }`)" class="button button-small"><i class="far fa-copy" /></a>
 							</div>
-						</graded-data-table>
+						</graded-data-table>-->
 					</div>
 
 					<!-- <data-table
@@ -60,6 +126,8 @@
 		middleware: 'auth',
 		data: () => ({
 			showModal: false,
+			searchQuery: '',
+			answers: [],
 			app: 0,
 			updateSheet: 0,
 			columns: [
@@ -73,7 +141,7 @@
 				},
 				{
 					field: 'applicantsNumber',
-					label: 'Applicants'
+					label: 'Applicants',
 				},
 				{
 					field: 'status',
@@ -98,14 +166,38 @@
 					field: 'view',
 					label: 'View',
 					width: '150px',
-					tdClass: 'text-center'
-				}
+					tdClass: 'text-center',
+				},
 			],
 		}),
+		computed: {
+			orderedAnswers() {
+				// Order answers by name
+				return Object.values(this.answers).sort((a, b) => {
+					if(a.name < b.name) return -1;
+					if(a.name > b.name) return 1;
+					return 0;
+				});
+			},
+		},
 		methods: {
 			...mapActions({
 				setApplication: 'worksheet/setApplication',
 			}),
+			uniqueCollaborators(answers) {
+
+				// Create an array of unique collaborators
+				const collaborators = {};
+
+				for(const a in answers) {
+					// check if the key exists
+					if(!collaborators[answers[a].id_user]) {
+						collaborators[answers[a].id_user] = answers[a].user;
+					}
+				}
+
+				return Object.values(collaborators);
+			},
 			formatApplicants(applicants) {
 
 				if(!applicants.length) false;
@@ -125,10 +217,10 @@
 					this.$notify({
 						group: 'graded',
 						title: 'Copied!',
-						text: 'UID copied to clipboard, sweet!'
+						text: 'UID copied to clipboard, sweet!',
 					});
 
-				} catch (e) {
+				} catch(e) {
 					console.error(e);
 				}
 			},
@@ -138,9 +230,13 @@
 				this.showModal = true;
 				this.updateSheet++;
 				this.setApplication(app);
-			}
-		}
-	}
+			},
+		},
+		async fetch() {
+			const res = await this.$axios.$get(`/worksheets/${ this.$route.params.worksheet }/reporting`);
+			this.answers = res.data;
+		},
+	};
 </script>
 
 <style scoped lang="less">
@@ -201,6 +297,50 @@
 
 					height: calc(~'100vh - 210px') !important;
 				}
+			}
+		}
+	}
+
+	.form-control-search {
+
+		border-radius: 100px;
+	}
+
+	.search-control {
+
+		position: absolute;
+		top: 50%;
+		right: @margin-double;
+		transform: translateY(-50%);
+	}
+
+	.table {
+
+		width: calc(~"100% - 50px");
+		margin: 0 auto;
+
+		thead {
+
+			th {
+
+				background: @background-1;
+				font-size: 0.8rem;
+				padding: @margin-half;
+			}
+		}
+
+		tbody {
+
+			td {
+
+				padding: @margin-half;
+				border-bottom: 1px solid @border-1;
+			}
+
+			.avatar {
+
+				display: inline-block;
+				margin: @margin-half;
 			}
 		}
 	}

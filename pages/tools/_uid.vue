@@ -37,7 +37,7 @@
 									:src="`${ $config.apiUrl }/users/${ user.id }/avatar?size=200`"
 									v-tooltip.bottom="user.nicename || user.login"
 									:style="`border-color: ${ $stringToColour(user.nicename) }`"
-									:alt="user.nicename || user.login""
+									:alt="user.nicename || user.login"
 								>
 							</div>
 						</div>
