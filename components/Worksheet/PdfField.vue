@@ -163,6 +163,10 @@
 
 			async saveAnswer() {
 
+				console.log('saveAnswer', this.answer);
+
+				if(!this.answer) return;
+
 				const content = {
 					userAnswer: this.answer,
 					originalQuestion: this.value,
