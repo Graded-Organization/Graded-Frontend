@@ -38,7 +38,6 @@
 							</thead>
 							<tbody>
 								<tr v-for="answer in orderedAnswers">
-									<!--<pre>{{ answer }}</pre>-->
 									<td>{{ answer.name }}</td>
 									<td>
 										<p>{{ answer.answers[0].content.userAnswer }}</p>
@@ -58,6 +57,7 @@
 									<td>
 										<a
 											href="#"
+											@click.prevent="showHistory(answer.id)"
 											class="button button-xsmall button-pill button-primary"
 										>View History</a>
 									</td>
@@ -114,6 +114,38 @@
 				</div>
 			</template>
 		</graded-modal>
+
+		<div
+			class="drawer drawer-editor"
+			:class="[ history ? 'is-visible' : '' ]"
+			@keydown.esc="history = false"
+		>
+			<div class="component-actions p-half">
+				<a href="#" class="button button-small" @click.prevent="history = false"><i class="fa fa-fw fa-times" /></a>
+			</div>
+
+			<h2 class="drawer-title">Answer History</h2>
+
+			<div class="drawer-content">
+				<div class="answer-history">
+					<template v-for="answer in history">
+						<div class="history-answer">
+							<img
+								class="avatar"
+								width="20"
+								:src="`${ $config.apiUrl }/users/${ answer.id_user }/avatar?size=35`"
+							>
+							<div class="answer-content">
+								<p class="answer-date">Published on {{ answer.created }}</p>
+								<p class="content">{{ answer.content.userAnswer || 'Empty response' }}</p>
+							</div>
+
+						</div>
+					</template>
+				</div>
+			</div>
+
+		</div>
 	</div>
 </template>
 
@@ -126,6 +158,7 @@
 		middleware: 'auth',
 		data: () => ({
 			showModal: false,
+			history: false,
 			searchQuery: '',
 			answers: [],
 			app: 0,
@@ -184,6 +217,12 @@
 			...mapActions({
 				setApplication: 'worksheet/setApplication',
 			}),
+			async showHistory(idBlock) {
+
+				const { data } = await this.$axios.$get(`/worksheets/${ this.$route.params.worksheet }/blocks/${ idBlock }/history`);
+
+				this.history = data;
+			},
 			uniqueCollaborators(answers) {
 
 				// Create an array of unique collaborators
@@ -342,6 +381,47 @@
 				display: inline-block;
 				margin: @margin-half;
 			}
+		}
+	}
+
+	.drawer {
+
+		height: calc(~'100vh - 62px - 43px') !important;
+		top: 62px;
+		width: 320px;
+		right: -50vw;
+		transition: right 0.3s ease-in-out;
+
+		&.is-visible {
+
+			right: 0;
+		}
+	}
+
+	.drawer-title {
+
+		position: sticky;
+		top: 0;
+		padding: @margin-default;
+		z-index: 100;
+		background: @gray-1 url('~/assets/images/template/topology.png') center center no-repeat;
+		z-index: 1;
+	}
+
+	.history-answer {
+
+		display: flex;
+		padding: @margin_default;
+		align-items: flex-start;
+
+		.avatar {
+
+			margin-right: @margin_default;
+		}
+
+		.answer-date {
+
+			font-size: 0.8rem;
 		}
 	}
 
