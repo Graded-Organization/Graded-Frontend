@@ -491,6 +491,7 @@
 			opacity: 0;
 			pointer-events: none;
 			transition: opacity 500ms;
+			z-index: 2;
 		}
 
 		&:hover {
