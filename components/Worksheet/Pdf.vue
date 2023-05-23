@@ -424,18 +424,19 @@
 	.selected-tool-info {
 
 		position: fixed;
-		right: @margin-double;
-		bottom: @margin-double;
+		left: 50%;
+		transform: translateX(-50%);
+		top: 0;
 		background: @background-0;
 		box-shadow: @shadow-3;
-		padding: @margin-double;
+		padding: @margin-default;
 		z-index: 1000;
-		border-radius: 0.5rem;
+		border-radius: 0 0 0.5rem 0.5rem;
 		transition: all 150ms;
 
 		&.has-history {
 
-			right: -50vw;
+			top: -50vw;
 		}
 	}
 
