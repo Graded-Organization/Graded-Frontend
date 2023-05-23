@@ -52,7 +52,7 @@
 										>
 									</td>
 									<td>
-										{{ answer.answers[0].created }}
+										{{ $dayjs(answer.answers[0].created).format('MM/DD/YYYY, hh:mm A') }}
 									</td>
 									<td>
 										<a
@@ -118,16 +118,15 @@
 		<div
 			class="drawer drawer-editor"
 			:class="[ history ? 'is-visible' : '' ]"
-			@keydown.esc="history = false"
 		>
 			<div class="component-actions p-half">
 				<a href="#" class="button button-small" @click.prevent="history = false"><i class="fa fa-fw fa-times" /></a>
 			</div>
 
-			<h2 class="drawer-title">Answer History</h2>
+			<h2 class="drawer-title" v-if="history"><small>{{ history[0].content.originalQuestion.name }}</small> <span>Answer History</span></h2>
 
 			<div class="drawer-content">
-				<div class="answer-history">
+				<div class="answer-history" v-if="history">
 					<template v-for="answer in history">
 						<div class="history-answer">
 							<img
@@ -136,8 +135,9 @@
 								:src="`${ $config.apiUrl }/users/${ answer.id_user }/avatar?size=35`"
 							>
 							<div class="answer-content">
-								<p class="answer-date">Published on {{ answer.created }}</p>
-								<p class="content">{{ answer.content.userAnswer || 'Empty response' }}</p>
+								<p class="answer-user">Edited by <strong>{{ answer.user.nicename }}</strong></p>
+								<p class="answer-date">{{ $dayjs(answer.created).format('MM/DD/YYYY, hh:mm A') }}</p>
+								<p class="content">"{{ answer.content.userAnswer || '(Blank)' }}"</p>
 							</div>
 
 						</div>
@@ -404,8 +404,18 @@
 		top: 0;
 		padding: @margin-default;
 		z-index: 100;
-		background: @gray-1 url('~/assets/images/template/topology.png') center center no-repeat;
-		z-index: 1;
+		background: white;
+		z-index: 2;
+		line-height: 1.2;
+
+		padding-right: 45px;
+
+		small {
+
+			font-size: 1rem;
+			font-weight: bold;
+			display: block;
+		}
 	}
 
 	.history-answer {
@@ -413,15 +423,71 @@
 		display: flex;
 		padding: @margin_default;
 		align-items: flex-start;
+		position: relative;
+		z-index: 1;
+
+
+		&:before {
+
+			content: '';
+			border-left: 2px solid @border-1;
+			height: 100%;
+			position: absolute;
+			left: calc(~'0.75rem + 15px');
+			top: 0;
+			z-index: 1;
+		}
+
+		&:first-child {
+
+			&:before {
+
+				height: calc(~"100% - 0.75rem");
+				top: auto;
+				bottom: 0;
+			}
+		}
+
+		&:last-child {
+
+			&:before {
+
+				height: 0.75rem;
+			}
+		}
+
+		// if just one, remove the border
+		&:only-child {
+
+			&:before {
+
+				display: none;
+			}
+		}
 
 		.avatar {
 
 			margin-right: @margin_default;
+			border: 1px solid @border-1;
+			position: relative;
+			z-index: 2;
+		}
+
+		.answer-user,
+		.answer-date {
+
+			font-size: 0.8rem;
 		}
 
 		.answer-date {
 
-			font-size: 0.8rem;
+			color: @background-5;
+			font-weight: bold;
+		}
+
+		.content {
+
+			font-style: italic;
 		}
 	}
 

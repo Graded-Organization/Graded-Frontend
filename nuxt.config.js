@@ -82,10 +82,18 @@ export default {
 		'@nuxtjs/axios',
 		'@nuxtjs/auth-next',
 		'@nuxtjs/i18n',
-		['nuxt-highlightjs', {
+		'@nuxtjs/dayjs',
+		[ 'nuxt-highlightjs', {
 			style: 'dark',
-		}],
+		} ],
 	],
+
+	dayjs: {
+		locales: [ 'en' ],
+		defaultLocale: 'en',
+		defaultTimeZone: 'America/Mexico_City',
+		plugins: [ 'relativeTime', 'advancedFormat', 'timezone' ],
+	},
 
 	io: {
 		sockets: [
@@ -117,11 +125,11 @@ export default {
 
 	googleFonts: {
 		families: {
-			Inter: [300, 400, 500, 700, 900],
-			Oxanium: [300, 400, 500, 700, 900],
-			'Titillium+Web': [300, 400, 600, 700, 900],
-			'Patrick Hand': [400],
-			'Flow+Block': [400],
+			Inter: [ 300, 400, 500, 700, 900 ],
+			Oxanium: [ 300, 400, 500, 700, 900 ],
+			'Titillium+Web': [ 300, 400, 600, 700, 900 ],
+			'Patrick Hand': [ 400 ],
+			'Flow+Block': [ 400 ],
 		},
 	},
 
