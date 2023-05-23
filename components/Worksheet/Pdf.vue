@@ -48,29 +48,66 @@
 
 			<div class="drawer-content">
 				<div class="answer-history" v-if="history && history.length">
-					<template v-for="(answer, i) in history">
-						<div class="history-answer">
-							<div href="#" class="history-actions" v-if="!!i">
-								<a
-									href="#"
-									@click.prevent="restoreAnswer(answer.content.userAnswer, answer)"
-									class="button button-xsmall button-primary"
-								>Restore</a>
-							</div>
 
-							<img
-								class="avatar"
-								width="20"
-								:src="`${ $config.apiUrl }/users/${ answer.id_user }/avatar?size=35`"
-							>
-							<div class="answer-content">
-								<p class="answer-user">Edited by <strong>{{ answer.user.nicename }}</strong></p>
-								<p class="answer-date">{{ $dayjs(answer.created).format('MM/DD/YYYY, hh:mm A') }}</p>
-								<p class="content">"{{ answer.content.userAnswer || '(Blank)' }}"</p>
-							</div>
+					<div class="current-version">
+						<h2 class="version-title">Current Version</h2>
+						<div>
+							<div class="history-answer">
+								<div href="#" class="history-actions" v-if="!!i">
+									<a
+										href="#"
+										@click.prevent="restoreAnswer(history[0].content.userAnswer, history[0])"
+										class="button button-xsmall button-primary"
+									>Restore</a>
+								</div>
 
+								<img
+									class="avatar"
+									width="20"
+									:src="`${ $config.apiUrl }/users/${ history[0].id_user }/avatar?size=35`"
+								>
+								<div class="answer-content">
+									<p class="answer-user">Edited by <strong>{{ history[0].user.nicename }}</strong></p>
+									<p class="answer-date">{{
+											$dayjs(history[0].created).format('MM/DD/YYYY, hh:mm A')
+										}}</p>
+									<p class="content">"{{ history[0].content.userAnswer || '(Blank)' }}"</p>
+								</div>
+
+							</div>
 						</div>
-					</template>
+					</div>
+
+					<div class="previous-versions" v-if="history.length > 1">
+						<h2 class="version-title">Previous Versions ({{ history.length - 1 }})</h2>
+						<div>
+							<template v-for="(answer, i) in history.slice(1)">
+								<div class="history-answer">
+									<div href="#" class="history-actions">
+										<a
+											href="#"
+											@click.prevent="restoreAnswer(answer.content.userAnswer, answer)"
+											class="button button-xsmall button-primary"
+										>Restore</a>
+									</div>
+
+									<img
+										class="avatar"
+										width="20"
+										:src="`${ $config.apiUrl }/users/${ answer.id_user }/avatar?size=35`"
+									>
+									<div class="answer-content">
+										<p class="answer-user">Edited by <strong>{{ answer.user.nicename }}</strong></p>
+										<p class="answer-date">{{
+												$dayjs(answer.created).format('MM/DD/YYYY, hh:mm A')
+											}}</p>
+										<p class="content">"{{ answer.content.userAnswer || '(Blank)' }}"</p>
+									</div>
+
+								</div>
+							</template>
+						</div>
+					</div>
 				</div>
 				<div class="empty" v-else>
 					<img src="~/assets/images/template/tumbleweed.gif" alt="Empty, so empty...">
@@ -578,6 +615,12 @@
 
 			margin: 0 auto;
 		}
+	}
+
+	.version-title {
+
+		padding: @margin-half @margin-default;
+		font-weight: bold;
 	}
 
 </style>
