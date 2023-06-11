@@ -46,9 +46,15 @@
 					<template v-if="hasAccess && actions">
 						<!--<a href="#" @click.prevent="showJoin" class="button button-primary">Share</a>-->
 						<a
+							:href="`${ $config.apiUrl }/worksheets/${ worksheet.uid }/download-pdf`"
+							class="button button-small button-ghost button-ghost-primary ml-half"
+							download
+						>Download <i class="far fa-arrow-to-bottom fa-fw" /></a>
+						<a
 							@click.prevent="sharingModal = true"
 							class="button button-small button-primary ml-half"
-						>Share</a>
+						>Share <i class="fal fa-share-alt fa-fw" /></a>
+
 					</template>
 				</div>
 			</div>
