@@ -160,7 +160,7 @@ export default {
 				},
 			},
 			google: {
-				clientId: '458693589477-68vpfo3ph78a7186snc7n8l1tht9b730.apps.googleusercontent.com',
+				clientId: '300354635680-nob5v9vuvk0lae0n5gvr7mir523elcm3.apps.googleusercontent.com',
 				codeChallengeMethod: '',
 				responseType: 'code',
 				endpoints: {
